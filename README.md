@@ -19,6 +19,10 @@ Para a construção do protótipo estamos utilizando...
  - Daniel Krug 
    - https://www.linkedin.com/in/daniel-krug-427646b9/
    - https://github.com/DaanKrug
+ - Deivid Gabriel
+   - https://github.com/Fukubi
+ - Francisco Cajlon Jhonathan Moura Batista
+   - https://github.com/cajlonbatista
 
 
 
