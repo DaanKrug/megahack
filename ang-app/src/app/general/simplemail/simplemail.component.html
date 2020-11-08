@@ -1,0 +1,310 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))
+		                          && !(['admin'].includes(logged.category) 
+		                          && permissions.includes('simplemail_write'))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="Formulário de envio de email pela aplicação" 
+	         class="dataForm">
+		<rich-tab-bar [objects]="[
+									   {value: '0', label: 'Endereços', title: 'Endereços'},
+									   {value: '1', label: 'Mensagem', title: 'Mensagem'}
+							     ]" 
+				      [selectedTab]="tab" 
+				      (setTabEmitter)="setTab($event)">
+		</rich-tab-bar>
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()">   	
+	        <div>
+	        	<div class="{{ tab == 0 ? '' : 'none' }}">
+	        		<rich-input-text [formGroup]="dataForm" 
+	        		                 rowss="7" forMail="true"
+	        		                 label="Destinatário(s) (*) - Individuais. Separe os, com vírgula (,)" 
+	            	                 titlee="Destinatário(s) Individuais. Separe os, com vírgula (,)"
+	            	                 formControlName="tosAddress" 
+	            	                 widthPerc="100" 
+	            	                 ngDefaultControl>
+                    </rich-input-text>
+            	</div>
+            	<div class="{{ tab == 1 ? '' : 'none' }}">
+            		<rich-input-text [formGroup]="dataForm" 
+            		                 label="Assunto (*)" 
+            		                 titlee="Assunto" 
+            		                 maxchars="200"
+	            	                 formControlName="subject" 
+	            	                 widthPerc="100" 
+	            	                 ngDefaultControl>
+                    </rich-input-text>
+	            	<rich-editor [formGroup]="dataForm" 
+	            	             formControlName="content" 
+	            	             label="Conteúdo Mensagem (*)" 
+	            	             titlee="Conteúdo Mensagem" 
+	            	             ngDefaultControl>
+				    </rich-editor>
+            	</div>
+            	<div class="clear"></div>
+        	</div>
+            <form-action [validationMessages]="validationMessages" 
+                         [processValidation]="processValidation"
+	                     (cancelDataEmitter)="cancelData()">
+	        </form-action>
+	    </form>
+    </section>
+</ng-template>
+	
+<ng-template #listObjects>
+    <section aria-label="lista dos emails enviados e para envio">
+	    <table class="table" 
+	           *ngIf="objects as listOfObject" 
+	           mdbTable> 
+	   		<thead class="black white-text">
+	        	<tr>
+	          		<th scope="col" 
+	          		    style="width: 8.8em;">
+	          		    Último Re/Envio
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: 6.5em;">
+	          			Status
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: auto;">
+	          			Assunto
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: 6em;" 
+	                    title="Sucessos/Falhas" 
+	                    aria-label="Sucessos/Falhas">
+	                    Suc./Falh.
+	                </th>
+	          		<th scope="col" 
+	          		    style="width: 9em;" 
+	          		    *ngIf="!auditingExclusions">
+	          			Ações
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: 5em;" 
+	          		    *ngIf="auditingExclusions">
+	          			Ações
+	          		</th>
+	     		</tr>
+	     	</thead>
+	     	<tbody>
+	        	<tr mdbTableCol 
+	        	    *ngFor="let simplemail of objects; trackBy: trackById">
+	          		<td class="number" 
+	          		    [innerHtml]="simplemail.updated_at"></td>
+	          		<td class="text">
+	          			<i class="fas fa-exclamation-circle" 
+	          			   style="color: #d27806; margin-right: .3em;"
+	          	           placement="top" 
+	          	           ngbTooltip="Envio finalizado com Mensagens de alerta: Clique no ícone [i] Detalhes"
+	          	           *ngIf="simplemail.status == 'finished' 
+	          	                  && !(null==simplemail.failMessages || simplemail.failMessages == '')">
+	          			</i>
+	          			<span [innerHtml]="getLabelForKey(status,simplemail.status)"></span>
+	          		</td>
+	          		<td class="text" 
+	          		    [innerHtml]="simplemail.subject"></td>
+	          		<td class="number">{{simplemail.successTotal}}/{{simplemail.failTotal}}</td>
+	          		<td class="actions">
+	          			<div class="buttons">
+			            	<button class="btn btn-primary clickable" 
+			            	        type="button" 
+			            	        *ngIf="!auditingExclusions"
+			            			placement="left" 
+			            			ngbTooltip="Re-enviar para os falhados" 
+			            			aria-label="Re-enviar para os falhados"
+			            		    (click)="reSend(simplemail.id,mailResend);"
+			            		    [disabled]="logged.id != simplemail.ownerId 
+			            		                || simplemail.failTotal == 0
+			            		                || simplemail.successTotal > 0
+			            		                || simplemail.status != 'finished'">
+			            		<i class="fas fa-paper-plane"></i>
+			            	</button>
+				       		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+				       		                    [object]="simplemail" 
+				       		                    [logged]="logged" 
+				       		                    noEdit="true"
+				       		                    [noAction]="!(['admin_master'].includes(logged.category))
+				                                              && !(['admin'].includes(logged.category) 
+				                                                 && permissions.includes('simplemail_write'))" 
+				       		                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+				       		                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+				       		                    [objectDetail]="objectDetail"
+				       		                    (showObjectEmitter)="showObject($event)"
+							                    (editObjectEmitter)="editObject($event)"
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+		      			</div>
+	        		</td>
+	        	</tr>
+	        	<tr *ngIf="emptyArray(objects)"
+	        	    class="summary">
+					<td colspan="5" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhum E-mail Enviado/Encontrado</em>
+						</span>
+					</td>
+				</tr>
+	        	<tr>
+	        		<td colspan="5" 
+	        		    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+	        		</td>
+	        	</tr>
+	    	</tbody>
+	    </table>
+    </section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Assunto:
+		</th>
+		<td class="text" 
+		    [innerHtml]="selectedObject.subject">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Conteúdo:
+		</th>
+		<td class="text">
+			<div id="contentText"></div>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Último Re/Envio:
+		</th>
+		<td class="text">{{ selectedObject.updated_at }}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Status:
+		</th>
+		<td class="text">{{ getLabelForKey(status,selectedObject.status) }}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Alertas:
+		</th>
+		<td class="text">
+			<div id="failMessagesText"></div>
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<div class="modal-header">
+    	<h4 class="modal-title" 
+    		id="modal-basic-title">
+    		Detalhes do E-mail
+    	</h4>
+    	<button type="button" 
+    	        class="close" 
+    	        aria-label="Close" 
+    	        (click)="showObject(null,null)">
+      		<span aria-hidden="true">&times;</span>
+    	</button>
+	</div>
+  	<div class="modal-body">
+	  	<rich-tab-bar [objects]="[
+								    {value: '0', label: 'Dados Gerais', title: 'Dados Gerais'},
+									{value: '1', label: 'Destinatários', title: 'Destinatários do E-mail'},
+									{value: '2', label: 'Sucessos', title: 'Destinatários do E-mail Envio com Sucesso'},
+									{value: '3', label: 'Falhas', title: 'Destinatários do E-mail Envio sem Sucesso'}
+							     ]" 
+				      [selectedTab]="modalTab" 
+				      (setTabEmitter)="setModalTab($event)">
+		</rich-tab-bar>
+    	<div style="height: 22em; overflow-x: hidden; overflow-y: auto;">
+		  	<table class="table tableInfo" 
+		  	       *ngIf="modalTab == 0">
+		  		<tbody>
+		  			<ng-template [ngTemplateOutlet]="selectedObjectTemplate"
+		  			             [selectedObject]="selectedObject">
+		  			</ng-template>	
+		  		</tbody>
+		  	</table>
+	  		<div *ngIf="modalTab == 1" 
+	  		     style="word-wrap: break-word; font-size: .85em;">
+				{{ selectedObject.tosAddress }}
+			</div>
+			<div *ngIf="modalTab == 2" 
+			     style="word-wrap: break-word; font-size: .85em;">
+		  		{{ selectedObject.successAddress }}
+		  	</div>
+		  	<div *ngIf="modalTab == 3" 
+		  	     style="word-wrap: break-word; font-size: .85em;">
+		  		{{ selectedObject.failAddress }}
+		  	</div>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="E-mail" 
+	                     [selectedObject]="selectedObject" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="E-mail" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #mailResend 
+             let-modal>
+	<continue-confirmation titlee="Continuar Com Processo de RE-ENVIO do E-mail?" 
+	                       content="Ao continuar, o processo não poderá ser interrompido.
+	                                Será efetuado o re-envio apenas para os destinatários
+	  					            que ainda não o receberam."
+	                       (confirmContinueProcessEmitter)="confirmContinueProcessMessage()"
+	                       (cancelContinueProcessEmitter)="cancelContinueProcessMessage()">
+	</continue-confirmation>
+</ng-template>

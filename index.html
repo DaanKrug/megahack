@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta http-equiv="Cache-Control" content="public, max-age=86400" />
+    	<meta charset="utf-8" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    	<meta name="theme-color" content="#ffffff" />
+    	<link rel="apple-touch-icon" href="./megahack2020/pwa-192x192.png" />
+    	<link rel="manifest" href="./manifest.webmanifest" />
+    	<link rel="icon" type="image/x-icon" href="./megahack2020/favicon.ico" />
+    	<meta name="title" content="Kentaurus" />
+		<style>
+        	body{padding: 0; margin: 0; overflow: hidden;}
+        	#appInternalFrame{display: none; border: 0; height: 100vh; width: 100%; overflow: hidden;}
+        </style>
+        <title>Kentaurus</title>
+    </head>
+    <body>
+        <div id="loading0">&nbsp;Loading ...</div>
+    	<iframe id="appInternalFrame" src="" title="Kentaurus"></iframe>
+    	<script>
+    		if('serviceWorker' in navigator){
+			    window.addEventListener('load', () => {
+			    	navigator.serviceWorker.register('./serviceworker.js');
+			    });
+			}
+			var elem = document.getElementById('appInternalFrame');
+			elem.src = './megahack2020';
+			elem.style.display = 'block';
+    		setTimeout(function(){document.getElementById('loading0').style.display = 'none';},300);
+    	</script>
+    </body>
+</html>
+
+
+
+
+
+
+

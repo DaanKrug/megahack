@@ -1,0 +1,103 @@
+.rsc{
+	margin-top: 0.3em;
+}
+.rsc-content{
+    height: 23em;
+    overflow-y: scroll;
+    margin-top: 0.15em;
+    padding-top: 0.4em;
+    display: flex;
+    flex-direction: column-reverse;
+}
+.rsc-footer{
+	position: relative;
+}
+.rsc-ts-bot div{
+	float: left;
+}
+.rsc-ts-user div{
+	float: right;
+}
+.chatContainer{
+    background: #f5f8fb;
+    border-radius: .8em;
+    box-shadow: 0 .9em 1.4em 0 rgba(0,0,0,0.25);
+    font-family: Ubuntu;
+    overflow: hidden;
+    width: 20em;
+    height: 27em;
+    z-index: 999;
+}
+.chatContainerHeader{
+    display: block;
+    height: 2.5em;
+    padding: 0.4em 1em;
+    text-align: left;
+    font-size: 1.2rem;
+}
+.chatMsgContainer{
+    display: block;
+    clear: both;
+}
+.chatMsgContainerOptions, 
+.chatMsgContainerOptionsFullWidth{
+	display: block;
+    clear: both;
+    padding: 0 2em;
+}
+.chatMsgContainerOptionsFullWidth{
+	padding: 0;
+}
+.chatMsgContainer img, .chatMsgContainer svg{
+    vertical-align: middle;
+}
+.chatMsgContainer img{
+    border-style: none;
+}
+.botIconContainer, .userIconContainer{
+	display: inline-block;
+    padding: 0.3em;
+}
+.botIcon, .userIcon,
+.botMsg, .userMsg{
+	animation: 0.3s ease 0s 1 normal forwards running gZmgDU;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 2px 0px;
+}
+.botIcon, .userIcon{
+    border-radius: 45% 45% 0 45%;
+    height: 2.4em;
+    width: 2.4em;
+    padding: .28em;
+}
+.userIcon{
+    border-radius: 45% 45% 45% 0px;
+}
+.botMsg, .userMsg{
+	display: inline-block;
+	font-size: .85rem;
+    margin-bottom: .3em;
+    overflow: hidden;
+    position: relative;
+    padding: .4em;
+}
+.botMsg{
+    background: #c9ff00;
+    border-radius: 1.4em 1.4em 1.4em 0;
+    color: rgb(34, 34, 34);
+}
+.userMsg{
+    background: rgb(75, 227, 200);
+    border-radius: 1.4em 1.4em 0 1.4em;
+    color: rgb(0, 0, 34);
+}
+.chatMsgContainer .botMsg, 
+.chatMsgContainer .userMsg{
+	max-width: calc(90% - 3em);
+}
+.chatMsgContainerOptions .botMsg{
+	background: #ffcc00;
+	cursor: pointer;
+	border-radius: 1.4em 1.4em 1.4em 1.4em;
+	margin-left: .4em;
+	max-width: 100%;
+}

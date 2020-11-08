@@ -1,0 +1,163 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+ 
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração dos módulos da aplicação">
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm">   	
+	        <div>
+	        	<rich-input-select label="Identificação (*)" 
+	        	                   titlee="Identificação" 
+	        	                   [objects]="modules" 
+                                   formControlName="name" 
+                                   widthPerc="100" 
+                                   ngDefaultControl>
+                </rich-input-select>
+            	<div class="clear"></div>
+        	</div>
+        	<form-action [validationMessages]="validationMessages" 
+        	             [processValidation]="processValidation"
+                         noCancel="true" 
+                         saveText="Adicionar">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista dos módulos da aplicação">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" 
+		        	    style="width: auto;">
+		        	    Identificação
+		        	</th>
+		            <th scope="col" 
+		                style="width: 5em;" 
+		                *ngIf="auditingExclusions">
+		                Ações
+		            </th>
+		            <th scope="col" 
+		                style="width: 9em;" 
+		                *ngIf="!auditingExclusions">
+		                Ações
+		            </th>
+		     	</tr>
+		     </thead>
+		     <tbody>
+		     	<tr mdbTableCol 
+		     	    *ngFor="let module of objects; trackBy: trackById">
+		        	<td class="text" 
+		        	    [innerHtml]="getLabelForKey(modules,module.name)"></td>
+		        	<td class="actions">
+		          		<div class="buttons">
+			       			<edit-delete-action [auditingExclusions]="auditingExclusions" 
+			       			                    [object]="module" 
+			       		                        [logged]="logged" 
+			       		                        [noEdit]="true"
+			       		                        [noAction]="!(['admin_master'].includes(logged.category))"
+			       		                        [objectDeleteConfirmation]="objectDeleteConfirmation" 
+			       		                        [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+			       		                        [objectDetail]="objectDetail"
+			       		                        (showObjectEmitter)="showObject($event)"
+			       		                        [lockUnLock]="true"
+			       		                        (lockEmitter)="lock($event)"
+			       		                        (unlockEmitter)="unlock($event)"
+						                        (editObjectEmitter)="editObject($event)"
+						                        (deleteObjectEmitter)="deleteObject($event)"
+						                        (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+			      		</div>
+		        	</td>
+		        </tr>
+		        <tr *ngIf="emptyArray(objects)"
+		            class="summary">
+					<td colspan="2" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhum Módulo Vinculado/Encontrado</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="2" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 11em;">
+		    Identificação:
+		</th>
+		<td class="text noBorderRight">
+			{{ getLabelForKey(modules,selectedObject.name) }}
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Módulo" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Módulo" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Módulo" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

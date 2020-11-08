@@ -1,0 +1,16 @@
+<button class="btn btn-outline-info {{className}}"
+        style="padding: 0; margin: 0 0.1em 0 0.25em;" tabIndex="0"
+        [attr.aria-label]="titlee"
+        *ngIf="forToggle && !noRender && null != label && label != ''">
+   	{{ label }}
+</button>
+<button (click)="clicked()" tabIndex="0" class="dropdown-item {{className}}"
+        [attr.aria-label]="titlee"
+		*ngIf="!forToggle && !noRender && null != label && label != '' && !activated">
+		{{ label }}
+</button>
+<button (click)="nothing()" tabIndex="0" class="dropdown-item active {{className}}"
+        [attr.aria-label]="titlee + ' já ativado ou pressionado'"
+		*ngIf="!forToggle && !noRender && null != label && label != '' && activated">
+		{{ label }}
+</button>

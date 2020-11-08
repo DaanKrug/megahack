@@ -1,0 +1,38 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" [ngStyle]="{'width': widthPerc + '%'}" *ngIf="!noRender">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+		<i class="far fa-question-circle inputActionIcon" 
+		   *ngIf="null != helpMessage"
+   		   placement="top" 
+   		   ngbTooltip="Clique para informações" 
+   		   aria-label="Clique para informações"
+   		   (click)="help()"
+   		   tabIndex="0">
+   		</i>
+	</div>
+	<div class="fieldset angular-editor-container {{className}}">
+	    <textarea id="{{id}}" 
+	              class="none" 
+	              [formControl]="ngControl.control">
+	    </textarea>
+		<textarea id="{{editorId}}" 
+		          [placeholder]="placeholderr">
+		</textarea>
+	</div>
+	<div class="clear" *ngIf="minchars > 0 || maxchars > 0"></div>
+	<div style="min-height: 2em;" *ngIf="minchars > 0 || maxchars > 0">
+		<div id="indicatorError_{{id}}"
+		     style="background-color: #f75a36; border-radius: .3em; color: #fff; padding-left: 1em;">
+		</div>
+		<div id="indicatorInfo_{{id}}"
+		     style="background-color: #3e7335; border-radius: .3em; color: #fff; padding-left: 1em;">
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>

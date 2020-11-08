@@ -1,0 +1,48 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" [ngStyle]="{'width': widthPerc + '%'}" *ngIf="!noRender">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">
+			{{ label }}
+		</label>
+		<i class="far fa-question-circle inputActionIcon" 
+		   *ngIf="null != helpMessage"
+   		   placement="top" 
+   		   ngbTooltip="Clique para informações" 
+   		   aria-label="Clique para informações"
+   		   (click)="help()"
+   		   tabIndex="0">
+   		</i>
+	</div>	
+    <select id="{{id}}" 
+            class="form-control clickable {{className}}" 
+            style="height: calc(1.5em + 0.65rem + 2px);"
+            *ngIf="!onlyRead" 
+            [formControl]="ngControl.control"
+            (change)="valueChanged()">
+        <option *ngFor="let object of objects" 
+                value="{{null != object.id ? object.id : object.value}}">
+        	{{ null != object.name ? object.name : '' }}
+        	{{ null == object.name && null != object.label ? object.label : '' }}
+        	{{ null == object.name && null == object.label 
+        	   && null != object.identifier ? object.identifier : '' }}
+        </option>
+	</select>
+	<input id="{{id}}" 
+	       type="text" 
+	       style="display: none !important;"
+	       readonly="true" 
+	       [formControl]="ngControl.control" 
+	       *ngIf="onlyRead" />
+	<input id="{{id}}_fake" 
+	       type="text" 
+	       style="width: 100%;" 
+	       class="form-control {{className}}" 
+	       readonly="true" [value]="readOnlyLabel"
+	       *ngIf="onlyRead" />
+	<div class="clear"></div>
+</div>

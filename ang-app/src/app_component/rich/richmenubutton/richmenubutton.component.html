@@ -1,0 +1,17 @@
+<div class="card-header header {{className}}" tabIndex="0" [attr.aria-label]="titlee"
+     (click)="clicked()" (keyup)="clicked()"
+     *ngIf="forToggle && !noRender && null != label && label != ''">
+	<i class="far fa-plus-square" *ngIf="!activated"></i>
+    <i class="far fa-minus-square" *ngIf="activated"></i>
+    {{label}}
+</div>
+<button (click)="clicked()" tabIndex="0" [attr.aria-label]="titlee"
+        class="list-group-item list-group-item-action {{className}}"
+		*ngIf="!forToggle && !noRender && null != label && label != '' && !activated">
+		{{ label }}
+</button>
+<button (click)="nothing()" tabIndex="0" [attr.aria-label]="titlee + ' já ativado ou pressionado'"
+        class="list-group-item list-group-item-action active {{className}}"
+		*ngIf="!forToggle && !noRender && null != label && label != '' && activated">
+		{{ label }}
+</button>

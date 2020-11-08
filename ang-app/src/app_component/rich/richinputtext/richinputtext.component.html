@@ -1,0 +1,61 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" [ngStyle]="{'width': widthPerc + '%'}" *ngIf="!noRender && !onlyRead">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+		<i class="far fa-question-circle inputActionIcon" 
+		   *ngIf="null != helpMessage"
+   		   placement="top" 
+   		   ngbTooltip="Clique para informações" 
+   		   aria-label="Clique para informações"
+   		   (click)="help()"
+   		   tabIndex="0">
+   		</i>
+	</div>
+	<input id="{{id}}" type="password" style="width: 100% !important;" autocomplete="off"
+	       maxlength="{{ maxchars > 0 ? maxchars : 250 }}" 
+	       class="form-control {{className}}" 
+	       (change)="onChangeValue($event)" (blur)="onChangeValue($event)" [formControl]="ngControl.control" 
+	       [placeholder]="placeholderr" *ngIf="forPassword"/>
+	<input id="{{id}}" type="text" style="width: 100% !important; text-align: right;" autocomplete="off"
+	       maxlength="{{ maxchars > 0 ? maxchars : 20 }}" class="form-control {{className}}" 
+	       mask="{{maskk}}" [dropSpecialCharacters]="!preserveSpecialCharacters"
+	       (change)="onChangeValue($event)" (blur)="onChangeValue($event)" [formControl]="ngControl.control" 
+	       [placeholder]="placeholderr" *ngIf="!forPassword && forNumber"/>
+	<input id="{{id}}" type="text" style="width: 100% !important;" autocomplete="off"
+	       maxlength="{{ maxchars > 0 ? maxchars : 250 }}" class="form-control {{className}}" 
+	       mask="{{maskk}}" [dropSpecialCharacters]="!preserveSpecialCharacters"
+	       (change)="onChangeValue($event)" (keyup)="onChangeValue($event)" [formControl]="ngControl.control" 
+	       [placeholder]="placeholderr" *ngIf="!forPassword && !forNumber && rowss == 1"/>
+	<textarea id="{{id}}" style="width: 100% !important;" rows="{{rowss}}" 
+	          maxlength="{{ maxchars > 0 ? maxchars : (250 * rowss) }}" autocomplete="off"
+	          class="form-control {{className}}"
+	          (change)="onChangeValue($event)" (keyup)="onChangeValue($event)" [formControl]="ngControl.control" 
+	          [placeholder]="placeholderr" *ngIf="!forPassword && !forNumber && rowss > 1">
+	</textarea>
+	<div class="clear"></div>
+</div>
+<div class="field" [ngStyle]="{'width': widthPerc + '%'}" *ngIf="!noRender && onlyRead">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+	</div>
+	<input id="{{id}}" type="password" style="width: 100% !important;" 
+	       class="form-control {{className}}" readonly="true"
+	       [formControl]="ngControl.control" *ngIf="forPassword"/>
+	<input id="{{id}}" type="text" style="width: 100% !important; text-align: right;" 
+	       class="form-control {{className}}" 
+	       readonly="true" [formControl]="ngControl.control" 
+	       *ngIf="!forPassword && forNumber"/>
+	<input id="{{id}}" type="text" style="width: 100% !important;" 
+	       class="form-control {{className}}" readonly="true"
+	       [formControl]="ngControl.control" *ngIf="!forPassword && !forNumber && rowss == 1"/>
+	<textarea id="{{id}}" style="width: 100% !important;" rows="{{rowss}}" 
+	          class="form-control {{className}}" readonly="true"
+	          [formControl]="ngControl.control" *ngIf="!forPassword && !forNumber && rowss > 1">
+	</textarea>
+	<div class="clear"></div>
+</div>

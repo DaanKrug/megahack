@@ -1,0 +1,302 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm" 
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+ 
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração das configurações da aplicação" 
+	         class="dataForm">
+		<rich-tab-bar [objects]="[
+									   {value: '0', label: 'Dados Gerais (*)', title: 'Dados Gerais'},
+									   {value: '1', label: 'Pol. Preços', title: 'Política de Preços'},
+									   {value: '2', label: 'Pol. Priv.', title: 'Política de Privacidade'},
+									   {value: '3', label: 'Termos', title: 'Termos de Uso'},
+									   {value: '4', label: 'Contr. Us.', title: 'Contrato de Usuário'},
+									   {value: '5', label: 'Inf. Aut.', title: 'Informações do Autor'}
+							      ]" 
+				      [selectedTab]="tab" 
+				      (setTabEmitter)="setTab($event)">
+		</rich-tab-bar> 
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()">   	
+			<div class="{{ tab == 0 ? '' : 'none' }}">	
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Identificação (*)" 
+            	                 titlee="Identificação" 
+            	                 maxchars="50"
+            	                 formControlName="name" 
+            	                 widthPerc="98" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+                <rich-input-text [formGroup]="dataForm" 
+                                 label="Descrição (*)" 
+            	                 titlee="Descrição" 
+            	                 maxchars="250"
+            	                 formControlName="description" 
+            	                 widthPerc="98" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="URL Site (*)" 
+            	                 titlee="URL Site" 
+            	                 maxchars="250"
+            	                 formControlName="site" 
+            	                 widthPerc="98" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-checkbox widthPerc="49" 
+            	               [breakBefore]="true"
+				               formControlName="usePricingPolicy" 
+				               label="Apresentar Política de Preços"
+				               ngDefaultControl >
+				</rich-checkbox>
+            	<rich-checkbox widthPerc="49"
+				               formControlName="usePrivacityPolicy" 
+				               label="Apresentar Política de Privacidade"
+				               ngDefaultControl >
+				</rich-checkbox>
+            	<rich-checkbox widthPerc="49" 
+            	               [breakBefore]="true"
+				               formControlName="useUsetermsPolicy" 
+				               label="Apresentar Termos de Uso"
+				               ngDefaultControl >
+				</rich-checkbox>
+            	<rich-checkbox widthPerc="49"
+				               formControlName="useUsecontractPolicy" 
+				               label="Apresentar Contrato de Usuário"
+				               ngDefaultControl >
+				</rich-checkbox>
+				<rich-checkbox widthPerc="49" 
+				               [breakBefore]="true"
+				               formControlName="useAuthorInfo" 
+				               label="Apresentar Informações do Autor"
+				               ngDefaultControl >
+				</rich-checkbox>
+            	<div class="clear"></div>
+        	</div>
+        	<div class="{{ tab == 1 ? '' : 'none' }}">	
+        		<rich-editor [formGroup]="dataForm" 
+        		             formControlName="pricingPolicy" 
+        		             ngDefaultControl>
+			    </rich-editor>
+        	</div>
+        	<div class="{{ tab == 2 ? '' : 'none' }}">	
+        		<rich-editor [formGroup]="dataForm" 
+        		             formControlName="privacityPolicy" 
+        		             ngDefaultControl>
+			    </rich-editor>
+        	</div>
+        	<div class="{{ tab == 3 ? '' : 'none' }}">	
+        		<rich-editor [formGroup]="dataForm" 
+        		             formControlName="usetermsPolicy" 
+        		             ngDefaultControl>
+			    </rich-editor>
+        	</div>
+        	<div class="{{ tab == 4 ? '' : 'none' }}">	
+        		<rich-editor [formGroup]="dataForm" 
+        		             formControlName="usecontractPolicy" 
+        		             ngDefaultControl>
+			    </rich-editor>
+        	</div>
+        	<div class="{{ tab == 5 ? '' : 'none' }}">	
+        		<rich-editor [formGroup]="dataForm" 
+        		             formControlName="authorInfo" 
+        		             ngDefaultControl>
+			    </rich-editor>
+        	</div>
+        	<form-action [validationMessages]="validationMessages" 
+        	             [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista das configurações da aplicação">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+	   		<thead class="black white-text">
+	        	<tr>
+	          		<th scope="col" 
+	          		    style="width: 12em;">
+	          		    Identificação
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: auto;">
+	          			URL Site
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: 9em;" 
+	          		    *ngIf="!auditingExclusions">
+	          			Ações
+	          		</th>
+	          		<th scope="col" 
+	          		    style="width: 5em;" 
+	          		    *ngIf="auditingExclusions">
+	          			Ações
+	          		</th>
+	        	</tr>
+	     	</thead>
+		    <tbody>
+		    	<tr mdbTableCol 
+		    	    *ngFor="let appconfig of objects; trackBy: trackById">
+		        	<td class="text" 
+		        	    [innerHtml]="appconfig.name">
+		        	</td>
+		          	<td class="text" 
+		          	    [innerHtml]="appconfig.site">
+		          	</td>
+		          	<td class="actions">
+		          		<div class="buttons">
+		            		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+		            		                    [object]="appconfig" 
+		            		                    [logged]="logged"
+		            	      	                [noAction]="!(['admin_master'].includes(logged.category))"
+			       		        	            [objectDeleteConfirmation]="objectDeleteConfirmation" 
+			       		            	        [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+			       		  	                    [lockUnLock]="true"
+			       		      	                (lockEmitter)="lock($event)"
+			       		                        (unlockEmitter)="unlock($event)"
+			       		                        [objectDetail]="objectDetail" 
+			       		                        (showObjectEmitter)="showObject($event)"
+						                        (editObjectEmitter)="editObject($event)"
+						                        (deleteObjectEmitter)="deleteObject($event)"
+						                        (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+			       		</div>
+		        	</td>
+		        </tr>
+		        <tr *ngIf="emptyArray(objects)"
+		            class="summary">
+					<td colspan="3" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhuma Configuração Cadastrada/Encontrada Para a Aplicação</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="3" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+	
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 15em;">
+			Identificação:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Descrição:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.description}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			URL Site:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.site}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Apresentar Política de Preços:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.usePricingPolicy ? 'Sim' : 'Não'}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Apresentar Política de Privacidade:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.usePrivacityPolicy ? 'Sim' : 'Não'}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Apresentar Termos de Uso:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.useUsetermsPolicy ? 'Sim' : 'Não'}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Apresentar Contrato de Usuário:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.useUsecontractPolicy ? 'Sim' : 'Não'}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Apresentar Informações do Autor:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.useAuthorInfo ? 'Sim' : 'Não'}}</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Configuração Aplicação" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração Aplicação" 
+	                     [selectedObject]="selectedObject" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração Aplicação" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

@@ -1,0 +1,297 @@
+<ng-template [ngIf]="view == 0">
+  	<div>
+	  	<form [formGroup]="loginForm" 
+	  	      (ngSubmit)="onLoginFormSubmit()" 
+	  	      class="dataForm">   	
+	        <div class="form">
+	        	<div>
+	        		<rich-input-text [formGroup]="loginForm" 
+	        		                 label="Login (*)" 
+	        		                 titlee="Login/E-mail" 
+	        		                 maxchars="100"
+	            	                 formControlName="email" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	                <rich-input-text [formGroup]="loginForm" 
+	                                 label="Senha (*)" 
+	                                 titlee="Senha"
+	                                 maxchars="100"
+	                                 [forPassword]="true" 
+	                                 [noRender]="lostPassword"
+	            	                 formControlName="password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	                <rich-input-text [formGroup]="loginForm" 
+	                                 label="Código de Confirmação (*)" 
+	                                 titlee="Código de Confirmação" 
+	                                 maxchars="20"
+	                                 [noRender]="null == loginConfirmation || lostPassword"
+	            	                 formControlName="confirmation_code" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	                <div class="clear"></div>
+	        	</div>
+	        	<captcha (captchaOkEmitter)="setCaptchaOk($event)"
+	        	         [noRender]="tryTimes < 1">
+            	</captcha>
+	        	<div style="margin-top: 0.3rem;">
+					<div *ngIf="validationMessages && processValidation" 
+					     aria-label="mensagens de validação do formulário">
+						<div *ngFor="let msg of validationMessages" 
+						     class="alert alert-danger">
+							<i class="fas fa-exclamation-triangle"></i>
+						  	<span [innerHtml]="msg"></span>
+						</div>
+					</div>
+	        	</div>
+	        </div>
+	        <div class="buttons clear">
+	        	<button class="btn btn-primary clickable" 
+	        	        style="padding: 0.3em;" 
+	        	        *ngIf="lostPassword" 
+	        	        aria-label="Voltar"
+	        	        tabindex="0"
+	        	        (click)="iLostPassword(false)">
+	        		<i class="fas fa-arrow-left"></i>
+	        		<span *ngIf="!fitMode">
+	        			Voltar
+	        		</span>
+	        	</button> 
+	            <button class="btn btn-primary clickable" 
+	                    style="padding: 0.3em;" 
+	                    *ngIf="lostPassword" 
+	                    aria-label="Recuperar Senha"
+	                    tabindex="0">
+	            	<i class="fas fa-check"></i>
+	            	<span *ngIf="!fitMode">
+	        			Recuperar Senha
+	        		</span>
+	            </button> 
+	            <button class="btn btn-primary clickable" 
+	                    (click)="cancelData()"
+	                    *ngIf="!lostPassword" 
+	                    aria-label="Cancelar"
+	                    tabindex="0">
+	            	<i class="fas fa-ban"></i>
+	            	<span *ngIf="!fitMode">
+	        			Cancelar
+	        		</span>
+	            </button>  
+	            <button class="btn btn-primary clickable" 
+	                    *ngIf="!lostPassword"
+	                    aria-label="Login" 
+	                    tabindex="0">
+	            	<i class="fas fa-check"></i>
+	            	<span *ngIf="!fitMode">
+	        			Login
+	        		</span>
+	            </button>  
+	            <div class="clear" 
+	                 style="margin-bottom: 0.3em;"
+	                 *ngIf="!lostPassword">
+	            </div>
+	            <button class="btn btn-link" 
+	                    style="padding: 0.3em;" 
+	                    (click)="iLostPassword(true)" 
+	                    *ngIf="!lostPassword"
+	                    aria-label="Recuperar Senha"
+	                    tabindex="0">
+	            	<i class="fas fa-at"></i>
+	            	Recuperar Senha
+	            </button>
+	            <div class="clear" 
+	                 style="margin-bottom: 0.3em;"
+	                 *ngIf="!lostPassword">
+	            </div>
+	        </div>
+			<div class="alert alert-info">
+				<div>* Campos de preenchimento obrigatório.</div>
+			</div>
+	    </form>
+	</div>
+</ng-template>
+
+<ng-template [ngIf]="view == 1">
+	<div>
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm"> 
+	        <div class="form">
+	        	<div *ngIf="!fitMode">
+	        		<rich-input-text [formGroup]="dataForm" 
+		        	                 label="Nome (*)" 
+		        	                 titlee="Nome" 
+		        	                 maxchars="30"
+		        	                 forAlpha="true"
+	            	                 formControlName="name" 
+	            	                 widthPerc="49" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	                <rich-input-text [formGroup]="dataForm" 
+	                                 label="E-mail (*)" 
+	                                 titlee="E-mail" 
+	                                 maxchars="100"
+	            	                 formControlName="email" 
+	            	                 widthPerc="49" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="dataForm" 
+		           	                 label="Senha (*)" 
+		           	                 titlee="Senha" 
+		           	                 maxchars="100"
+	                                 forPassword="true" 
+	                                 (valueChangedEmitter)="validatePasswordForce($event)"
+	            	                 formControlName="password" 
+	            	                 widthPerc="49" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="dataForm" 
+		           	                 label="Confirmação Senha (*)" 
+		           	                 titlee="Confirmação da Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="re_password" 
+	            	                 widthPerc="49" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	        	</div>
+	        	<div *ngIf="fitMode">
+	        		<rich-input-text [formGroup]="dataForm" 
+		        	                 label="Nome (*)" 
+		        	                 titlee="Nome" 
+		        	                 maxchars="30"
+		        	                 forAlpha="true"
+	            	                 formControlName="name" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	                <rich-input-text [formGroup]="dataForm" 
+	                                 label="E-mail (*)" 
+	                                 titlee="E-mail" 
+	                                 maxchars="100"
+	            	                 formControlName="email" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="dataForm" 
+		           	                 label="Senha (*)" 
+		           	                 titlee="Senha" 
+		           	                 maxchars="100"
+	                                 forPassword="true" 
+	                                 (valueChangedEmitter)="validatePasswordForce($event)"
+	            	                 formControlName="password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="dataForm" 
+		           	                 label="Confirmação Senha (*)" 
+		           	                 titlee="Confirmação da Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="re_password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+	        	</div>
+                <rich-checkbox widthPerc="98" 
+                               breakBefore="true" 
+                               formControlName="acceptTerms" 
+					           label="Eu declaro que li na íntegra, concordo e aceito 
+					                  todos os termos descritos nos itens das políticas 
+					                  do site conforme contidos nos respectivos menus de navegação."
+					           ngDefaultControl>
+			    </rich-checkbox>
+	           	<captcha (captchaOkEmitter)="setCaptchaOk($event)">
+            	</captcha>
+	           	<div class="clear"></div>
+	       	</div>
+            <form-action [validationMessages]="validationMessages" 
+                         [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()" 
+                         [passwordValidationMessage]="passwordValidationMessage"
+                         saveText="Registrar-me">
+            </form-action>
+    	</form>
+    </div>
+</ng-template>
+
+<ng-template [ngIf]="view == 2">
+	<div>
+		<form [formGroup]="changePasswordForm" 
+		      (ngSubmit)="onChangePasswordFormSubmit()" 
+		      class="dataForm"> 
+	        <div>
+	        	<div *ngIf="!fitMode">
+		        	<rich-input-text [formGroup]="changePasswordForm" 
+		        	                 label="Senha Atual (*)" 
+		           	                 titlee="Senha Atual" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="password" 
+	            	                 widthPerc="25" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		        	<rich-input-text [formGroup]="changePasswordForm" 
+		        	                 label="Nova Senha (*)" 
+		           	                 titlee="Nova Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+		           	                 (valueChangedEmitter)="validatePasswordForce($event)"
+	            	                 formControlName="new_password" 
+	            	                 widthPerc="25" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="changePasswordForm" 
+		           	                 label="Confirmação Nova Senha (*)" 
+		           	                 titlee="Confirmação Nova Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="re_new_password" 
+	            	                 widthPerc="47" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+                </div>
+                <div *ngIf="fitMode">
+                	<rich-input-text [formGroup]="changePasswordForm" 
+		        	                 label="Senha Atual (*)" 
+		           	                 titlee="Senha Atual" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		        	<rich-input-text [formGroup]="changePasswordForm" 
+		        	                 label="Nova Senha (*)" 
+		           	                 titlee="Nova Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+		           	                 (valueChangedEmitter)="validatePasswordForce($event)"
+	            	                 formControlName="new_password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+		           	<rich-input-text [formGroup]="changePasswordForm" 
+		           	                 label="Confirm. Nova Senha (*)" 
+		           	                 titlee="Confirmação Nova Senha" 
+		           	                 maxchars="100" 
+		           	                 forPassword="true" 
+	            	                 formControlName="re_new_password" 
+	            	                 widthPerc="98" 
+	            	                 ngDefaultControl>
+	                </rich-input-text>
+                </div>
+	           	<div class="clear"></div>
+	       	</div>
+	        <form-action [validationMessages]="validationMessages" 
+	                     [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()" 
+                         [passwordValidationMessage]="passwordValidationMessage"
+                         saveText="Trocar Senha">
+            </form-action>
+       	 </form>
+    </div>
+</ng-template>

@@ -1,0 +1,201 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm" 
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="false"
+	          (addObjectEmitter)="addObject()"
+	          helpMessage="<h5>Cadastro das imagens</h5>
+	                       <p>Utilizadas nos cadastros dos produtos.</p>
+	                       <p>
+	                       As imagens são cadastradas à parte, para facilitar a troca
+	                       de imagem do produto.
+	                       </p>
+	                       "
+	          (helpEmitter)="helpMessage($event)">
+</form-toolbar>
+ 
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração das imagens">
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm">   	
+	        <div>
+	        	<rich-input-text [formGroup]="dataForm" 
+	        	                 label="Link (*)" 
+	        	                 titlee="Link"
+            	                 formControlName="link" 
+            	                 widthPerc="49" 
+            	                 helpMessage="<h5>Link ou endereço web (URL) da imagem</h5>
+            	                              <p>
+            	                              Deve apontar para uma imagem armazenada em site com HTTPS.<br/>
+            	                              Ex: <em>https://meusite.com.br/nomedaimagem.jpg</em>.
+            	                              </p>
+            	                              <p>
+            	                              Também deve apontar para um arquivo de imagem que tenha uma das
+            	                              seguintes extensões: .png .jpg .jpeg .gif ou .bmp.
+            	                              </p>"
+	          					 (helpEmitter)="helpMessage($event)"
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Identificação (*)" 
+            	                 titlee="Identificação" 
+            	                 placeholderr="Nome da Imagem"
+            	                 maxchars="30" 
+            	                 forAlphaNum="true"
+            	                 formControlName="name" 
+            	                 widthPerc="49" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<div class="clear"></div>
+        	</div>
+        	<form-action [validationMessages]="validationMessages" 
+        	             [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista das imagens">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" 
+		        	    style="width: auto;">
+		        		Identificação
+		        	</th>
+		        	<th scope="col" 
+		        	    style="width: 9em;" 
+		        	    *ngIf="!auditingExclusions">
+		        		Ações
+		        	</th>
+		        	<th scope="col" 
+		        	    style="width: 7em;" 
+		        	    *ngIf="auditingExclusions">
+		        	    Ações
+		        	</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    	<tr mdbTableCol 
+		    	    *ngFor="let image of objects; trackBy: trackById">
+		        	<td class="text" 
+		        	    [innerHtml]="image.name"></td>
+		          	<td class="actions">
+			          	<div class="buttons">
+			          		<button class="btn btn-primary clickable"
+			            			placement="left" 
+			            			ngbTooltip="Download" 
+			            			aria-label="Download"
+			            		    (click)="downloadFile(image.link);">
+			            		<i class="fas fa-file-download"></i>
+			            	</button>
+				       		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+				       		                    [object]="image" 
+				       		                    [logged]="logged"
+				       		                    [noAction]="false"
+				       		                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+				       		                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+				       		                    [objectDetail]="objectDetail"
+				       		                    (showObjectEmitter)="showObject($event)"
+							                    (editObjectEmitter)="editObject($event)"
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+				       	</div>
+		          	</td>
+		        </tr>
+		        <tr *ngIf="emptyArray(objects)"
+		            class="summary">
+					<td colspan="2" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhuma Imagem Cadastrada/Encontrada</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="2" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+	
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="col" 
+		    class="text" 
+		    style="width: 7em;">
+			Identificação:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<td colspan="2" 
+		    style="padding: 0;" 
+		    class="noBorderRight">
+			<img id="selectedObjectLink"
+			     src=""
+			     alt="A própria imagem referida pelo link"
+			     style="width: 100%; height: 20em;" />
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Imagem" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Imagem" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Imagem" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

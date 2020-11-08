@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+    	Confirmação Necessária
+    </h4>
+</div>
+<div class="modal-body">
+  	<table class="table tableInfo">
+  		<thead>
+  			<tr>
+  				<th>
+  					<h5>
+  						<span>{{ titlee }}</span>
+  						<i class="far fa-question-circle inputActionIcon" 
+						   *ngIf="null != helpMessage"
+		           		   placement="top" 
+		           		   ngbTooltip="Clique para informações" 
+		           		   aria-label="Clique para informações"
+		           		   (click)="help()"
+		           		   tabIndex="0">
+		           		</i>
+  					</h5>
+  				</th>
+  			</tr>
+  		</thead>
+  		<tbody>
+  			<tr>
+  				<td class="noBorderRight" style="font-size: .9em;">
+  					{{ content }}
+  				</td>
+  			</tr>
+  		</tbody>
+  	</table>
+</div>
+<div class="modal-footer">
+   	<div class="buttons clear"> 
+      	<button class="btn btn-primary clickable" 
+      	        (click)="cancelContinueProcess()"
+      	        *ngIf="!noCancel">
+      		<i class="fas fa-ban"></i> Cancelar
+      	</button>
+ 		<button class="btn btn-primary clickable" (click)="confirmContinueProcess()">
+ 			<i class="fas fa-check-double"></i> Confirmar e Continuar
+ 		</button>  
+	</div>
+</div>

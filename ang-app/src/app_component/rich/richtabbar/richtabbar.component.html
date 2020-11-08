@@ -1,0 +1,19 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field {{className}}" style="width: 100%;" *ngIf="!noRender">
+	<ul class="nav nav-tabs justify-content-start" style="margin-left: .5em;">
+		<li class="nav-item" *ngFor="let object of objects">
+			<span class="nav-link {{ isSelected(object.value) ? 'active' : '' }}" 
+			      placement="top" ngbTooltip="{{object.title}}" [attr.aria-label]="object.title"
+			      (click)="setTab(object.value)">
+		   	    {{ object.label }}
+			</span>
+		</li>
+	</ul>
+	<div class="clear" style="margin-bottom: .4em;"></div>
+</div>
+<div class="clear" style="width: 100%;" *ngIf="!noRender"></div>

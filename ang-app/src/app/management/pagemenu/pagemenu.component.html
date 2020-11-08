@@ -1,0 +1,192 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm" 
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('pagemenu_write'))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+ 
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração dos menus">
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm"> 
+			<div> 	
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Identificação (*)" 
+            	                 titlee="Identificação" 
+            	                 maxchars="250"
+            	                 formControlName="name" 
+            	                 widthPerc="79" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Ord. Apres." 
+            	                 titlee="Ordem Apresentação" 
+            	                 maxchars="3" 
+            	                 minValue="1" 
+            	                 maxValue="999" 
+            	                 forNumber="true"
+            	                 formControlName="position" 
+            	                 widthPerc="19" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<div class="clear"></div>
+            </div> 
+        	<form-action [validationMessages]="validationMessages" 
+        	             [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista dos menus">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" 
+		        	    style="width: auto;">
+		        		Identificação
+		        	</th>
+		            <th scope="col" 
+		                style="width: 4em;" 
+		                title="Ordem Apresentação" 
+		                aria-label="Ordem Apresentação">
+		                Ord.
+		            </th>
+		            <th scope="col" 
+		                style="width: 10.5em;" 
+		                *ngIf="!auditingExclusions">
+		            	Ações
+		            </th>
+		            <th scope="col" 
+		                style="width: 5em;" 
+		                *ngIf="auditingExclusions">
+		            	Ações
+		            </th>
+		     	</tr>
+		    </thead>
+		    <tbody>
+		        <tr mdbTableCol 
+		            *ngFor="let pagemenu of objects; trackBy: trackById">
+		        	<td class="text" 
+		        	    [innerHtml]="pagemenu.name">
+		        	</td>
+		            <td class="number" 
+		                [innerHtml]="pagemenu.position">
+		            </td>
+		            <td class="actions">
+			          	<div class="buttons">
+			          		<button class="btn btn-primary clickable" 
+			          		        type="button" 
+			          		        *ngIf="!auditingExclusions"
+			            			placement="left" 
+			            			ngbTooltip="Itens Menus" 
+			            			aria-label="Itens Menus"
+			            		    (click)="toMenuItems(pagemenu.id);">
+			            		<i class="fas fa-bars"></i>
+			            	</button>
+				       		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+				       		                    [object]="pagemenu" 
+				       		                    [logged]="logged"
+				       		                    [noAction]="!(['admin_master'].includes(logged.category))
+			                                                  && !(['admin'].includes(logged.category) 
+			                                                     && permissions.includes('pagemenu_write'))"
+				       		                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+				       		                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+				       		                    [objectDetail]="objectDetail"
+				       		                    (showObjectEmitter)="showObject($event)"
+				       		                    [lockUnLock]="true"
+				       		                    (lockEmitter)="lock($event)"
+				       		                    (unlockEmitter)="unlock($event)"
+							                    (editObjectEmitter)="editObject($event)"
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+				       	</div>
+		          	</td>
+		        </tr>
+		        <tr>
+		        	<td colspan="3" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 11em;">
+			Identificação:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Ordem Apresentação:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.position}}</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Menu" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Menu" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Menu" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

@@ -1,0 +1,250 @@
+<form-toolbar [title]="title" 
+			  [editing]="editing" 
+			  [searchForm]="searchForm"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+ 
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração das configurações AWS S3">
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm">   	
+			<div>	
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Bucket Name (*)" 
+				                 titlee="Bucket Name" 
+				                 maxchars="250"
+	           	                 formControlName="bucketName" 
+	           	                 widthPerc="99" 
+	           	                 ngDefaultControl>
+                </rich-input-text>
+	           	<rich-input-text [formGroup]="dataForm" 
+	           	                 label="Bucket URL (*)" 
+	           	                 titlee="Bucket URL" 
+	           	                 maxchars="250"
+	           	                 formControlName="bucketUrl" 
+	           	                 widthPerc="99" 
+	           	                 ngDefaultControl>
+                </rich-input-text>
+	            <rich-input-text [formGroup]="dataForm" 
+	                             label="Region (*)" 
+	                             titlee="Region" 
+	                             maxchars="30"
+	           	                 formControlName="region" 
+	           	                 widthPerc="19" 
+	           	                 ngDefaultControl>
+                </rich-input-text>
+	           	<rich-input-text [formGroup]="dataForm" 
+	           	                 label="Version (*)" 
+	           	                 titlee="Version" 
+	           	                 maxchars="30"
+	           	                 formControlName="version" 
+	           	                 widthPerc="19" 
+	           	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Key (*)" 
+            	                 titlee="Key" 
+            	                 maxchars="50"
+	                             formControlName="key" 
+	                             widthPerc="19" 
+	                             ngDefaultControl>
+                </rich-input-text>
+	           	<rich-input-text [formGroup]="dataForm" 
+	           	                 label="Secret (*)" 
+	           	                 titlee="Secret" 
+	           	                 maxchars="100"
+	          	                 formControlName="secret" 
+	          	                 widthPerc="40" 
+	          	                 ngDefaultControl>
+                </rich-input-text>
+	       	</div>
+        	<form-action [validationMessages]="validationMessages" 
+        	             [processValidation]="processValidation"
+	                     (cancelDataEmitter)="cancelData()">
+	        </form-action>
+		</form>
+	</section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista das configurações AWS S3">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		     	<tr>
+		        	<th scope="col" 
+		        	    style="width: 12em;">
+		        	    Bucket
+		        	</th>
+		        	<th scope="col" 
+		        	    style="width: 6em;">
+		        	    Region
+		        	</th>
+		        	<th scope="col" 
+		        	    style="width: auto;">
+		        		Bucket URL
+		        	</th>
+		          	<th scope="col" 
+		          	    style="width: 9em;" 
+		          	    *ngIf="!auditingExclusions">
+		          	    Ações
+		          	</th>
+		          	<th scope="col" 
+		          	    style="width: 5em;" 
+		          	    *ngIf="auditingExclusions">
+		          	    Ações
+		          	</th>
+		     	</tr>
+		    </thead>
+		    <tbody>
+		    	<tr mdbTableCol 
+		    	    *ngFor="let s3config of objects; trackBy: trackById">
+		        	<td class="text" 
+		        	    [innerHtml]="s3config.bucketName">
+		          	</td>
+		          	<td class="text" 
+		          		[innerHtml]="s3config.region">
+		          	</td>
+		          	<td class="text" 
+		          	    [innerHtml]="s3config.bucketUrl">
+		          	</td>
+		          	<td class="actions">
+		          		<div class="buttons">
+		            		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+		            		                    [object]="s3config" 
+		            		                    [logged]="logged"
+		            	   	                    [noAction]="!(['admin_master'].includes(logged.category))"
+		            	                        [objectDeleteConfirmation]="objectDeleteConfirmation" 
+			       		                        [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+			       		                        [objectDetail]="objectDetail"
+			       		                        (showObjectEmitter)="showObject($event)"
+			         		                    [lockUnLock]="true"
+			        		                    (lockEmitter)="lock($event)"
+			        		                    (unlockEmitter)="unlock($event)"
+			       	    	                    (showObjectEmitter)="showObject($event)"
+						                        (editObjectEmitter)="editObject($event)"
+						                        (deleteObjectEmitter)="deleteObject($event)"
+						                        (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+			       		</div>
+		        	</td>
+				</tr>
+				<tr *ngIf="emptyArray(objects)"
+				    class="summary">
+					<td colspan="4" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhuma Configuração AWS S3 Cadastrada/Encontrada</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="4" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 8em;">
+			Bucket Name:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.bucketName}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Bucket URL:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.bucketUrl}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Region:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.region}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Version:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.version}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Key:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.key}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Secret:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.secret}}</td>
+	</tr>
+</ng-template>
+	
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Configuração AWS S3" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração AWS S3" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração AWS S3" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

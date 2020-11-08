@@ -1,0 +1,146 @@
+/* 
+<headerX>                   - ffcc00 
+<backgroundX>               - fffaff
+<primarybuttonX>            - 1e6e94
+<activeborderX>             - eeef75
+<activebackgroundX>         - 99dae4
+<textcolor1X>               - fff
+<textcolor2X>               - 100101
+<disabledX>                 - bbd9de
+*/
+
+html, body{
+    background-color: #fffaff !important;
+}
+.modal-body{
+    background-color: #fff !important;
+}
+.card, .nav-link:hover, .nav-link.active{
+	border: 1px solid #ffcc00 !important;
+}
+.header, .nav-link.active, .card-header, .modal-header, .wizard-tab{
+    background-color: #ffcc00 !important;
+}
+.nav-link:hover, .destak,
+.list-group-item-action:hover, .dropdown-item:hover,
+.list-group-item-action:focus, .dropdown-item:focus{
+	color: #100101 !important;
+	background-color: #eeef75 !important;
+}
+.nav-link.active, .nav-tabs{
+	border-bottom: 1px solid #ffcc00 !important;
+}
+.list-group-item.active, 
+.list-group-item.active:hover,
+.list-group-item.active:focus,
+.dropdown-item.active,
+.dropdown-item.active:hover,
+.dropdown-item.active:focus{
+	background-color: #99dae4 !important;
+	border-color: #99dae4 !important;
+}
+.list-group-item-action:hover, .dropdown-item:hover,
+.list-group-item-action:focus, .dropdown-item:focus{
+	background-color: #eeef75 !important;
+    border-color: #99dae4 !important;
+}
+.dropdown-item{
+	border-top: 1px solid rgba(0,0,0,.125) !important;
+}
+.nav-link, .nav-link.active:hover, .inputActionIcon, .wizard-tab-inactive{
+    color: #ff7700 !important;
+}
+.btn-primary {
+    background-color: #ffcc00 !important;
+    border-color: #ffcc00 !important;
+}
+.list-group-item, .list-group-item-action, .dropdown-item,
+.list-group-item.active, .list-group-item-action.active, .dropdown-item.active{
+	color: #100101 !important;
+}
+.table thead th {
+    border-top: 2px solid #dee2e6;
+}
+.table td{
+    border-right: 1px solid #dee2e6;
+}
+.table tr.summary, 
+.table tr td.summary, 
+.table td.summary{
+    background-color: #bbd9de !important;
+}
+.title, .title2 {
+    color: #ffcc00 !important;
+}
+.calendarPickerContent a, .input-group-append a{
+    border: 1px solid #ffcc00 !important;
+    background-color: #ffcc00 !important;
+}
+form .alert-info {
+    color: #000008;
+    background-color: #b8dfe6 !important;
+}
+.infoLinks .btn-link:hover, .infoLinksTopBack .btn-link:hover,
+.infoLinks .btn-link:focus, .infoLinksTopBack .btn-link:focus{
+    background: #ffcc00;
+}
+.links > a {
+    color: #ffcc00;
+}
+.infoContent h1, .infoContent h2, .infoContent h3, .infoContent h4, .infoContent h5{
+	color: #ffcc00;
+}
+.infoLinks .btn-link, .infoLinksTopBack .btn-link, 
+.infoLinksNoHover .btn-link, .infoLinksTopBackNoHover .btn-link{
+	color: #ffcc00;
+}
+.inputActionIcon:hover, .inputActionIcon:focus{
+	color: #99dae4;
+}
+.input-group-text {
+    background-color: #ffcc00 !important;
+    border-color: #ffcc00 !important;
+}
+.input-group-text:hover,
+.input-group-text:focus{
+	background-color: #99dae4 !important;
+    border-color: #eeef75 !important;
+}
+.input-group-text.disabled,
+.input-group-text:hover.disabled,
+.input-group-text:focus.disabled {
+    background-color: #bbd9de !important;
+    border-color: #bbd9de !important;
+}
+.page-link, .btn-link{
+	color: #1e6e94 !important;
+}
+.header, .header a.nav-link, .top-right > a, .top-left > a, .credits a,
+.infoLinks .btn-link:hover, .infoLinksTopBack .btn-link:hover,
+.infoLinks .btn-link:focus, .infoLinksTopBack .btn-link:focus,
+.calendarPickerContent a, .input-group-append a, .nav-link.active,
+.card-header, .modal-header, .modal-header .close, 
+.input-group-text, .input-group-text .inputActionIcon,
+.btn-outline-info, .btn-outline-info:hover, .btn-outline-info:focus,
+.btn-primary, .btn-primary:hover,
+.btn-primary:not(:disabled):not(.disabled).active, 
+.btn-primary:not(:disabled):not(.disabled):active, 
+.show > .btn-primary.dropdown-toggle,
+.page-item.active .page-link,
+.wizard-tab, .cardheaderButton{
+	color: #000 !important;
+}
+.show > .btn-primary.dropdown-toggle,
+.page-item.active .page-link{
+	background-color: #ffcc00 !important;
+    border-color: #eeef75 !important;
+}
+@media only screen and (max-width: 1100px) {
+	.menuTop .btn.btn-link{
+	    color: #000 !important;
+	}
+	.subHeaderMenuTop{
+		border-top: 1px solid #bbd9de !important;
+		background-color: #ffcc00 !important;
+	}
+}

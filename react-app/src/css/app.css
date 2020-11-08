@@ -1,0 +1,78 @@
+.btLargeContainer{
+	width: 32%;
+	text-align:center;
+}
+.btLarge{
+	width: 8em;
+	height: 8em;
+	border-radius: .6em;
+}
+.btIconLarge{
+	font-size: 4em;
+}
+select.form-control{
+	height: calc(1.5em + 0.65rem + 2px);
+}
+.menuLeft{
+	width: 10em !important;
+	float: left !important;
+	display: block !important;
+}
+.menuContent{
+	width: calc(100% - 10.5em) !important;
+	float: right !important;
+	display: block !important;
+}
+@media only screen and (max-width: 300px) {
+	.btLargeContainer{
+		width: 100%;
+		margin-bottom: 1em;
+	}
+	label{
+		font-size: .65em;
+	}
+}
+@media only screen and (min-width: 301px) and (max-width: 400px) {
+	.btLarge{
+		width: 6.5em;
+		height: 6.5em;
+		border-radius: .6em;
+		font-size: .8em;
+	}
+	.btIconLarge{
+		font-size: 2.5em;
+	}
+	label{
+		font-size: .7em;
+	}
+}
+@media only screen and (min-width: 401px) and (max-width: 500px) {
+	.btLarge{
+		width: 7em;
+		height: 7em;
+		border-radius: .6em;
+	}
+	.btIconLarge{
+		font-size: 3.5em;
+	}
+	label{
+		font-size: .8em;
+	}
+}
+@media only screen and (min-width: 501px) and (max-width: 600px) {
+	label{
+		font-size: .9em;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

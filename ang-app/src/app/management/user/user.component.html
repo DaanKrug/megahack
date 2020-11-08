@@ -1,0 +1,478 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm" 
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('user_write'))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+	
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração das pacientes e profissionais da saúde">
+		<rich-tab-bar [objects]="[
+							         {value: '0', label: 'Dados Gerais (*)', title: 'Dados Gerais'},
+							         {value: '1', label: 'Inf. Compl.', title: 'Informações Complementares'},
+									 {value: '2', label: 'Permissões', title: 'Permissões de Acesso'}
+							     ]" 
+				      [selectedTab]="tab" 
+				      (setTabEmitter)="setTab($event)">
+		</rich-tab-bar>
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm">   	
+	        <div class="{{ tab == 0 ? '' : 'none' }}">
+	        	<rich-input-text [formGroup]="dataForm" 
+	        	                 label="Nome (*)" 
+            	                 titlee="Nome" 
+            	                 maxchars="30" 
+            	                 forAlphaName="true"
+            	                 formControlName="name" 
+            	                 [widthPerc]="fitMode ? 100 : 98" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="E-mail (**)" 
+            	                 titlee="E-mail" 
+            	                 maxchars="100"
+            	                 formControlName="email" 
+            	                 [widthPerc]="fitMode ? 100 : 38" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Senha (**)" 
+            	                 titlee="Senha" 
+            	                 maxchars="100" 
+            	                 forPassword="true"
+            	                 (valueChangedEmitter)="validatePasswordForce($event)"
+            	                 formControlName="password" 
+            	                 [widthPerc]="fitMode ? 100 : 29" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+                <rich-input-select label="Cat./Perm. (*)" 
+                                   titlee="Categoria/Permissão" 
+                                   [objects]="categories" 
+                                   formControlName="category" 
+                                   [widthPerc]="fitMode ? 100 : 30" 
+                                   ngDefaultControl>
+                </rich-input-select>
+        	</div>
+        	<div class="{{ tab == 1 ? '' : 'none' }}">
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="R.G." 
+				                 titlee="R.G."
+				                 maxchars="20"
+				                 formControlName="a1_rg" 
+				                 [widthPerc]="fitMode ? 100 : 33" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="C.P.F." 
+				                 titlee="C.P.F."
+				                 maxchars="11"
+   				                 forNumber="true"
+				                 formControlName="a2_cpf" 
+				                 [widthPerc]="fitMode ? 100 : 32" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="C.N.S." 
+				                 titlee="C.N.S."
+				                 maxchars="15"
+				                 forNumber="true"
+				                 formControlName="a3_cns" 
+				                 [widthPerc]="fitMode ? 100 : 32"
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Telefone(s)" 
+				                 titlee="Telefone(s)"
+				                 maxchars="250"
+				                 formControlName="a4_phone" 
+				                 [widthPerc]="fitMode ? 100 : 98" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Endere&ccedil;o" 
+				                 titlee="Endere&ccedil;o"
+				                 formControlName="a5_address" 
+				                 [widthPerc]="fitMode ? 100 : 48.5" 
+				                 rowss="2"
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Outras Informa&ccedil;&otilde;es Importantes" 
+				                 titlee="Outras Informa&ccedil;&otilde;es Importantes"
+				                 formControlName="a6_otherinfo" 
+				                 [widthPerc]="fitMode ? 100 : 48.5" 
+				                 rowss="2"
+				                 ngDefaultControl>
+				</rich-input-text>
+				<div class="clear"></div>
+			</div>
+        	<div class="{{ tab == 2 ? '' : 'none' }}">
+        		<div class="field" 
+        		     style="width: 99%;">
+            		<div class="fieldset">
+            			<div *ngIf="null==disponiblePermissions">
+            				<div class="alert alert-danger">
+								<i class="fas fa-exclamation-triangle"></i>
+								<span>Selecione uma categoria para a pessoa/usuário, na aba "Dados Gerais".</span>
+							</div>
+							<div class="clear"></div>
+            			</div>
+            			<div *ngIf="null!=disponiblePermissions">
+            				<div *ngIf="disponiblePermissions.length == 0">
+	            				<div class="alert alert-info">
+									<i class="fas fa-exclamation-triangle"></i>
+									<span>Nenhuma permissão disponível, para a categoria selecionada.</span>
+								</div>
+								<div class="clear"></div>
+	            			</div>
+            				<div *ngFor="let permission of disponiblePermissions" 
+            				     class="field {{ permission.breakBefore ? 'clear' : ''}}" 
+            				     style="width: 19em; font-size: .95em;">
+	            		    	<div class="field">
+			            			<input type="checkbox" 
+			            			       checked="checked" 
+			            			       id="chk_{{permission.value}}"
+			            			       *ngIf="selectedPermissions.includes(permission.value)"
+			            			       (click)="uncheckPermission(permission.value)"
+			            			       [disabled]="null!=permission.dependOf 
+			            			                   && !(selectedPermissions.includes(permission.dependOf))"/>
+			            			<input type="checkbox"  
+			            			       id="chk_{{permission.value}}" 
+			            			       *ngIf="!(selectedPermissions.includes(permission.value))"
+			            			       (click)="checkPermission(permission.value)"
+			            			       [disabled]="null!=permission.dependOf 
+			            			                   && !(selectedPermissions.includes(permission.dependOf))"/>
+			            		</div>
+			            		<div class="field label" 
+			            		     style="margin-left: .3em;">
+			            			<label class="clickable {{ null!=permission.dependOf 
+			            			                           && !(selectedPermissions.includes(permission.dependOf)) 
+			            			                              ? 'disabled' : '' }}" 
+			            			       for="chk_{{permission.value}}">
+			            				{{ permission.label }} (Read)
+			            			</label>
+			            		</div>
+			            		<div class="clear"></div>
+			            		<div class="field" 
+			            		     style="margin-left: 1.5em;">
+			            			<input type="checkbox" 
+			            			       checked="checked" 
+			            			       id="chk_{{permission.value + '_write'}}"
+			            			       *ngIf="selectedPermissions.includes(permission.value + '_write')"
+			            			       (click)="uncheckPermission(permission.value + '_write')"
+			            			       [disabled]="(null!=permission.dependOf 
+			            			                   && !(selectedPermissions.includes(permission.dependOf)))
+			            			                   || !(selectedPermissions.includes(permission.value))"/>
+			            			<input type="checkbox"  
+			            			       id="chk_{{permission.value + '_write'}}" 
+			            			       *ngIf="!(selectedPermissions.includes(permission.value + '_write'))"
+			            			       (click)="checkPermission(permission.value + '_write')"
+			            			       [disabled]="(null!=permission.dependOf 
+			            			                   && !(selectedPermissions.includes(permission.dependOf)))
+			            			                   || !(selectedPermissions.includes(permission.value))"/>
+			            		</div>
+			            		<div class="field label" 
+			            		     style="margin-left: .3em;">
+			            			<label class="clickable {{ (null!=permission.dependOf 
+			            			                           && !(selectedPermissions.includes(permission.dependOf)))
+			            			                           || !(selectedPermissions.includes(permission.value)) 
+			            			                              ? 'disabled' : '' }}" 
+			            			       for="chk_{{permission.value + '_write'}}">
+			            				+ Write
+			            			</label>
+			            		</div>
+			            		<div class="clear"></div>
+	            		    </div>
+	            		    <div class="clear"></div>
+            			</div>
+            		</div>
+            		<div class="clear"></div>
+            	</div>
+            	<div class="clear"></div>
+        	</div>
+            <form-action [validationMessages]="validationMessages" 
+                         [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()" 
+                         [passwordValidationMessage]="passwordValidationMessage"
+                         [additionalMsgsInfo]="formInfo">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista dos pacientes e profissionais da saúde">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" 
+		        	    style="width: auto;">
+		        	    Nome + E-mail
+		        	</th>
+		        	<th scope="col" 
+		                *ngIf="!fitMode"
+		                style="width: 6em;" 
+		                title="C.N.S." 
+	                    aria-label="C.N.S.">
+	                    C.N.S.
+	                </th>
+		            <th scope="col" 
+		                *ngIf="!fitMode"
+		                style="width: 10em;" 
+		                title="Categoria/Permissão" 
+	                    aria-label="Categoria/Permissão">
+	                    Cat./Perm.
+	                </th>
+		            <th scope="col" 
+		                style="width: 11em;" 
+		                *ngIf="!auditingExclusions && !fitMode">
+		            	Ações
+		            </th>
+		            <th scope="col" 
+		                style="width: 9.5em;" 
+		                *ngIf="!auditingExclusions && fitMode">
+		            	Ações
+		            </th>
+		            <th scope="col" 
+		            	style="width: 5em;" 
+		            	*ngIf="auditingExclusions">
+		            	Ações
+		            </th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    	<tr mdbTableCol 
+		    	    *ngFor="let user of objects; trackBy: trackById">
+		        	<td class="text">
+		        		{{user.name}} &lt;{{user.email}}&gt;
+		        	</td>
+		        	<td class="number"
+		          	    *ngIf="!fitMode" 
+		          	    [innerHtml]="user.a3_cns">
+		          	</td>
+		          	<td class="text"
+		          	    *ngIf="!fitMode" 
+		          	    [innerHtml]="getLabelForKey(categories,user.category)">
+		          	</td>
+		            <td class="actions">
+			          	<div class="buttons">
+				       		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+				       		                    [object]="user" 
+				       		                    [logged]="logged"
+				       		                    [noAction]="!(['admin_master'].includes(logged.category))
+			                                                  && !(['admin'].includes(logged.category) 
+			                                                  && permissions.includes('user_write'))"
+				       		                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+				       		                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+				       		                    [objectDetail]="fitMode ? null : objectDetail"
+				       		                    (showObjectEmitter)="showObject($event)"
+				       		                    [lockUnLock]="!fitMode"
+				       		                    (lockEmitter)="lock($event)"
+				       		                    (unlockEmitter)="unlock($event)"
+							                    (editObjectEmitter)="editObject($event)"
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+				       	</div>
+		          	</td>
+		        </tr>
+		        <tr *ngIf="emptyArray(objects)"
+				    class="summary">
+					<td colspan="4"
+					    *ngIf="!fitMode" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhum Paciente/Profissional da Saúde Cadastrada/Encontrada</em>
+						</span>
+					</td>
+					<td colspan="2"
+					    *ngIf="fitMode" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhum Paciente/Profissional da Saúde Cadastrada/Encontrada</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="4"  
+		        	    *ngIf="fitMode"
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        	<td colspan="2"  
+		        	    *ngIf="!fitMode"
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+	
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 11em;">
+			Nome:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			E-mail:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.email}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Categoria/Permissão:
+		</th>
+		<td class="text noBorderRight">{{ getLabelForKey(categories,selectedObject.category) }}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+			Acesso Ativo:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.active ? 'Sim' : 'Não'}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 12em;"
+ 		    title="R.G."
+ 		    aria-label="R.G.">
+ 			R.G.:
+ 		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a1_rg">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="C.P.F."
+		    aria-label="C.P.F.">
+			C.P.F.:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a2_cpf">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="C.N.S."
+		    aria-label="C.N.S.">
+			C.N.S.:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a3_cns">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Telefone(s)"
+		    aria-label="Telefone(s)">
+			Telefone(s):
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a4_phone">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Endere&ccedil;o"
+		    aria-label="Endere&ccedil;o">
+			Endere&ccedil;o:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a5_address">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Outras Informa&ccedil;&otilde;es Importantes"
+		    aria-label="Outras Informa&ccedil;&otilde;es Importantes">
+			Outras Inf.:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a6_otherinfo">
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Paciente/Profissional da Saúde" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Paciente/Profissional da Saúde" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Paciente/Profissional da Saúde" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

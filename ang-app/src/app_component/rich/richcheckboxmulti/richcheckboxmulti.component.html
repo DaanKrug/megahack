@@ -1,0 +1,42 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" [ngStyle]="{'width': widthPerc + '%'}" *ngIf="!noRender && null != label && label != ''">
+	<div *ngIf="null != label">
+		<label title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+		<i class="far fa-question-circle inputActionIcon" 
+		   *ngIf="null != helpMessage"
+   		   placement="top" 
+   		   ngbTooltip="Clique para informações" 
+   		   aria-label="Clique para informações"
+   		   (click)="help()"
+   		   tabIndex="0">
+   		</i>
+	</div>
+	<div class="fieldset {{className}}">
+		<div>
+			<div class="field" *ngFor="let object of objects" [ngStyle]="{'width': widthInput + 'em'}">
+			    <div class="field" style="width: 1.7em;">
+		  			<input type="checkbox" checked="checked" id="{{id}}_{{object.value}}"
+		  			       *ngIf="selectedObjects.includes(object.value)"
+		  			       (click)="valueChangedRemove(object.value)"/>
+		  			<input type="checkbox" id="{{id}}_{{object.value}}" 
+		  			       *ngIf="!(selectedObjects.includes(object.value))"
+		  			       (click)="valueChangedAdd(object.value)"/>
+		  		</div>
+		  		<div class="field label" style="width: calc(99% - 2em);">
+		  			<label class="clickable" for="{{id}}_{{object.value}}"
+		  			       [attr.aria-label]="object.label" style="display: block;">
+		  				{{ object.label }}
+		  			</label>
+		  		</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>

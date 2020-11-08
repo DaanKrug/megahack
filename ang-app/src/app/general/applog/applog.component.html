@@ -1,0 +1,98 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [enabledAuditList]="false"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="true"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+
+<section aria-label="lista de logs da aplicação">
+	<table class="table" 
+	       *ngIf="objects as listOfObject" 
+	       mdbTable> 
+   		<thead class="black white-text">
+        	<tr>
+          		<th scope="col" 
+          		    style="width: 11em;" 
+                    title="Usuário + Data e Hora" 
+                    aria-label="Data e hora, com usuário na linha abaixo">
+                    Data/Usuário
+                </th>
+          		<th scope="col" 
+          		    style="width: 6.6em;" 
+          		    aria-label="Ação realizada pelo usuário">
+          		    Ação
+          		</th>
+          		<th scope="col" 
+          		    style="width: auto;" 
+                    title="Registro + Registro com Alteração" 
+                    aria-label="Registro antes da ação, então os caracteres: '=>' 
+                                e depois o registro após a ação realizada">
+              		Registro/Reg. Alteração
+          		</th>
+       		</tr>
+     	</thead>
+     	<tbody style="font-size: 0.8rem;">
+        	<tr mdbTableCol 
+        	    *ngFor="let log of objects; trackBy: trackById">
+          		<td class="text" 
+          		    style="padding: 0.2em 0.1em;">
+            		<span [innerHtml]="log.created_at"></span><br/>
+          			<span [innerHtml]="log.userName"></span><br/>
+          			&lt;<span [innerHtml]="log.userEmail"></span>&gt;
+	          	</td>
+	          	<td class="text" 
+	          	    style="padding: 0.2em 0.1em;">
+	          		<div [innerHtml]="log.operation"></div> 
+	          		<div [innerHtml]="log.objTitle" 
+	          		     style="font-weight: 600;">
+	          		</div>
+	          	</td>
+	          	<td class="text" 
+	          	    style="padding: 0;">
+	          		<div [innerHtml]="log.ffrom" 
+	          	         style="background-color: #a9e6f9; padding: 0.2em 0.1em; text-align: justify;">
+	          	    </div>
+	          		<div *ngIf="log.tto"></div> 
+	          		<div *ngIf="log.tto" 
+	          		     [innerHtml]="log.tto" 
+	          	          style="background-color: #f7e396; padding: 0.2em 0.1em; text-align: justify;">
+	          	    </div>
+	        	</td>
+	        </tr>
+	        <tr>
+	        	<td colspan="3" 
+	        	    class="navigationBottom" 
+	        	    style="text-align: left;">
+	        		&nbsp;&nbsp;&nbsp;
+	              	<span style="background-color: #a9e6f9;">Antes</span>
+	              	&nbsp;&nbsp;&nbsp;
+	              	<span style="background-color: #f7e396;">Depois (*)</span> - 
+	        		* Quando se trata de operação do tipo que realiza alteração nos dados.
+	        	</td>
+	        </tr>
+	        <tr>
+	        	<td colspan="3" 
+	        	    class="navigationBottom">
+	        		<table-navigator [pages]="pages" 
+	        		                 [selectedPage]="selectedPage" 
+					                 [previousPageDisabled]="previousPageDisabled" 
+					                 [nextPageDisabled]="nextPageDisabled" 
+					                 [rowsPerPage]="rowsPerPage" 
+					                 [totalPages]="totalPages" 
+					                 [totalRows]="totalRows"
+					                 (previousPageEmitter)="previousPage()" 
+					                 (setPageEmitter)="setPage($event)"
+					                 (nextPageEmitter)="nextPage()">
+					</table-navigator>
+	        	</td>
+	        </tr>
+	   	</tbody>
+    </table>
+	<div class="clear"></div>
+</section>

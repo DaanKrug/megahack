@@ -1,0 +1,311 @@
+<form-toolbar [title]="title" 
+              [editing]="editing" 
+              [searchForm]="searchForm" 
+              [backToOrigin]="logged.category == 'admin_master' && selectedUser.category != 'admin_master'"
+              (backToOriginEmitter)="backToUsers()"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+	          (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" 
+	          (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('mailerconfig_write'))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+	
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração das configurações de envio de email">
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()" 
+		      class="dataForm">   	
+	        <div>
+	        	<rich-input-select label="Provedor (*)" 
+	        	                   titlee="Provedor" 
+	        	                   [objects]="providers" 
+                                   formControlName="provider" 
+                                   widthPerc="20" 
+                                   ngDefaultControl>
+                </rich-input-select>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Identificação (*)" 
+            	                 titlee="Identificação" 
+            	                 maxchars="30" 
+            	                 onlyAlpha="true"
+            	                 formControlName="name" 
+            	                 widthPerc="23" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="E-mail (*)" 
+            	                 titlee="E-mail" 
+            	                 maxchars="100" 
+            	                 formControlName="username" 
+            	                 widthPerc="27" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Replay-To (*)" 
+            	                 titlee="Replay-To" 
+            	                 maxchars="100" 
+            	                 formControlName="replayTo" 
+            	                 widthPerc="27" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Senha (**)" 
+            	                 titlee="Senha" 
+            	                 maxchars="250" 
+            	                 breakBefore="true"
+            	                 formControlName="password" 
+            	                 widthPerc="32" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+                <rich-input-text [formGroup]="dataForm" 
+                                 label="Ord. Util." 
+                                 titlee="Ordem Utilização" 
+            	                 maxchars="3" 
+            	                 minValue="1" 
+            	                 maxValue="999" 
+            	                 forNumber="true"
+            	                 formControlName="position" 
+            	                 widthPerc="19" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Mensal (*) (***)" 
+            	                 titlee="Limite de Envio Mensal" 
+            	                 maxchars="10" 
+            	                 minValue="1" 
+            	                 maxValue="4294967295" 
+            	                 forNumber="true"
+            	                 formControlName="perMonth" 
+            	                 widthPerc="23" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Diário (*) (***)" 
+            	                 titlee="Limite de Envio Diário" 
+            	                 maxchars="10" 
+            	                 minValue="1" 
+            	                 maxValue="4294967295" 
+            	                 forNumber="true"
+            	                 formControlName="perDay" 
+            	                 widthPerc="23" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Hora (*) (***)" 
+            	                 titlee="Limite de Envio por Hora" 
+            	                 maxchars="10" 
+            	                 minValue="1" 
+            	                 maxValue="4294967295" 
+            	                 forNumber="true"
+            	                 formControlName="perHour" 
+            	                 widthPerc="32" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Minuto (*) (***)" 
+            	                 titlee="Limite de Envio por Minuto" 
+            	                 maxchars="10" 
+            	                 minValue="1" 
+            	                 maxValue="4294967295" 
+            	                 forNumber="true"
+            	                 formControlName="perMinute" 
+            	                 widthPerc="32" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<rich-input-text [formGroup]="dataForm" 
+            	                 label="Segundo (*) (***)" 
+            	                 titlee="Limite de Envio por Segundo" 
+            	                 maxchars="10" 
+            	                 minValue="1" 
+            	                 maxValue="4294967295" 
+            	                 forNumber="true"
+            	                 formControlName="perSecond" 
+            	                 widthPerc="33" 
+            	                 ngDefaultControl>
+                </rich-input-text>
+            	<div class="clear"></div>
+        	</div>
+            <form-action [validationMessages]="validationMessages" 
+                         [processValidation]="processValidation"
+                         (cancelDataEmitter)="cancelData()"
+                         [additionalMsgsInfo]="formInfo">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista das configurações de envio de email">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" 
+		        	    style="width: 16em;" 
+		        	    title="Identificação"
+		                aria-label="Identificação">
+		                Identificação
+		            </th>
+		            <th scope="col" 
+		                style="width: 6em;">
+		                Provedor
+		            </th>
+		          	<th scope="col" 
+		          	    style="width: auto;">
+		          	    Endereço E-mail
+		          	</th>
+		          	<th scope="col" 
+		          	    style="width: 3em;"
+		          	    aria-label="Prioridade de Utilização"
+		          	    title="Prioridade de Utilização">
+		          	    Pri.
+		          	</th>
+		          	<th scope="col" 
+		          	    style="width: 7em;" 
+		                title="Limite Envio Mensal/Limite Envio Diário" 
+		                aria-label="Limite Envio Mensal/Limite Envio Diário">
+		                Mês/Dia
+		            </th>
+		          	<th scope="col" 
+		          	    style="width: 5em;" 
+		          	    *ngIf="auditingExclusions">
+		          	    Ações
+		          	</th>
+		          	<th scope="col" 
+		          	    style="width: 7em;" 
+		          	    *ngIf="!auditingExclusions">
+		          	    Ações
+		          	</th>
+		     	</tr>
+		     </thead>
+		     <tbody>
+		     	<tr mdbTableCol 
+		     	    *ngFor="let mailerconfig of objects; trackBy: trackById">
+		        	<td class="text"
+		        	    [innerHtml]="mailerconfig.name">
+		          	</td>
+		          	<td class="text"
+		          	    [innerHtml]="getLabelForKey(providers,mailerconfig.provider)">
+		          	</td>
+		          	<td class="text" 
+		          	    [innerHtml]="mailerconfig.username">
+		          	</td>
+		          	<td class="number" 
+		          	    [innerHtml]="mailerconfig.position">
+		          	</td>
+		          	<td class="number">
+		          		{{mailerconfig.perMonth}}/{{mailerconfig.perDay}}
+		          	</td>
+		          	<td class="actions">
+		          		<div class="buttons">
+			       			<edit-delete-action [auditingExclusions]="auditingExclusions" 
+			       			                    [object]="mailerconfig" 
+			       			                    [logged]="logged"
+			       		                        [noAction]="!(['admin_master'].includes(logged.category))
+		                                                    && !(['admin'].includes(logged.category) 
+		                                                    && permissions.includes('mailerconfig_write'))"
+			       		                        [objectDeleteConfirmation]="objectDeleteConfirmation" 
+			       		                        [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+			       		                        [objectDetail]="objectDetail"
+			       		                        (showObjectEmitter)="showObject($event)"
+						                        (editObjectEmitter)="editObject($event)"
+						                        (deleteObjectEmitter)="deleteObject($event)"
+						                        (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+			       		</div>
+		        	</td>
+		        </tr>
+		        <tr *ngIf="emptyArray(objects)" 
+		            class="summary">
+					<td colspan="6" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhuma Configuração de Envio de Email Cadastrada/Encontrada</em>
+						</span>
+					</td>
+				</tr>
+		        <tr>
+		        	<td colspan="6" 
+		        	    class="navigationBottom">
+		        		<table-navigator [pages]="pages" 
+		        		                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+		    class="text" 
+		    style="width: 11em;">
+		    Identificação:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">
+		    Provedor:
+		</th>
+		<td class="text noBorderRight">{{ getLabelForKey(providers,selectedObject.provider) }}</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text">Endereço de E-mail:
+		</th>
+		<td class="text noBorderRight">{{selectedObject.username}}</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="Configuração E-mail" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true"
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração E-mail" 
+	                     [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Configuração E-mail" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true"
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

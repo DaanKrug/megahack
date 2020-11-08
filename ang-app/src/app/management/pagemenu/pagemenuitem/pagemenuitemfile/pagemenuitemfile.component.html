@@ -1,0 +1,122 @@
+<form-toolbar [title]="title" [editing]="editing" [searchForm]="searchForm" 
+              [backToOrigin]="true" (backToOriginEmitter)="toPageMenuItems()"
+	          (onSearchFormSubmitEmitter)="onSearchFormSubmit()" (listDataEmitter)="listData()"
+	          (listDataNoCacheEmitter)="listDataNoCache()"
+	          [auditingExclusions]="auditingExclusions"
+	          [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+	          (auditListEmitter)="auditList()" (normalListEmitter)="normalList()"
+	          [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('pagemenuitemfile_write'))"
+	          (addObjectEmitter)="addObject()">
+</form-toolbar>
+
+<ng-template [ngIf]="editing" [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteração dos arquivos em item menu">
+		<form [formGroup]="dataForm" (ngSubmit)="onObjectFormSubmit()" class="dataForm"> 
+			<div> 	
+			    <rich-filter-selector id="selectOneFile" label="Arquivo" 
+				                      emptyLabel="Selecione" widthPerc="74"
+				                      [selectedObject]="selectedFile" [objects]="files" 
+				                      (infoContainEmitter)="infoFileContain()" 
+				                      (filterObjectsEmitter)="filterFiles($event)" 
+				                      (valueChangedEmitter)="setSelectedFile($event)" >
+				</rich-filter-selector>
+				<rich-input-text [formGroup]="dataForm" label="Ord. Apres." 
+				                 titlee="Ordem Apresentação na Listagem" 
+            	                 maxchars="3" minValue="1" maxValue="999" forNumber="true"
+            	                 formControlName="position" widthPerc="24" ngDefaultControl>
+                </rich-input-text>
+            	<div class="clear" ></div>
+            </div> 
+        	<form-action [validationMessages]="validationMessages" [processValidation]="processValidation"
+                         noCancel="true" saveText="Adicionar">
+            </form-action>
+	    </form>
+    </section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista dos arquivos em item menu">
+		<table class="table" *ngIf="objects as listOfObject" mdbTable> 
+			<thead class="black white-text">
+		    	<tr>
+		        	<th scope="col" style="width: auto;">Identificação</th>
+		          	<th scope="col" style="width: 3em;" 
+		                title="Ordem Apresentação" aria-label="Ordem Apresentação">Ord.</th>
+		            <th scope="col" style="width: 5em;">Ações</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        <tr mdbTableCol *ngFor="let pagemenuitemfile of objects; trackBy: trackById">
+		        	<td class="text" [innerHtml]="pagemenuitemfile.name"></td>
+		        	<td class="number" [innerHtml]="pagemenuitemfile.position"></td>
+		        	<td class="actions">
+			          	<div class="buttons">
+				       		<edit-delete-action [auditingExclusions]="auditingExclusions" 
+				       		                    [object]="pagemenuitemfile" [logged]="logged"
+				       		                    [noEdit]="true"
+				       		                    [noAction]="!(['admin_master'].includes(logged.category))
+			                                                && !(['admin'].includes(logged.category) 
+			                                                && permissions.includes('pagemenuitemfile_write'))"
+				       		                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+				       		                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation"
+				       		                    [objectDetail]="objectDetail"
+				       		                    (showObjectEmitter)="showObject($event)"
+							                    (editObjectEmitter)="editObject($event)"
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+				       	</div>
+		        	</td>
+		        </tr>
+		        <tr>
+		        	<td colspan="3" class="navigationBottom">
+		        		<table-navigator [pages]="pages" [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+		        	</td>
+		        </tr>
+		    </tbody>
+		</table>
+	</section>
+</ng-template>
+		
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" class="text" style="width: 11em;">Identificação:</th>
+		<td class="text noBorderRight">{{selectedObject.name}}</td>
+	</tr>
+	<tr>
+		<th scope="row" class="text">Ordem Apresentação:</th>
+		<td class="text noBorderRight">{{selectedObject.position}}</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail let-modal>
+	<delete-confirmation label="Arquivo Item Menu" [selectedObject]="selectedObject" info="true"
+	                     [templateOutlet]="selectedObjectTemplate" (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation let-modal>
+	<delete-confirmation label="Arquivo Item Menu" [selectedObject]="selectedObject"
+	                     [auditingExclusions]="auditingExclusions" [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation let-modal>
+	<delete-confirmation label="Arquivo Item Menu" [selectedObject]="selectedObject" redo="true"
+	                     [auditingExclusions]="auditingExclusions" [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

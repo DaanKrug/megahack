@@ -1,0 +1,62 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" 
+     [ngStyle]="{'width': widthPerc + '%'}" 
+     *ngIf="!noRender && null != label && label != ''">
+	<div class="fieldset {{className}} {{ onlyRead ? 'disabled' : ''}}">
+		<div class="field" 
+		     style="width: 1.7em;" 
+		     [ngStyle]="onlyRead ? {} : {'padding-top': '0.07em','height': '1.7em'}" >
+	 		<input id="{{id}}" 
+	 		       type="checkbox" 
+	 		       [formControl]="ngControl.control" 
+	 		       *ngIf="!onlyRead && !checkedd" />
+	 		<input id="{{id}}" 
+	 		       type="checkbox" 
+	 		       [formControl]="ngControl.control" 
+	 		       checked="checked"
+	 		       *ngIf="!onlyRead && checkedd" />
+	 		<input id="{{id}}" 
+	 		       type="checkbox" 
+	 		       [formControl]="ngControl.control" 
+	 		       readonly="true" 
+	 		       style="display: none !important;"
+	 		       *ngIf="onlyRead && !checkedd" />
+	 		<input id="{{id}}" 
+	 		       type="checkbox" 
+	 		       [formControl]="ngControl.control" 
+	 		       readonly="true" 
+	 		       checked="checked" 
+	 		       style="display: none !important;"
+	 		       *ngIf="onlyRead && checkedd" />
+	 		<button class="btn btn-primary disabled" 
+	 		        style="width: 1.6em; height: 1.6em; padding: 0; border-radius: .15em;"
+	 		        [disabled]="true" 
+	 		        *ngIf="onlyRead">
+	 			<i class="far fa-check-square" *ngIf="checkedd"></i>
+	 			<i class="far fa-square" *ngIf="!checkedd"></i>
+	 		</button>
+	 		<div class="clear"></div>
+	 	</div>
+	 	<div class="field label" style="width: calc(99% - 2em);">
+	 		<label class="{{ onlyRead ? 'disabled' : 'clickable' }}" style="display: block;"
+	 		       for="{{id}}" [attr.aria-label]="titlee">
+	        	{{ label }}
+	        </label>
+	        <i class="far fa-question-circle inputActionIcon" 
+			   *ngIf="null != helpMessage"
+          	   placement="top" 
+          	   ngbTooltip="Clique para informações" 
+          	   aria-label="Clique para informações"
+          	   (click)="help()"
+          	   tabIndex="0">
+          	</i>
+	 	</div>
+	 	<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>

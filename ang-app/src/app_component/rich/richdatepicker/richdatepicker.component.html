@@ -1,0 +1,94 @@
+<div class="clear" style="margin-bottom: .3em;" 
+     *ngIf="breakBefore && !breakBeforeDouble && !noRender">
+</div>
+<div class="clear" style="margin-bottom: .7em;" 
+     *ngIf="breakBeforeDouble && !noRender">
+</div>
+<div class="field" style="margin-right: 0.35em; width: 12.3em;" *ngIf="!noRender && whitTime">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+		<i class="far fa-question-circle inputActionIcon" 
+		   *ngIf="null != helpMessage"
+   		   placement="top" 
+   		   ngbTooltip="Clique para informações" 
+   		   aria-label="Clique para informações"
+   		   (click)="help()"
+   		   tabIndex="0">
+   		</i>
+	</div>
+	<div class="clear"></div>
+	<input id="{{id}}" 
+		   *ngIf="!onlyRead"
+	       type="text" 
+	       mask="00/00/0000 00:00:00" 
+	       [placeholder]="placeholderr"
+	       style="width: 12.1em;"
+		   class="form-control calendarInput {{className}}" 
+		   [formControl]="ngControl.control" />
+	<input id="{{id}}" 
+	       *ngIf="onlyRead"
+	       type="text" 
+	       mask="00/00/0000 00:00:00" 
+	       style="width: 12.1em;"
+		   class="form-control calendarInput {{className}}" 
+		   [formControl]="ngControl.control" 
+		   readonly="true" />
+	<div class="calendarPickerContent">
+		<a (click)="datePickerInput.toggle();"
+		   *ngIf="!onlyRead"
+		   style="margin-left: 10.3em;">
+			<i class="far fa-calendar-alt"></i>
+		</a>
+		<a (click)="doNothing();"
+		   *ngIf="onlyRead"
+		   style="margin-left: 10.3em; cursor: default !important;">
+			<i class="far fa-calendar-alt"></i>
+		</a>
+	</div>
+	<input type="text" 
+	       class="calendarInputHidden" 
+	       ngbDatepicker 
+	       #datePickerInput="ngbDatepicker"
+		   (dateSelect)="onDateSelect($event);"/>
+	<div class="clear"></div>
+</div> 
+<div class="field" style="margin-right: 0.35em; width: 8.5em;" *ngIf="!noRender && !whitTime">
+	<div *ngIf="null != label">
+		<label for="{{id}}" title="{{titlee}}" [attr.aria-label]="titlee">{{ label }}</label>
+	</div>
+	<div class="clear"></div>
+	<input id="{{id}}" 
+	       *ngIf="!onlyRead"
+	       type="text" 
+	       mask="00/00/0000" 
+	       [placeholder]="placeholderr"
+	       style="width: 8.3em;"
+		   class="form-control calendarInput {{className}}" 
+		   [formControl]="ngControl.control" />
+	<input id="{{id}}" 
+	       *ngIf="onlyRead"
+	       type="text" 
+	       mask="00/00/0000" 
+	       style="width: 8.3em;"
+		   class="form-control calendarInput {{className}}" 
+		   [formControl]="ngControl.control" 
+		   readonly="true" />
+	<div class="calendarPickerContent">
+		<a (click)="datePickerInput.toggle();"
+		   *ngIf="!onlyRead"
+		   style="margin-left: 6.5em;">
+			<i class="far fa-calendar-alt"></i>
+		</a>
+		<a (click)="doNothing();"
+		   *ngIf="onlyRead"
+		   style="margin-left: 6.5em; cursor: default !important;">
+			<i class="far fa-calendar-alt"></i>
+		</a>
+	</div>	   
+	<input type="text" 
+	       class="calendarInputHidden" 
+	       ngbDatepicker 
+	       #datePickerInput="ngbDatepicker"
+		   (dateSelect)="onDateSelect($event);"/>
+	<div class="clear"></div>
+</div> 
