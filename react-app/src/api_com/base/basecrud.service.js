@@ -31,16 +31,19 @@ const BaseCrudService = {
 	},
 	async getDataFetch(url,requestOptions){
 		const response = await fetch(url,requestOptions);
-		//try{
+		try{
 			const data = await response.json();
-			return DataService.clearRowZeroObjectsValidated(data);
-		/*}catch(e){
+			if(Array.isArray(data)){
+				return DataService.clearRowZeroObjectsValidated(data);
+			}
+			return data;
+		}catch(e){
 			if(BaseCrudService.inDebugg()){
 				console.log('Error: ', e);
 				console.log('Requested URL: ', response.url);
 			}
 			return null;
-		}*/
+		}
 	},
 	async makeRequestToAPI(resorceUrl,method,bodyObject){
 		let url = BaseCrudService.getBase() + resorceUrl;

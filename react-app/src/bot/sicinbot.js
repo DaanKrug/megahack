@@ -34,7 +34,7 @@ export default class SicinBot extends React.Component {
 			return
 		}
 		this.setState({lastClickTime: now});
-		if(msgResponse === 'Sim, Realizar Nova Operação' && valueResponse === -1){
+		if(stepId === -1){
 			botia.reset();
 			this.reset();
 			return;
@@ -50,7 +50,8 @@ export default class SicinBot extends React.Component {
 			setTimeout(() => {this.loadNextSteps(stepId,msgResponse,valueResponse);},100);
 			return;
 		}
-		const newStep = this.state.actualStep + (botia.blockWalking ? 0 : 1);
+		let discounter = botia.needRepeatBack ? -1 : 0;
+		const newStep = this.state.actualStep + (botia.blockWalking ? 0 : 1) + discounter;
 		const nextSteps = botia.getNextSteps(newStep,msgResponse,valueResponse);
 		let msgs = this.state.msgs.slice();
 		msgs = msgs.concat(nextSteps);
@@ -60,7 +61,7 @@ export default class SicinBot extends React.Component {
 			msgs: msgs
 		});
 		if(botia.needResume && !botia.blockWalking){
-			setTimeout(() => {this.loadNextSteps(stepId,msgResponse,valueResponse);},100);
+			setTimeout(() => {this.loadNextSteps(stepId + discounter,msgResponse,valueResponse);},100);
 			return;
 		}
 	}
@@ -100,7 +101,7 @@ export default class SicinBot extends React.Component {
 						 className="chatContainer">
 				    	<div className="chatContainerHeader rsc-header header">
 				    		<span className="rsc-header-title">
-				    		Bot title
+				    		Joana Resolve
 				    		</span>
 				    	</div>
 				    	<div id="chatContainerBody" 

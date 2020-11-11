@@ -24,6 +24,16 @@ defmodule ExApp.ConsumerunitController do
     sendResponse(conn,Handler.registerFaultByConsumerUnitId(id))
   end
   
+  put "/" do
+    {:ok, _body, conn} = Plug.Conn.read_body(conn)
+    sendResponse(conn,Handler.registerReBinding(conn.params))
+  end
+
+  put "/:id" do
+    id = NumberUtil.toInteger(StringUtil.decodeUri("#{id}"))
+    sendResponse(conn,Handler.registerReBindingByConsumerUnitId(id))
+  end
+  
   match _ do
     notFound(conn)
   end

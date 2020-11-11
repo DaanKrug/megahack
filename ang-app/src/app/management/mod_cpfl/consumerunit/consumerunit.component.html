@@ -1,0 +1,225 @@
+<form-toolbar [title]="title" 
+			  [editing]="editing" 
+			  [searchForm]="searchForm" 
+			  (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+			  (listDataEmitter)="listData()"
+			  (listDataNoCacheEmitter)="listDataNoCache()"
+			  [auditingExclusions]="auditingExclusions"
+			  [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+			  (auditListEmitter)="auditList()" 
+			  (normalListEmitter)="normalList()"
+			  [disabledAddNew]="true"
+			  (addObjectEmitter)="addObject()" 
+			  [backToOrigin]="null != selectedClient" 
+			  (backToOriginEmitter)="backToOrigin()">
+</form-toolbar>
+
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista das Unidades Consumidoras">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+				<tr>
+					<th scope="col" 
+					    style="width: auto;" 
+					    title="Nome/Razão Social" 
+					    aria-label="Nome/Razão Social">
+						Nome/Razão Social
+					</th>
+					<th scope="col" 
+					    style="width: 7rem;" 
+					    title="CPF/CNPJ" 
+					    aria-label="CPF/CNPJ">
+						CPF/CNPJ
+					</th>
+					<th scope="col" 
+					    style="width: 12rem;" 
+					    title="Característica do Imóvel" 
+					    aria-label="Característica do Imóvel">
+						Característica do Imóvel
+					</th>
+					<th scope="col" 
+					    style="width: 9em;" 
+					    *ngIf="!auditingExclusions">
+					    A&ccedil;&otilde;es
+					</th>
+					<th scope="col" 
+					    style="width: 5em;" 
+					    *ngIf="auditingExclusions">
+					    A&ccedil;&otilde;es
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr mdbTableCol 
+				    *ngFor="let consumerunit of objects; trackBy: trackById">
+					<td class="text" 
+					    [innerHtml]="consumerunit.a1_name">
+					</td>
+					<td class="text">
+						{{ consumerunit.a3_cpf }}{{ consumerunit.a4_cnpj }}
+					</td>
+					<td class="text" 
+					    [innerHtml]="getLabelForKey(a2_caracteristics,consumerunit.a2_caracteristic)">
+					</td>
+					<td class="actions">
+						<div class="buttons">
+							<edit-delete-action [auditingExclusions]="auditingExclusions" 
+							                    [object]="consumerunit" 
+							                    [noEdit]="true"
+							                    [logged]="logged"
+							                    [noAction]="!(['admin_master'].includes(logged.category))
+								                              && !(['admin'].includes(logged.category) 
+								                              && permissions.includes('client_write'))" 
+							                    [objectDetail]="objectDetail" 
+							                    (showObjectEmitter)="showObject($event)"
+							                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation" 
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+						</div>
+					</td>
+				</tr>
+				<tr *ngIf="emptyArray(objects)"
+				    class="summary">
+					<td colspan="5" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhuma Unidade Consumidora Cadastrada/Encontrada</em>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="5" 
+					    class="navigationBottom">
+						<table-navigator [pages]="pages" 
+						                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+ 		    class="text" 
+ 		    style="width: 12em;"
+ 		    title="Nome/Razão Social"
+ 		    aria-label="Nome/Razão Social">
+ 			Nome/Razão Social:
+ 		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a1_name">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="CPF/CNPJ"
+		    aria-label="CPF/CNPJ">
+			CPF/CNPJ:
+		</th>
+		<td class="text noBorderRight">
+			{{ selectedObject.a3_cpf }}{{ selectedObject.a4_cnpj }}
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Característica do Imóvel"
+		    aria-label="Característica do Imóvel">
+			Característica do Imóvel:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="getLabelForKey(a2_caracteristics,selectedObject.a2_caracteristic)">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Endereço"
+		    aria-label="Endereço">
+			Endereço:
+		</th>
+		<td class="text noBorderRight">
+		    {{ selectedObject.a8_street }}, 
+			{{ emptyString(selectedObject.a9_number) ? 's/n' : selectedObject.a9_number }},
+			{{ emptyString(selectedObject.a10_compl1type) 
+			   || emptyString(selectedObject.a11_compl1desc)
+			     ? '' : getLabelForKey(a10_compl1types,selectedObject.a10_compl1type) }}
+			{{ emptyString(selectedObject.a10_compl1type) 
+			   || emptyString(selectedObject.a11_compl1desc) 
+			     ? '' : selectedObject.a11_compl1desc + ',' }}
+			{{ emptyString(selectedObject.a12_compl2type) 
+			   || emptyString(selectedObject.a13_compl2desc) 
+			     ? '' : getLabelForKey(a12_compl2types,selectedObject.a12_compl2type) }}
+			{{ emptyString(selectedObject.a12_compl2type) 
+			   || emptyString(selectedObject.a13_compl2desc)
+			     ? '' : selectedObject.a13_compl2desc + ',' }}
+			{{ selectedObject.a7_city }}/{{ selectedObject.a6_uf }},
+			CEP: {{ selectedObject.a5_cep }}
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Referência"
+		    aria-label="Referência">
+			Referência:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a14_reference">
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="da Unidade Consumidora" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true" 
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Unidade Consumidora" 
+	                     [selectedObject]="selectedObject" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Unidade Consumidora" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

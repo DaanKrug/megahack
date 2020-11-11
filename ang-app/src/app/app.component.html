@@ -271,6 +271,12 @@
 								                      (clickEmitter)="clientsView()"
 								                      (clickEmitter1)="drd3.close()">
 								</rich-dropdown-button>
+								<rich-dropdown-button label="Unidades Consumidoras" 
+								                      [activated]="view == 'consumerunits'" 
+								                      [noRender]="!(['system_auditor','admin','admin_master'].includes(logged.category))"
+								                      (clickEmitter)="consumerunitsView()"
+								                      (clickEmitter1)="drd3.close()">
+								</rich-dropdown-button>
 								<rich-dropdown-button label="Solicitações de Nova Ligação" 
 								                      [activated]="view == 'solicitations'" 
 								                      [noRender]="!(['system_auditor','admin','admin_master'].includes(logged.category))"
@@ -444,6 +450,11 @@
 								<rich-menu-button label="Clientes" 
 								                  (clickEmitter)="clientsView()" 
 								                  [activated]="view == 'clients'" 
+								                  [noRender]="!(['system_auditor','admin','admin_master'].includes(logged.category))">
+								</rich-menu-button>
+								<rich-menu-button label="Unidades Consumidoras" 
+								                  (clickEmitter)="consumerunitsView()" 
+								                  [activated]="view == 'consumerunits'" 
 								                  [noRender]="!(['system_auditor','admin','admin_master'].includes(logged.category))">
 								</rich-menu-button>
 								<rich-menu-button label="Solicitações de Nova Ligação" 

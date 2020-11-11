@@ -6,7 +6,7 @@ export default class BotIcon extends React.Component {
 	    return (
 	    		<div className="botIconContainer rsc-ts-image-container">
 	    			<img className="botIcon rsc-ts-image" 
-	    				 src={require('../../img/doctor4.png')} 
+	    				 src={require('../../img/joana.png')} 
 	    				 alt="avatar" />
 	    		</div>
 	    );

@@ -14,19 +14,16 @@ export default class BotIAUtil {
 		});
 	}
 	
+	registerReBinding(cpf){
+		return ConsumerUnitService.registerReBinding(cpf).then(response => {
+			return response;
+		});
+	}
+	
+	registerReBindingByConsumerUnitId(id){
+		return ConsumerUnitService.registerReBindingByConsumerUnitId(id).then(response => {
+			return response;
+		});
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

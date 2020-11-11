@@ -1,6 +1,7 @@
 defmodule ExApp.MessagesUtil do
 
   alias ExApp.ReturnUtil
+  alias ExApp.StringUtil
   
   def systemMessage(messageCode,parameters \\ []) do
     cond do
@@ -275,18 +276,42 @@ defmodule ExApp.MessagesUtil do
       (messageCode == 100155) -> ReturnUtil.getValidationResult(100155,
                                  "Falha ao alterar <strong>Unidade Consumidora</strong>.")
       (messageCode == 100156) -> ReturnUtil.getValidationResult(100156,
-                                 "<strong>Unidade Consumidora</strong> não encontrada para o CPF.")
+                                 "Desculpe, não encontrei nenhuma Unidade Consumidora para o CPF informado.")
       (messageCode == 100157) -> ReturnUtil.getValidationResult(100157,
-                                 "<strong>Unidade Consumidora</strong> não encontrada para o CNPJ.")
+                                 "Desculpe, não encontrei nenhuma Unidade Consumidora para o CNPJ informado.")
       (messageCode == 100158) -> ReturnUtil.getValidationResult(100158,
                                  """
                                  Falta de Energia registrada com sucesso para a 
-                                 Unidade Consumidora <strong>Enum.at(parameters,0)</strong>.
-                                 <br/>
-                                 Seu protocolo de atendimento é <strong>Enum.at(parameters,1)</strong>
+                                 Unidade Consumidora #{Enum.at(parameters,0) |> StringUtil.leftZeros(11)}
+                                 - #{Enum.at(parameters,1)}.
+                                 | Seu protocolo de atendimento é #{Enum.at(parameters,2)}
+                                 | #{Enum.at(parameters,4)}
                                  """)
       (messageCode == 100159) -> ReturnUtil.getValidationResult(100159,
-                                 "<strong>Unidade Consumidora</strong> informada não foi encontrada.")
+                                 "Desculpe, não encontrei a Unidade Consumidora informada.")
+      (messageCode == 100160) -> ReturnUtil.getValidationResult(100160,
+                                 """
+                                 Solicitação de re-ligamento de energia registrada com sucesso para a 
+                                 Unidade Consumidora #{Enum.at(parameters,0) |> StringUtil.leftZeros(11)}
+                                 - #{Enum.at(parameters,1)}.
+                                 | Seu protocolo de atendimento é #{Enum.at(parameters,2)}
+                                 | #{Enum.at(parameters,4)}
+                                 | Aguarde entre 2 e 3 horas para a realização do serviço.
+                                 """)
+      (messageCode == 100161) -> ReturnUtil.getValidationResult(100161,
+                                 """
+                                 Desculpe, no momento não é possível realizar a
+                                 solicitação de re-ligamento de energia para a 
+                                 Unidade Consumidora #{Enum.at(parameters,0) |> StringUtil.leftZeros(11)}
+                                 - #{Enum.at(parameters,1)}.
+                                 | Seu protocolo de atendimento é #{Enum.at(parameters,2)}
+                                 | #{Enum.at(parameters,4)}
+                                 | Motivo: Ainda consta(m) débito(s) ativo(s) no sistema.
+                                 | Solução: Efetue a quitação do(s) respectivo(s) débito(s)
+                                 e aguarde um tempo para voltar a realizar a solicitação. Se 
+                                 a quitação ocorreu a pouco tempo, aguarde um pouco para voltar a
+                                 realizar a solicitação.
+                                 """)
       true -> systemMessage(0)
     end
   end

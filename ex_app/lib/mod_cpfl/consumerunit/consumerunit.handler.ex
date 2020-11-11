@@ -4,6 +4,7 @@ defmodule ExApp.ConsumerunitHandler do
   alias ExApp.AuthorizerUtil
   alias ExApp.MessagesUtil
   alias ExApp.MapUtil
+  alias ExApp.StringUtil
   alias ExApp.Consumerunit
   alias ExApp.GenericValidator
   alias ExApp.ConsumerunitValidator
@@ -28,17 +29,68 @@ defmodule ExApp.ConsumerunitHandler do
       (length(consumerUnits) == 0 and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
       (length(consumerUnits) == 0) -> MessagesUtil.systemMessage(100157)
       (length(consumerUnits) == 1) 
-        -> MessagesUtil.systemMessage(100158,[Enum.at(consumerUnits,0) |> MapUtil.get(:id),"0000000123456789"])
+        -> Enum.at(consumerUnits,0) |> registerFaultByConsumerUnit()
       true -> consumerUnits
     end
   end
   
   def registerFaultByConsumerUnitId(id) do
-    consumerUnit = ConsumerunitService.loadById(id)
+    ConsumerunitService.loadById(id) |> registerFaultByConsumerUnit()
+  end
+  
+  defp registerFaultByConsumerUnit(consumerUnit) do
     cond do
       (nil == consumerUnit) -> MessagesUtil.systemMessage(100159)
-      true -> MessagesUtil.systemMessage(100158,[id,"0000000XXXXXXXXX"])
+      true -> MessagesUtil.systemMessage(100158,[getConsumerUnitNumber(consumerUnit),
+                                                 getConsumerUnitLabel(consumerUnit),
+                                                 "0000000XXXXXXXXX",
+                                                 ""])
     end
+  end
+  
+  def registerReBinding(mapParams) do
+    a3_cpf = SolicitationValidator.getA3_cpf(mapParams)
+    a4_cnpj = SolicitationValidator.getA4_cnpj(mapParams)
+    consumerUnits = loadConsumerUnits(a3_cpf,a4_cnpj)
+    cond do
+      (length(consumerUnits) == 0 and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
+      (length(consumerUnits) == 0) -> MessagesUtil.systemMessage(100157)
+      (length(consumerUnits) == 1) 
+        -> Enum.at(consumerUnits,0) |> registerReBindingByConsumerUnit()
+      true -> consumerUnits
+    end
+  end
+  
+  def registerReBindingByConsumerUnitId(id) do
+    ConsumerunitService.loadById(id) |> registerReBindingByConsumerUnit()
+  end
+  
+  defp registerReBindingByConsumerUnit(consumerUnit) do
+    cond do
+      (nil == consumerUnit) -> MessagesUtil.systemMessage(100161)
+      true -> MessagesUtil.systemMessage(100160,[getConsumerUnitNumber(consumerUnit),
+                                                 getConsumerUnitLabel(consumerUnit),
+                                                 "0000000XXXXXXXXX",
+                                                 ""])
+    end
+  end
+  
+  defp getConsumerUnitNumber(consumerUnit) do
+    MapUtil.get(consumerUnit,:id)
+  end
+  
+  defp getConsumerUnitLabel(consumerUnit) do
+    streetNumber = MapUtil.get(consumerUnit,:a9_number) |> StringUtil.trim()
+    streetNumber = cond do
+      (streetNumber == "") -> "s/n"
+      true -> streetNumber
+    end
+    """
+    #{MapUtil.get(consumerUnit,:a8_street) |> StringUtil.trim()}, #{streetNumber},
+    #{MapUtil.get(consumerUnit,:a7_city) |> StringUtil.trim()}/
+    #{MapUtil.get(consumerUnit,:a6_uf) |> StringUtil.trim()} - CEP: 
+    #{MapUtil.get(consumerUnit,:a5_cep) |> StringUtil.trim()}
+    """
   end
   
   

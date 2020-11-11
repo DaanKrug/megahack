@@ -99,6 +99,11 @@ const routes: Routes = [
 	  						 .then(m => m.ClientModule), 
 	canActivate: [UserServiceRouter] 
   },
+  { path: 'consumerunits',
+	loadChildren: () => import('./management/mod_cpfl/consumerunit/consumerunit.module')
+	                         .then(m => m.ConsumerunitModule), 
+	canActivate: [UserServiceRouter] 
+  },
   { path: 'solicitations',
 	loadChildren: () => import('./management/mod_cpfl/solicitation/solicitation.module')
 	  					     .then(m => m.SolicitationModule), 

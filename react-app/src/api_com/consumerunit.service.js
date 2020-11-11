@@ -14,6 +14,16 @@ const ConsumerUnitService = {
 		return BaseCrudService.makeRequestToAPI(url,'post',{})
 						      .then(response => { return response; });
 	},
+	registerReBinding(cpf){
+		const url = ConsumerUnitService.getUrlBase();
+		return BaseCrudService.makeRequestToAPI(url,'put',{a3_cpf: cpf})
+						      .then(response => { return response; });
+	},
+	registerReBindingByConsumerUnitId(id){
+		const url = ConsumerUnitService.getUrlBase() + '/' + id;
+		return BaseCrudService.makeRequestToAPI(url,'put',{})
+						      .then(response => { return response; });
+	},
 };
 export default ConsumerUnitService;
 
