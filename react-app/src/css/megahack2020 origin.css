@@ -16,10 +16,10 @@ html, body{
     background-color: #fff !important;
 }
 .card, .nav-link:hover, .nav-link.active{
-	border: 1px solid #ffffff !important;
+	border: 1px solid #7bccdf !important;
 }
 .header, .nav-link.active, .card-header, .modal-header, .wizard-tab{
-    background-color: #FFA149 !important;
+    background-color: #1c99b5 !important;
 }
 .nav-link:hover, .destak,
 .list-group-item-action:hover, .dropdown-item:hover,

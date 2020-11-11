@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans&family=Poppins&family=Ubuntu:wght@300&display=swap');
 .rsc{
 	margin-top: 0.3em;
 }
@@ -18,23 +19,29 @@
 .rsc-ts-user div{
 	float: right;
 }
+
 .chatContainer{
-    background: #f5f8fb;
+    background: #ffffff;
     border-radius: .8em;
-    box-shadow: 0 .9em 1.4em 0 rgba(0,0,0,0.25);
-    font-family: Ubuntu;
     overflow: hidden;
+    margin-bottom: 10px;
     width: 20em;
     height: 27em;
     z-index: 999;
+    box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
+    -webkit-box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
+-moz-box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
+
 }
 .chatContainerHeader{
-    display: block;
-    height: 2.5em;
-    padding: 0.4em 1em;
-    text-align: left;
-    font-size: 1.2rem;
+    padding: 10px 20px;
+    font-weight: 600;
+    display: flex;
+    font-size: 16px;
+    justify-content: center;
+    margin: auto;
 }
+
 .chatMsgContainer{
     display: block;
     clear: both;
@@ -56,12 +63,11 @@
 }
 .botIconContainer, .userIconContainer{
 	display: inline-block;
-    padding: 0.3em;
+    padding: 0.5em;
 }
 .botIcon, .userIcon,
 .botMsg, .userMsg{
 	animation: 0.3s ease 0s 1 normal forwards running gZmgDU;
-	box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 2px 0px;
 }
 .botIcon, .userIcon{
     border-radius: 45% 45% 0 45%;
@@ -81,9 +87,12 @@
     padding: .4em;
 }
 .botMsg{
-    background: #c9ff00;
+    background: #ffe1c5;
+    padding: 10px 15px;
+    font-family: Open Sans, sans-serif;
     border-radius: 1.4em 1.4em 1.4em 0;
     color: rgb(34, 34, 34);
+    border: 1px solid #ffa149;
 }
 .userMsg{
     background: rgb(75, 227, 200);
@@ -95,7 +104,7 @@
 	max-width: calc(90% - 3em);
 }
 .chatMsgContainerOptions .botMsg{
-	background: #ffcc00;
+	background: #ffa149;
 	cursor: pointer;
 	border-radius: 1.4em 1.4em 1.4em 1.4em;
 	margin-left: .4em;

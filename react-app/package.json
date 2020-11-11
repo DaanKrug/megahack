@@ -12,7 +12,6 @@
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.0",
     "react-scripts": "3.4.4",
-    "react-simple-chatbot": "^0.6.1",
     "styled-components": "^5.2.0",
     "svg-gauge": "^1.0.6"
   },
