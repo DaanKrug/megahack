@@ -32,6 +32,9 @@ import { PageMenuService } from '../management/pagemenu/pagemenu.service';
 import { PageMenuItemService } from '../management/pagemenu/pagemenuitem/pagemenuitem.service';
 import { PageMenuItemFileService } 
        from '../management/pagemenu/pagemenuitem/pagemenuitemfile/pagemenuitemfile.service';
+       
+import { ClientService } from '../management/mod_cpfl/client/client.service';
+import { SolicitationService } from '../management/mod_cpfl/solicitation/solicitation.service';
 
 
 export class BaseCrudFilterComponent extends BaseCrudComponent implements OnInit, OnDestroy{
@@ -49,6 +52,8 @@ export class BaseCrudFilterComponent extends BaseCrudComponent implements OnInit
 	pageMenuService: PageMenuService;
 	pageMenuItemService: PageMenuItemService;
 	pageMenuItemFileService: PageMenuItemFileService;
+	clientService: ClientService;
+	solicitationService: SolicitationService;
 
     modulesNames: string[];
     activatedServices: any[];
@@ -241,6 +246,14 @@ export class BaseCrudFilterComponent extends BaseCrudComponent implements OnInit
 		if(toAactivateServices.includes('pagemenuitemfile')){
 			this.pageMenuItemFileService = new PageMenuItemFileService(this.http);
 			this.injectServiceDependencies(this.pageMenuItemFileService);
+		}
+		if(toAactivateServices.includes('client')){
+			this.clientService = new ClientService(this.http);
+			this.injectServiceDependencies(this.clientService);
+		}
+		if(toAactivateServices.includes('solicitation')){
+			this.solicitationService = new SolicitationService(this.http);
+			this.injectServiceDependencies(this.solicitationService);
 		}
 		this.servicesInitialized = true;
 	}

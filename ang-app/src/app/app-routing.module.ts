@@ -94,6 +94,16 @@ const routes: Routes = [
 	                         .then(m => m.PageMenuItemFileModule), 
 	canActivate: [UserServiceRouter] 
   },
+  { path: 'clients',
+	loadChildren: () => import('./management/mod_cpfl/client/client.module')
+	  						 .then(m => m.ClientModule), 
+	canActivate: [UserServiceRouter] 
+  },
+  { path: 'solicitations',
+	loadChildren: () => import('./management/mod_cpfl/solicitation/solicitation.module')
+	  					     .then(m => m.SolicitationModule), 
+	canActivate: [UserServiceRouter] 
+  },
   { path: '**',redirectTo: '/',pathMatch: 'full' }
 ];
 

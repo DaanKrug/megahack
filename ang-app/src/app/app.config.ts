@@ -4,12 +4,15 @@ export class AppConfig {
 		'home','mailerconfigs','modules','appconfigs','s3configs',
 		'simplemails','users','applogs','images','files',
 		'pagemenus','pagemenuitems','pagemenuitemfiles',
+		'clients','solicitations',
 	];
 	
 	static categories = [
 		['modules',                                ['admin_master']],
 	    ['appconfigs',                             ['admin_master']],
 	    ['s3configs',                              ['admin_master']],
+	    ['clients',                                ['admin_master','admin','system_auditor']],
+	    ['solicitations',                          ['admin_master','admin','system_auditor']],
 		['mailerconfigs',                          ['admin_master','admin','system_auditor']],
 		['simplemails',                            ['admin_master','admin','system_auditor']],
 		['users',                                  ['admin_master','admin','system_auditor']],

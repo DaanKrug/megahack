@@ -256,126 +256,37 @@ defmodule ExApp.MessagesUtil do
                                  <strong>Comunicação/Acesso Externa</strong>.
                                  """)
       (messageCode == 100148) -> ReturnUtil.getValidationResult(100148,
-                                 "Falha ao criar <strong>Diagnóstico Câncer</strong>.")
+                                 "Falha ao criar <strong>Cliente</strong>.")
       (messageCode == 100149) -> ReturnUtil.getValidationResult(100149,
-                                 "Falha ao alterar <strong>Diagnóstico Câncer</strong>.")
+                                 "Falha ao alterar <strong>Cliente</strong>.")
       (messageCode == 100150) -> ReturnUtil.getValidationResult(100150,
-                                 "Falha ao criar <strong>Tipo de Câncer</strong>.")
+                                 "<strong>Cliente</strong> informado não existe.")
       (messageCode == 100151) -> ReturnUtil.getValidationResult(100151,
-                                 "Falha ao alterar <strong>Tipo de Câncer</strong>.")
+                                 "Falha ao criar <strong>Solicitação de Nova Ligação</strong>.")
       (messageCode == 100152) -> ReturnUtil.getValidationResult(100152,
-                                 "<strong>Tipo de Câncer</strong> informado não existe.")
+                                 "Falha ao alterar <strong>Solicitação de Nova Ligação</strong>.")
       (messageCode == 100153) -> ReturnUtil.getValidationResult(100153,
                                  """
-                                 <strong>Tipo de Câncer</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Nível Um Estadiamento</strong> vinculado.
-                                 """)     
+                                 <strong>Cliente</strong> não pode ser excluído pois tem 
+                                 <strong>solicitação de nova ligação</strong> vinculada.
+                                 """)
       (messageCode == 100154) -> ReturnUtil.getValidationResult(100154,
-                                 "Falha ao criar <strong>Nível Um Estadiamento</strong>.")
+                                 "Falha ao criar <strong>Unidade Consumidora</strong>.")
       (messageCode == 100155) -> ReturnUtil.getValidationResult(100155,
-                                 "Falha ao alterar <strong>Nível Um Estadiamento</strong>.")  
+                                 "Falha ao alterar <strong>Unidade Consumidora</strong>.")
       (messageCode == 100156) -> ReturnUtil.getValidationResult(100156,
-                                 """
-                                 <strong>Nível Um Estadiamento</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Nível Dois Estadiamento</strong> vinculado.
-                                 """) 
+                                 "<strong>Unidade Consumidora</strong> não encontrada para o CPF.")
       (messageCode == 100157) -> ReturnUtil.getValidationResult(100157,
-                                 "<strong>Nível Um Estadiamento</strong> informado não existe.")
+                                 "<strong>Unidade Consumidora</strong> não encontrada para o CNPJ.")
       (messageCode == 100158) -> ReturnUtil.getValidationResult(100158,
-                                 "Falha ao criar <strong>Nível Dois Estadiamento</strong>.")
+                                 """
+                                 Falta de Energia registrada com sucesso para a 
+                                 Unidade Consumidora <strong>Enum.at(parameters,0)</strong>.
+                                 <br/>
+                                 Seu protocolo de atendimento é <strong>Enum.at(parameters,1)</strong>
+                                 """)
       (messageCode == 100159) -> ReturnUtil.getValidationResult(100159,
-                                 "Falha ao alterar <strong>Nível Dois Estadiamento</strong>.")
-      (messageCode == 100160) -> ReturnUtil.getValidationResult(100160,
-                                 """
-                                 <strong>Tipo de Câncer</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Diagnóstico Câncer</strong> vinculado.
-                                 """) 
-      (messageCode == 100161) -> ReturnUtil.getValidationResult(100161,
-                                 "Falha ao criar <strong>Informação Complementar</strong>.")
-      (messageCode == 100162) -> ReturnUtil.getValidationResult(100162,
-                                 "Falha ao alterar <strong>Informação Complementar</strong>.")
-      (messageCode == 100163) -> ReturnUtil.getValidationResult(100163,
-                                 "Falha ao criar <strong>Sintoma de Câncer</strong>.")
-      (messageCode == 100164) -> ReturnUtil.getValidationResult(100164,
-                                 "Falha ao alterar <strong>Sintoma de Câncer</strong>.")
-      (messageCode == 100165) -> ReturnUtil.getValidationResult(100165,
-                                 "Falha ao criar <strong>Faixa Etária</strong>.")
-      (messageCode == 100166) -> ReturnUtil.getValidationResult(100166,
-                                 "Falha ao alterar <strong>Faixa Etária</strong>.")  
-      (messageCode == 100167) -> ReturnUtil.getValidationResult(100167,
-                                 "Falha ao criar <strong>Fator de Risco Câncer</strong>.")
-      (messageCode == 100168) -> ReturnUtil.getValidationResult(100168,
-                                 "Falha ao alterar <strong>Fator de Risco Câncer</strong>.") 
-      (messageCode == 100169) -> ReturnUtil.getValidationResult(100169,
-                                 """
-                                 Já existe uma <strong>Faixa Etária</strong> 
-                                 que compreende toda ou parte da faixa etária informada.
-                                 """)
-      (messageCode == 100170) -> ReturnUtil.getValidationResult(100170,
-                                 "<strong>Tipo de Câncer</strong> informado não existe.") 
-      (messageCode == 100171) -> ReturnUtil.getValidationResult(100171,
-                                 "Falha ao criar <strong>Sintoma Tipo de Câncer</strong>.")
-      (messageCode == 100172) -> ReturnUtil.getValidationResult(100172,
-                                 "Falha ao alterar <strong>Sintoma Tipo de Câncer</strong>.") 
-      (messageCode == 100173) -> ReturnUtil.getValidationResult(100173,
-                                 "<strong>Sintoma de Câncer</strong> informado não existe.") 
-      (messageCode == 100174) -> ReturnUtil.getValidationResult(100174,
-                                 """
-                                 <strong>Tipo de Câncer</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Sintoma Tipo de Câncer</strong> vinculado.
-                                 """) 
-      (messageCode == 100175) -> ReturnUtil.getValidationResult(100175,
-                                 """
-                                 <strong>Sintoma de Câncer</strong> em questão não pode ser excluído,
-                                 pois está vinculado a <strong>Tipo de Câncer</strong>.
-                                 """)  
-      (messageCode == 100176) -> ReturnUtil.getValidationResult(100176,
-                                 """
-                                 <strong>Sintoma de Câncer</strong> já está vinculado 
-                                 ao <strong>Tipo de Câncer</strong> em questão.
-                                 """)  
-      (messageCode == 100177) -> ReturnUtil.getValidationResult(100177,
-                                 "<strong>Fator de Risco Câncer</strong> informado não existe.") 
-      (messageCode == 100178) -> ReturnUtil.getValidationResult(100178,
-                                 "Falha ao criar <strong>Fator De Risco para Tipo De Câncer</strong>.")
-      (messageCode == 100179) -> ReturnUtil.getValidationResult(100179,
-                                 "Falha ao alterar <strong>Fator De Risco para Tipo De Câncer</strong>.") 
-      (messageCode == 100180) -> ReturnUtil.getValidationResult(100180,
-                                 """
-                                 <strong>Fator De Risco Câncer</strong> já está vinculado 
-                                 ao <strong>Tipo de Câncer</strong> em questão.
-                                 """) 
-      (messageCode == 100181) -> ReturnUtil.getValidationResult(100181,
-                                 """
-                                 <strong>Tipo de Câncer</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Fator De Risco Câncer</strong> vinculado.
-                                 """) 
-      (messageCode == 100182) -> ReturnUtil.getValidationResult(100182,
-                                 """
-                                 <strong>Fator De Risco Câncer</strong> em questão não pode ser excluído,
-                                 pois está vinculado a <strong>Tipo de Câncer</strong>.
-                                 """)
-      (messageCode == 100183) -> ReturnUtil.getValidationResult(100183,
-                                 """
-                                 <strong>Faixa Etária</strong> em questão não pode ser excluída,
-                                 pois está vinculada a <strong>Tipo de Câncer</strong>.
-                                 """)
-      (messageCode == 100184) -> ReturnUtil.getValidationResult(100184,
-                                 """
-                                 <strong>Tipo de Câncer</strong> em questão não pode ser excluído,
-                                 pois tem <strong>Faixa Etária</strong> vinculada.
-                                 """)   
-      (messageCode == 100185) -> ReturnUtil.getValidationResult(100185,
-                                 """
-                                 <strong>Faixa Etária</strong> já está vinculada
-                                 ao <strong>Tipo de Câncer</strong> em questão.
-                                 """)  
-      (messageCode == 100186) -> ReturnUtil.getValidationResult(100186,
-                                 "<strong>Faixa Etária</strong> informada não existe.") 
-      (messageCode == 100187) -> ReturnUtil.getValidationResult(100187,
-                                 "Falha ao criar <strong>Faixa Etária para Tipo De Câncer</strong>.")
-      (messageCode == 100188) -> ReturnUtil.getValidationResult(100188,
-                                 "Falha ao alterar <strong>Faixa Etária para Tipo De Câncer</strong>.") 
+                                 "<strong>Unidade Consumidora</strong> informada não foi encontrada.")
       true -> systemMessage(0)
     end
   end

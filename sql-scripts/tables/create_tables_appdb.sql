@@ -154,3 +154,96 @@ ALTER TABLE `additionaluserinfo` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_I
 
 
 
+
+CREATE TABLE `client` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_name` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a2_type` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a3_cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a4_cnpj` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a5_birthdate` datetime DEFAULT NULL,
+     `a6_doctype` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+     `a7_document` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+     `a8_gender` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a9_email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+     `a10_phone` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a11_cep` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a12_uf` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a13_city` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a14_street` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a15_number` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a16_compl1type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a17_compl1desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a18_compl2type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a19_compl2desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `client` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `client` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+CREATE TABLE `solicitation` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_name` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a3_cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a4_cnpj` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a2_caracteristic` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a5_cep` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a6_uf` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a7_city` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a8_street` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a9_number` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a10_compl1type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a11_compl1desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a12_compl2type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a13_compl2desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a14_reference` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a15_clientid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `active` tinyint(1) NOT NULL DEFAULT 0,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `solicitation` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `solicitation` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+CREATE TABLE `consumerunit` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_name` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a3_cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a4_cnpj` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+     `a2_caracteristic` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a5_cep` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a6_uf` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+     `a7_city` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a8_street` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a9_number` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+     `a10_compl1type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a11_compl1desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a12_compl2type` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a13_compl2desc` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a14_reference` varchar(250) COLLATE utf8mb4_general_ci NOT NULL,
+     `a15_clientid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `a16_solicitationid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `consumerunit` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `consumerunit` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;

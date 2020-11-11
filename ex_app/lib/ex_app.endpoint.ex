@@ -23,6 +23,9 @@ defmodule ExApp.Endpoint do
   alias ExApp.PageMenuItemController
   alias ExApp.PageMenuItemFileController
   alias ExApp.AdditionaluserinfoController
+  alias ExApp.ClientController
+  alias ExApp.SolicitationController
+  alias ExApp.ConsumerunitController
   
   
   plug(Plug.Logger, log: :debug)
@@ -48,7 +51,9 @@ defmodule ExApp.Endpoint do
   forward("/pagemenuitems",                    to: PageMenuItemController)
   forward("/pagemenuitemfiles",                to: PageMenuItemFileController)
   forward("/additionaluserinfos",              to: AdditionaluserinfoController)
-
+  forward("/clients",                          to: ClientController)
+  forward("/solicitations",                    to: SolicitationController)
+  forward("/consumerunits",                    to: ConsumerunitController)
   
   
   match _ do

@@ -16,7 +16,7 @@ import SicinBot from './bot/sicinbot.js';
 //BaseBrowserStorageService.setSessionItem('_remote_server_','true');
 
 // change to 'true' to show API connection errors
-BaseBrowserStorageService.setSessionItem('_debugg_mode_on_','false');
+BaseBrowserStorageService.setSessionItem('_debugg_mode_on_','true');
 
 
 ReactDOM.render(

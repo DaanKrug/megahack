@@ -1,0 +1,479 @@
+<form-toolbar [title]="title" 
+			  [editing]="editing" 
+			  [searchForm]="searchForm" 
+			  (onSearchFormSubmitEmitter)="onSearchFormSubmit()" 
+			  (listDataEmitter)="listData()"
+			  (listDataNoCacheEmitter)="listDataNoCache()"
+			  [auditingExclusions]="auditingExclusions"
+			  [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
+			  (auditListEmitter)="auditList()" 
+			  (normalListEmitter)="normalList()"
+			  [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('client_write'))"
+			  (addObjectEmitter)="addObject()">
+</form-toolbar>
+
+<ng-template [ngIf]="editing" 
+             [ngIfElse]="listObjects">
+	<section aria-label="cadastro e alteracao de Clientes" 
+	         class="dataForm"> 
+	    <rich-tab-bar [objects]="[
+									   {value: '0', label: 'Dados Gerais (*)', title: 'Dados Gerais'},
+									   {value: '1', label: 'Endereço (*)', title: 'Endereço'},
+									   {value: '2', label: 'Complemento do Endereço', title: 'Complemento do Endereço'}
+							      ]" 
+				      [selectedTab]="tab" 
+				      (setTabEmitter)="setTab($event)">
+		</rich-tab-bar> 
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()">   	
+			<div class="{{ tab == 0 ? '' : 'none' }}">	
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Nome/Razão Social (*)" 
+				                 titlee="Nome/Razão Social"
+				                 maxchars="250"
+				                 formControlName="a1_name" 
+				                 widthPerc="97" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+   				<rich-input-select emptyLabel="-- Selecione --" 
+				                   label="Tipo Pessoa (*)" 
+				                   titlee="Tipo Pessoa"
+   				                   [objects]="a2_types" 
+   				                   formControlName="a2_type" 
+   				                   widthPerc="24" 
+   				                   (valueChangedEmitter)="setSelectedPersonType($event)"
+   				                   ngDefaultControl>
+   				</rich-input-select>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="CPF (*)" 
+				                 titlee="CPF"
+				                 maxchars="20"
+				                 formControlName="a3_cpf" 
+				                 widthPerc="24" 
+				                 placeholderr="" 
+				                 [noRender]="selectedPersonType != 'PF'"
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="CNPJ (*)" 
+				                 titlee="CNPJ"
+				                 maxchars="20"
+				                 formControlName="a4_cnpj" 
+				                 widthPerc="24" 
+				                 placeholderr="" 
+				                 [noRender]="selectedPersonType != 'PJ'"
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-select emptyLabel="-- Selecione --" 
+				                   label="T. Outro Doc. (*)" 
+				                   titlee="Tipo Outro Documento"
+   				                   [objects]="a6_doctypes" 
+   				                   formControlName="a6_doctype" 
+   				                   widthPerc="24" 
+   				                   ngDefaultControl>
+   				</rich-input-select>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Outro Doc. (*)" 
+				                 titlee="Outro Documento"
+				                 maxchars="30"
+				                 formControlName="a7_document" 
+				                 widthPerc="24" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-date-picker [formGroup]="dataForm" 
+				                  label="Dt. Nasc. (*)" 
+				                  titlee="Data Nascimento" 
+				                  placeholderr=""
+				                  formControlName="a5_birthdate" 
+				                  widthPerc="23" 
+				                  ngDefaultControl>
+				</rich-date-picker>
+   				<rich-input-select emptyLabel="-- Selecione --" 
+				                   label="Sexo/Gênero (*)" 
+				                   titlee="Sexo/Gênero"
+   				                   [objects]="a8_genders" 
+   				                   formControlName="a8_gender" 
+   				                   widthPerc="33" 
+   				                   ngDefaultControl>
+   				</rich-input-select>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="E-mail (*)" 
+				                 titlee="E-mail"
+				                 maxchars="100"
+				                 formControlName="a9_email" 
+				                 widthPerc="38" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Telefone(s) (*)" 
+				                 titlee="Telefone(s)"
+				                 maxchars="250"
+				                 formControlName="a10_phone" 
+				                 widthPerc="96" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+			</div>
+			<div class="{{ tab == 1 ? '' : 'none' }}">
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="CEP (*)" 
+				                 titlee="CEP"
+				                 maxchars="10"
+				                 formControlName="a11_cep" 
+				                 widthPerc="19" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Estado/UF (*)" 
+				                 titlee="Estado/UF"
+				                 maxchars="2"
+				                 formControlName="a12_uf" 
+				                 widthPerc="19" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Cidade (*)" 
+				                 titlee="Cidade"
+				                 maxchars="250"
+				                 formControlName="a13_city" 
+				                 widthPerc="60" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Logradouro (*)" 
+				                 titlee="Logradouro"
+				                 maxchars="250"
+				                 formControlName="a14_street" 
+				                 widthPerc="69" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Número" 
+				                 titlee="Número"
+				                 maxchars="10"
+				                 formControlName="a15_number" 
+				                 widthPerc="29" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+			</div>
+			<div class="{{ tab == 2 ? '' : 'none' }}">
+   				<rich-input-select emptyLabel="-- Selecione --" 
+				                   label="Complemento 1 Tipo" 
+				                   titlee="Complemento 1 Tipo"
+   				                   [objects]="a16_compl1types" 
+   				                   formControlName="a16_compl1type" 
+   				                   widthPerc="29" 
+   				                   ngDefaultControl>
+   				</rich-input-select>
+				<rich-input-text [formGroup]="dataForm" 
+				                 label="Complemento 1 Descrição" 
+				                 titlee="Complemento 1 Descrição"
+				                 maxchars="250"
+				                 formControlName="a17_compl1desc" 
+				                 widthPerc="69" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+   				<rich-input-select emptyLabel="-- Selecione --" 
+				                   label="Complemento 2 Tipo" 
+				                   titlee="Complemento 2 Tipo"
+   				                   [objects]="a18_compl2types" 
+   				                   formControlName="a18_compl2type" 
+   				                   widthPerc="29" 
+   				                   ngDefaultControl>
+   				</rich-input-select>
+   				<rich-input-text [formGroup]="dataForm" 
+				                 label="Complemento 2 Descrição" 
+				                 titlee="Complemento 2 Descrição"
+				                 maxchars="250"
+				                 formControlName="a19_compl2desc" 
+				                 widthPerc="69" 
+				                 placeholderr="" 
+				                 ngDefaultControl>
+				</rich-input-text>
+				<div class="clear"></div>
+			</div> 
+			<form-action [validationMessages]="validationMessages" 
+			             [processValidation]="processValidation" 
+			             (cancelDataEmitter)="cancelData()">
+			</form-action>
+		</form>
+	</section>
+</ng-template>
+
+<ng-template #listObjects>
+	<section aria-label="lista dos Clientes">
+		<table class="table" 
+		       *ngIf="objects as listOfObject" 
+		       mdbTable> 
+			<thead class="black white-text">
+				<tr>
+					<th scope="col" 
+					    style="width: auto;" 
+					    title="Nome/Razão Social" 
+					    aria-label="Nome/Razão Social">
+						Nome/Razão Social
+					</th>
+					<th scope="col" 
+					    style="width: 7rem;" 
+					    title="CPF/CNPJ" 
+					    aria-label="CPF/CNPJ">
+						CPF/CNPJ
+					</th>
+					<th scope="col" 
+					    style="width: 10rem;" 
+					    title="E-mail" 
+					    aria-label="E-mail">
+						E-mail
+					</th>
+					<th scope="col" 
+					    style="width: 10rem;" 
+					    title="Telefone(s)" 
+					    aria-label="Telefone(s)">
+						Telefone(s)
+					</th>
+					<th scope="col" 
+					    style="width: 9em;" 
+					    *ngIf="!auditingExclusions">
+					    A&ccedil;&otilde;es
+					</th>
+					<th scope="col" 
+					    style="width: 5em;" 
+					    *ngIf="auditingExclusions">
+					    A&ccedil;&otilde;es
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr mdbTableCol 
+				    *ngFor="let client of objects; trackBy: trackById">
+					<td class="text" 
+					    [innerHtml]="client.a1_name">
+					</td>
+					<td class="number">
+						{{ client.a3_cpf }}{{ client.a4_cnpj }}
+					</td>
+					<td class="text" 
+					    [innerHtml]="client.a9_email">
+					</td>
+					<td class="text" 
+					    [innerHtml]="client.a10_phone">
+					</td>
+					<td class="actions">
+						<div class="buttons">
+							<button class="btn btn-primary clickable" 
+			          		        type="button" 
+			          		        *ngIf="!auditingExclusions"
+			            			placement="left" 
+			            			ngbTooltip="Solicitações de Nova Ligação" 
+			            			aria-label="Solicitações de Nova Ligação"
+			            		    (click)="toSolicitations(client.id);">
+			            		<i class="fas fa-charging-station"></i>
+			            	</button>
+							<edit-delete-action [auditingExclusions]="auditingExclusions" 
+							                    [object]="client" 
+							                    [logged]="logged"
+							                    [noAction]="!(['admin_master'].includes(logged.category))
+								                              && !(['admin'].includes(logged.category) 
+								                              && permissions.includes('client_write'))" 
+							                    (editObjectEmitter)="editObject($event)"
+							                    [objectDetail]="objectDetail" 
+							                    (showObjectEmitter)="showObject($event)"
+							                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
+							                    (deleteObjectEmitter)="deleteObject($event)"
+							                    [objectUnDeleteConfirmation]="objectUnDeleteConfirmation" 
+							                    (unDeleteObjectEmitter)="unDeleteObject($event)">
+							</edit-delete-action>
+						</div>
+					</td>
+				</tr>
+				<tr *ngIf="emptyArray(objects)"
+				    class="summary">
+					<td colspan="5" 
+					    class="text navigationBottom">
+						<span>
+							<em>Nenhum Cliente Cadastrado/Encontrado</em>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="5" 
+					    class="navigationBottom">
+						<table-navigator [pages]="pages" 
+						                 [selectedPage]="selectedPage" 
+						                 [previousPageDisabled]="previousPageDisabled" 
+						                 [nextPageDisabled]="nextPageDisabled" 
+						                 [rowsPerPage]="rowsPerPage" 
+						                 [totalPages]="totalPages" 
+						                 [totalRows]="totalRows"
+						                 (previousPageEmitter)="previousPage()" 
+						                 (setPageEmitter)="setPage($event)"
+						                 (nextPageEmitter)="nextPage()">
+						</table-navigator>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+</ng-template>
+
+<ng-template #selectedObjectTemplate>
+	<tr>
+		<th scope="row" 
+ 		    class="text" 
+ 		    style="width: 12em;"
+ 		    title="Nome/Razão Social"
+ 		    aria-label="Nome/Razão Social">
+ 			Nome/Razão Social:
+ 		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a1_name">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="CPF"
+		    aria-label="CPF">
+			CPF/CNPJ:
+		</th>
+		<td class="text noBorderRight">
+			{{ selectedObject.a3_cpf }}{{ selectedObject.a4_cnpj }}
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Data Nascimento"
+		    aria-label="Data Nascimento">
+			Dt. Nasc.:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a5_birthdateLabel">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Tipo Outro Documento"
+		    aria-label="Tipo Outro Documento">
+			Tipo Outro Doc.:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="getLabelForKey(a6_doctypes,selectedObject.a6_doctype)">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Outro Documento"
+		    aria-label="Outro Documento">
+			Outro Documento:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a7_document">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Sexo/Gênero"
+		    aria-label="Sexo/Gênero">
+			Sexo/Gênero:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="getLabelForKey(a8_genders,selectedObject.a8_gender)">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="E-mail"
+		    aria-label="E-mail">
+			E-mail:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a9_email">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Telefone(s)"
+		    aria-label="Telefone(s)">
+			Telefone(s):
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.a10_phone">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Endereço"
+		    aria-label="Endereço">
+			Endereço:
+		</th>
+		<td class="text noBorderRight">
+			{{ selectedObject.a14_street }}, 
+			{{ emptyString(selectedObject.a15_number) ? 's/n' : selectedObject.a15_number }},
+			{{ emptyString(selectedObject.a16_compl1type) 
+			   || emptyString(selectedObject.a17_compl1desc)
+			     ? '' : getLabelForKey(a16_compl1types,selectedObject.a16_compl1type) }}
+			{{ emptyString(selectedObject.a16_compl1type) 
+			   || emptyString(selectedObject.a17_compl1desc) 
+			     ? '' : selectedObject.a17_compl1desc + ',' }}
+			{{ emptyString(selectedObject.a18_compl2type) 
+			   || emptyString(selectedObject.a19_compl2desc) 
+			     ? '' : getLabelForKey(a18_compl2types,selectedObject.a18_compl2type) }}
+			{{ emptyString(selectedObject.a18_compl2type) 
+			   || emptyString(selectedObject.a19_compl2desc)
+			     ? '' : selectedObject.a19_compl2desc + ',' }}
+			{{ selectedObject.a13_city }}/{{ selectedObject.a12_uf }},
+			CEP: {{ selectedObject.a11_cep }}
+		</td>
+	</tr>
+</ng-template>
+
+<ng-template #objectDetail 
+             let-modal>
+	<delete-confirmation label="do Cliente" 
+	                     [selectedObject]="selectedObject" 
+	                     info="true" 
+	                     [templateOutlet]="selectedObjectTemplate" 
+	                     (cancelDataEmitter)="showObject()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Cliente" 
+	                     [selectedObject]="selectedObject" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>
+
+<ng-template #objectUnDeleteConfirmation 
+             let-modal>
+	<delete-confirmation label="Cliente" 
+	                     [selectedObject]="selectedObject" 
+	                     redo="true" 
+	                     [auditingExclusions]="auditingExclusions" 
+	                     [templateOutlet]="selectedObjectTemplate"
+	                     (confirmDeleteObjectEmitter)="confirmUnDeleteObject($event)" 
+	                     (cancelDataEmitter)="cancelData()">
+	</delete-confirmation>
+</ng-template>

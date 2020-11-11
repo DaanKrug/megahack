@@ -134,7 +134,11 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 		this.subscriptions[i++] = this.eventEmitterService.get('pagemenuitems')
 		                              .subscribe(data => {this.pagemenuitemsView(data.object);});
 		this.subscriptions[i++] = this.eventEmitterService.get('pagemenuitemfiles')
-		                              .subscribe(data => {this.pagemenuitemfilesView(data.object);});		
+		                              .subscribe(data => {this.pagemenuitemfilesView(data.object);});
+		this.subscriptions[i++] = this.eventEmitterService.get('clients')
+		                              .subscribe(data => {this.clientsView();});
+		this.subscriptions[i++] = this.eventEmitterService.get('solicitations')
+		                              .subscribe(data => {this.solicitationsView(data.object);});
 	}
 	
 	loadConfig(){
@@ -313,6 +317,20 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 		title += 'Item Menu: ' + pageMenuItem.name;
 		title += this.viewTitleSeparator + 'Arquivos';
 		this.navigateTo('pagemenuitemfiles',title); 
+	}
+	
+	clientsView(){ 
+		this.navigateTo('clients','Clientes'); 
+	}
+	
+	solicitationsView(client){ 
+		this.storageService.clear();
+		this.storageService.put(client);
+		var title = 'Solicitações de Novas Ligações';
+		if(!this.emptyObject(client)){
+			title = 'Cliente: ' + client.a1_name +  this.viewTitleSeparator + title;
+		}
+		this.navigateTo('solicitations',title); 
 	}
 	
 	applogsView(){ this.navigateTo('applogs','Logs da Aplica&ccedil;&atilde;o'); }

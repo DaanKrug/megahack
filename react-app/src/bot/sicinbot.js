@@ -34,7 +34,7 @@ export default class SicinBot extends React.Component {
 			return
 		}
 		this.setState({lastClickTime: now});
-		if(msgResponse === 'Nova Consulta' && valueResponse === -1){
+		if(msgResponse === 'Sim, Realizar Nova Operação' && valueResponse === -1){
 			botia.reset();
 			this.reset();
 			return;
@@ -46,22 +46,23 @@ export default class SicinBot extends React.Component {
 	}
 	
 	loadNextSteps(stepId,msgResponse,valueResponse){
-		if(!(botia.wasLoaded())){
-			setTimeout(() => {this.loadNextSteps(stepId,msgResponse,valueResponse);},10);
+		if(botia.waiting){
+			setTimeout(() => {this.loadNextSteps(stepId,msgResponse,valueResponse);},100);
 			return;
 		}
-		const nextSteps = botia.getNextSteps(this.state.actualStep,stepId,msgResponse,valueResponse);
+		const newStep = this.state.actualStep + (botia.blockWalking ? 0 : 1);
+		const nextSteps = botia.getNextSteps(newStep,msgResponse,valueResponse);
 		let msgs = this.state.msgs.slice();
 		msgs = msgs.concat(nextSteps);
-		if(botia.finished){
-			msgs = msgs.concat(botia.diagnoseResults(msgs));
-		}
-		const newStep = nextSteps[nextSteps.length - 1].id;
 		this.setState({
 			key: new Date().getTime(),
 			actualStep: newStep,
 			msgs: msgs
 		});
+		if(botia.needResume && !botia.blockWalking){
+			setTimeout(() => {this.loadNextSteps(stepId,msgResponse,valueResponse);},100);
+			return;
+		}
 	}
 	
 	getMessageElement(msg,index){
