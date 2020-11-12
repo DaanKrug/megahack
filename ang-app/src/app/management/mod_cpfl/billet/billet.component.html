@@ -8,19 +8,55 @@
 			  [enabledAuditList]="['admin_master','admin','system_auditor'].includes(logged.category)"
 			  (auditListEmitter)="auditList()" 
 			  (normalListEmitter)="normalList()"
-			  [disabledAddNew]="true"
-			  (addObjectEmitter)="addObject()" 
-			  [backToOrigin]="null != selectedClient" 
-			  (backToOriginEmitter)="backToOrigin()">
+			  [disabledAddNew]="!(['admin_master'].includes(logged.category))
+	                              && !(['admin'].includes(logged.category) 
+	                              && permissions.includes('client_write'))"
+			  (addObjectEmitter)="addObject()"    
+			  [backToOrigin]="true" 
+			  (backToOriginEmitter)="backToOrigin()" >
 </form-toolbar>
 
 <ng-template [ngIf]="editing" 
              [ngIfElse]="listObjects">
-
+	<section aria-label="cadastro e alteracao de Fatura Energias" 
+	         class="dataForm"> 
+		<form [formGroup]="dataForm" 
+		      (ngSubmit)="onObjectFormSubmit()">   	
+			<div>
+   				<rich-input-text [formGroup]="dataForm" 
+				                 label="Valor (*)" 
+				                 titlee="Valor" 
+   				                 placeholderr="" 
+   				                 maskk="0*,00" 
+   				                 preserveSpecialCharacters="true"
+   				                 maxchars="11" 
+   				                 minValue="0" 
+   				                 maxValue="99999999" 
+   				                 forNumber="true"
+   				                 formControlName="a3_value" 
+   				                 widthPerc="39" 
+   				                 ngDefaultControl>
+   				</rich-input-text>
+				<rich-date-picker [formGroup]="dataForm" 
+				                  label="Dt. Venc. (*)" 
+				                  titlee="Data Vencimento" 
+				                  placeholderr=""
+				                  formControlName="a4_billingdate" 
+				                  widthPerc="29" 
+				                  ngDefaultControl>
+				</rich-date-picker> 
+				<div class="clear"></div>
+			</div> 
+			<form-action [validationMessages]="validationMessages" 
+			             [processValidation]="processValidation" 
+			             (cancelDataEmitter)="cancelData()">
+			</form-action>
+		</form>
+	</section>
 </ng-template>
 
 <ng-template #listObjects>
-	<section aria-label="lista das Unidades Consumidoras">
+	<section aria-label="lista dos Fatura Energias">
 		<table class="table" 
 		       *ngIf="objects as listOfObject" 
 		       mdbTable> 
@@ -28,24 +64,18 @@
 				<tr>
 					<th scope="col" 
 					    style="width: auto;" 
-					    title="Nome/Razão Social" 
-					    aria-label="Nome/Razão Social">
-						Nome/Razão Social
+					    title="Valor" 
+					    aria-label="Valor">
+						Valor
 					</th>
 					<th scope="col" 
-					    style="width: 7rem;" 
-					    title="CPF/CNPJ" 
-					    aria-label="CPF/CNPJ">
-						CPF/CNPJ
+					    style="width: 12em;" 
+					    title="Data Vencimento" 
+					    aria-label="Data Vencimento">
+						Dt. Venc.
 					</th>
 					<th scope="col" 
-					    style="width: 12rem;" 
-					    title="Característica do Imóvel" 
-					    aria-label="Característica do Imóvel">
-						Característica do Imóvel
-					</th>
-					<th scope="col" 
-					    style="width: 11em;" 
+					    style="width: 9em;" 
 					    *ngIf="!auditingExclusions">
 					    A&ccedil;&otilde;es
 					</th>
@@ -58,34 +88,25 @@
 			</thead>
 			<tbody>
 				<tr mdbTableCol 
-				    *ngFor="let consumerunit of objects; trackBy: trackById">
-					<td class="text" 
-					    [innerHtml]="consumerunit.a1_name">
+				    *ngFor="let billet of objects; trackBy: trackById">
+					<td class="number" 
+					    [innerHtml]="billet.a3_valueLabel">
 					</td>
-					<td class="text">
-						{{ consumerunit.a3_cpf }}{{ consumerunit.a4_cnpj }}
-					</td>
-					<td class="text" 
-					    [innerHtml]="getLabelForKey(a2_caracteristics,consumerunit.a2_caracteristic)">
+					<td class="number" 
+					    [innerHtml]="billet.a4_billingdateLabel">
 					</td>
 					<td class="actions">
 						<div class="buttons">
-							<button class="btn btn-primary clickable" 
-			          		        type="button" 
-			          		        *ngIf="!auditingExclusions"
-			            			placement="left" 
-			            			ngbTooltip="Faturas Energia" 
-			            			aria-label="Faturas Energia"
-			            		    (click)="toBillets(consumerunit.id);">
-			            		<i class="far fa-money-bill-alt"></i>
-			            	</button>
 							<edit-delete-action [auditingExclusions]="auditingExclusions" 
-							                    [object]="consumerunit" 
-							                    [noEdit]="true"
+							                    [object]="billet" 
 							                    [logged]="logged"
 							                    [noAction]="!(['admin_master'].includes(logged.category))
 								                              && !(['admin'].includes(logged.category) 
 								                              && permissions.includes('client_write'))" 
+							                    [lockUnLock]="true"
+							                    (lockEmitter)="lock($event)" 
+							                    (unlockEmitter)="unlock($event)"
+							                    (editObjectEmitter)="editObject($event)"
 							                    [objectDetail]="objectDetail" 
 							                    (showObjectEmitter)="showObject($event)"
 							                    [objectDeleteConfirmation]="objectDeleteConfirmation" 
@@ -98,15 +119,15 @@
 				</tr>
 				<tr *ngIf="emptyArray(objects)"
 				    class="summary">
-					<td colspan="5" 
+					<td colspan="3" 
 					    class="text navigationBottom">
 						<span>
-							<em>Nenhuma Unidade Consumidora Cadastrada/Encontrada</em>
+							<em>Nenhuma Fatura Cadastrada/Encontrada</em>
 						</span>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="5" 
+					<td colspan="3" 
 					    class="navigationBottom">
 						<table-navigator [pages]="pages" 
 						                 [selectedPage]="selectedPage" 
@@ -129,80 +150,43 @@
 <ng-template #selectedObjectTemplate>
 	<tr>
 		<th scope="row" 
- 		    class="text" 
- 		    style="width: 12em;"
- 		    title="Nome/Razão Social"
- 		    aria-label="Nome/Razão Social">
- 			Nome/Razão Social:
- 		</th>
-		<td class="text noBorderRight" 
-		    [innerHtml]="selectedObject.a1_name">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row" 
 		    class="text"
-		    title="CPF/CNPJ"
-		    aria-label="CPF/CNPJ">
-			CPF/CNPJ:
-		</th>
-		<td class="text noBorderRight">
-			{{ selectedObject.a3_cpf }}{{ selectedObject.a4_cnpj }}
-		</td>
-	</tr>
-	<tr>
-		<th scope="row" 
-		    class="text"
-		    title="Característica do Imóvel"
-		    aria-label="Característica do Imóvel">
-			Característica do Imóvel:
+		    title="Valor"
+		    aria-label="Valor"
+		    style="width: 7em;">
+			Valor:
 		</th>
 		<td class="text noBorderRight" 
-		    [innerHtml]="getLabelForKey(a2_caracteristics,selectedObject.a2_caracteristic)">
+		    [innerHtml]="selectedObject.a3_valueLabel">
 		</td>
 	</tr>
 	<tr>
 		<th scope="row" 
 		    class="text"
-		    title="Endereço"
-		    aria-label="Endereço">
-			Endereço:
-		</th>
-		<td class="text noBorderRight">
-		    {{ selectedObject.a8_street }}, 
-			{{ emptyString(selectedObject.a9_number) ? 's/n' : selectedObject.a9_number }},
-			{{ emptyString(selectedObject.a10_compl1type) 
-			   || emptyString(selectedObject.a11_compl1desc)
-			     ? '' : getLabelForKey(a10_compl1types,selectedObject.a10_compl1type) }}
-			{{ emptyString(selectedObject.a10_compl1type) 
-			   || emptyString(selectedObject.a11_compl1desc) 
-			     ? '' : selectedObject.a11_compl1desc + ',' }}
-			{{ emptyString(selectedObject.a12_compl2type) 
-			   || emptyString(selectedObject.a13_compl2desc) 
-			     ? '' : getLabelForKey(a12_compl2types,selectedObject.a12_compl2type) }}
-			{{ emptyString(selectedObject.a12_compl2type) 
-			   || emptyString(selectedObject.a13_compl2desc)
-			     ? '' : selectedObject.a13_compl2desc + ',' }}
-			{{ selectedObject.a7_city }}/{{ selectedObject.a6_uf }},
-			CEP: {{ selectedObject.a5_cep }}
-		</td>
-	</tr>
-	<tr>
-		<th scope="row" 
-		    class="text"
-		    title="Referência"
-		    aria-label="Referência">
-			Referência:
+		    title="Data Vencimento"
+		    aria-label="Data Vencimento">
+			Vencimento:
 		</th>
 		<td class="text noBorderRight" 
-		    [innerHtml]="selectedObject.a14_reference">
+		    [innerHtml]="selectedObject.a4_billingdateLabel">
+		</td>
+	</tr>
+	<tr>
+		<th scope="row" 
+		    class="text"
+		    title="Ativa"
+		    aria-label="Ativa">
+			Ativa:
+		</th>
+		<td class="text noBorderRight" 
+		    [innerHtml]="selectedObject.activeLabel">
 		</td>
 	</tr>
 </ng-template>
 
 <ng-template #objectDetail 
              let-modal>
-	<delete-confirmation label="da Unidade Consumidora" 
+	<delete-confirmation label="da Fatura Energia" 
 	                     [selectedObject]="selectedObject" 
 	                     info="true" 
 	                     [templateOutlet]="selectedObjectTemplate" 
@@ -212,7 +196,7 @@
 
 <ng-template #objectDeleteConfirmation 
              let-modal>
-	<delete-confirmation label="Unidade Consumidora" 
+	<delete-confirmation label="Fatura Energia" 
 	                     [selectedObject]="selectedObject" 
 	                     [auditingExclusions]="auditingExclusions" 
 	                     [templateOutlet]="selectedObjectTemplate"
@@ -223,7 +207,7 @@
 
 <ng-template #objectUnDeleteConfirmation 
              let-modal>
-	<delete-confirmation label="Unidade Consumidora" 
+	<delete-confirmation label="Fatura Energia" 
 	                     [selectedObject]="selectedObject" 
 	                     redo="true" 
 	                     [auditingExclusions]="auditingExclusions" 

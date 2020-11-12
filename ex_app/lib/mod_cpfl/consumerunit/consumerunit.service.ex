@@ -3,10 +3,24 @@ defmodule ExApp.ConsumerunitService do
   use ExApp.BaseServiceSecure
   alias ExApp.App.DAOService
   alias ExApp.DateUtil
+  alias ExApp.StringUtil
   alias ExApp.NumberUtil
   alias ExApp.ResultSetHandler
   alias ExApp.Consumerunit 
   
+  
+  def loadConsumerUnitIdsByCep(cep,clientId) do
+    sql = "select GROUP_CONCAT(id) from consumerunit where a5_cep = ? and a15_clientid <> ?"
+  	resultset = DAOService.load(sql,[cep,clientId])
+  	ids = cond do
+      (nil == resultset or resultset.num_rows == 0) -> nil
+      true -> ResultSetHandler.getColumnValue(resultset,0,0)
+    end
+    cond do
+      (nil == ids or StringUtil.trim(ids) == "") -> "0"
+      true -> ids
+    end
+  end
   
   def loadById(id) do
     sql = """

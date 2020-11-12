@@ -141,6 +141,8 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 		                              .subscribe(data => {this.solicitationsView(data.object);});
 		this.subscriptions[i++] = this.eventEmitterService.get('consumerunits')
 		                              .subscribe(data => {this.consumerunitsView(data.object);});
+		this.subscriptions[i++] = this.eventEmitterService.get('billets')
+		                              .subscribe(data => {this.billetsView(data.object);});
 	}
 	
 	loadConfig(){
@@ -343,6 +345,18 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 			title = 'Cliente: ' + client.a1_name +  this.viewTitleSeparator + title;
 		}
 		this.navigateTo('consumerunits',title); 
+	}
+	
+	billetsView(consumerunit){
+		if(this.emptyObject(consumerunit)){
+			return;
+		}
+		this.storageService.clear();
+		this.storageService.put(consumerunit);
+		var title = 'Unidade Consumidora: ' + consumerunit.id;
+		title += this.viewTitleSeparator;
+		title += 'Faturas Energia';
+		this.navigateTo('billets',title); 
 	}
 	
 	applogsView(){ this.navigateTo('applogs','Logs da Aplica&ccedil;&atilde;o'); }

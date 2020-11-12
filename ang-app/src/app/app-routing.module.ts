@@ -104,6 +104,10 @@ const routes: Routes = [
 	                         .then(m => m.ConsumerunitModule), 
 	canActivate: [UserServiceRouter] 
   },
+  { path: 'billets',
+	loadChildren: () => import('./management/mod_cpfl/billet/billet.module').then(m => m.BilletModule), 
+	canActivate: [UserServiceRouter] 
+  },
   { path: 'solicitations',
 	loadChildren: () => import('./management/mod_cpfl/solicitation/solicitation.module')
 	  					     .then(m => m.SolicitationModule), 

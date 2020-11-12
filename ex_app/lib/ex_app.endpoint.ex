@@ -26,6 +26,9 @@ defmodule ExApp.Endpoint do
   alias ExApp.ClientController
   alias ExApp.SolicitationController
   alias ExApp.ConsumerunitController
+  alias ExApp.FaultreportController
+  alias ExApp.RebindingrequestController
+  alias ExApp.BilletController
   
   
   plug(Plug.Logger, log: :debug)
@@ -54,6 +57,9 @@ defmodule ExApp.Endpoint do
   forward("/clients",                          to: ClientController)
   forward("/solicitations",                    to: SolicitationController)
   forward("/consumerunits",                    to: ConsumerunitController)
+  forward("/faultreports",                     to: FaultreportController)
+  forward("/rebindingrequests",                to: RebindingrequestController)
+  forward("/billets",                          to: BilletController)
   
   
   match _ do

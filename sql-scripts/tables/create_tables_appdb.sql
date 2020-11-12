@@ -247,3 +247,61 @@ CREATE TABLE `consumerunit` (
 ALTER TABLE `consumerunit` ADD PRIMARY KEY (`id`);
    
 ALTER TABLE `consumerunit` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+CREATE TABLE `rebindingrequest` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_clientid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `a2_consumerunitid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `rebindingrequest` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `rebindingrequest` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+CREATE TABLE `faultreport` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_clientid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `a2_consumerunitid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `faultreport` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `faultreport` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+CREATE TABLE `billet` (
+     `id` bigint(20) UNSIGNED NOT NULL,
+     `a1_clientid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `a2_consumerunitid` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `a3_value` decimal(10,2) UNSIGNED NOT NULL DEFAULT 0,
+     `a4_billingdate` datetime DEFAULT NULL,
+     `active` tinyint(1) NOT NULL DEFAULT 0,
+     `ownerId` bigint(20) UNSIGNED NOT NULL,
+     `created_at` timestamp NULL DEFAULT NULL,
+     `updated_at` timestamp NULL DEFAULT NULL,
+     `deleted_at` timestamp NULL DEFAULT NULL
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+   
+ALTER TABLE `billet` ADD PRIMARY KEY (`id`);
+   
+ALTER TABLE `billet` MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+

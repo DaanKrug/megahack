@@ -1,7 +1,7 @@
 import BaseBrowserStorageService from '../api_com/base/basebrowserstorage.service.js';
 import BotIAUtil from './util/bot.ia.util.js';
 import StepUtil from './util/step.util.js';
-import CpfValidator from './validator/cpf.validator.js';
+import CpfCnpjValidator from './validator/cpfcnpj.validator.js';
 
 const botiaUtil = new BotIAUtil();
 const stepUtil = new StepUtil();
@@ -16,6 +16,7 @@ export default class BotIA2 {
     serviceCode: number;
     selectedConsumerUnitNumber: string;
     needRepeatBack: boolean;
+    finished: boolean;
 
 	constructor(){
 		this.reset();
@@ -30,6 +31,12 @@ export default class BotIA2 {
 		this.serviceCode = 0;
 		this.selectedConsumerUnitNumber = null;
 		this.needRepeatBack = false;
+		this.finished = false;
+	}
+	
+	resetCpfCnpj(){
+		BaseBrowserStorageService.setLocalItem('cpf','');
+		this.cpf = null;
 	}
 	
     getInitialSteps(){
@@ -41,7 +48,10 @@ export default class BotIA2 {
     	let oldNeedResume = this.needResume ? true : false;
     	this.needResume = false;
     	this.needRepeatBack = false;
-    	if(stepId === 1 && null !== this.cpf){
+    	if(this.finished){
+    		return this.goToBeginStep();
+    	}
+    	if(stepId === 1 && null !== this.cpf && this.cpf.trim() !== ''){
     		this.needResume = true;
     		return [];
     	}
@@ -49,7 +59,7 @@ export default class BotIA2 {
     		return this.getPutCPFSteps(stepId);
     	}
     	if(stepId === 2 && !oldNeedResume){
-    		let msg = CpfValidator(msgResponse);
+    		let msg = CpfCnpjValidator(msgResponse);
     		if(null !== msg){
     			this.needRepeatBack = true;
     			return this.getErrorMsgSteps(stepId,msg);
@@ -57,6 +67,7 @@ export default class BotIA2 {
     		this.cpf = msgResponse.trim();
     		this.cpf = this.cpf.replace(/\./gi,'');
     		this.cpf = this.cpf.replace(/-/gi,'');
+    		this.cpf = this.cpf.replace(/\//gi,'');
     		BaseBrowserStorageService.setLocalItem('cpf',this.cpf);
     	}
     	if(stepId === 2){
@@ -70,6 +81,11 @@ export default class BotIA2 {
     	if(stepId === 3 && valueResponse === 2){
     		this.serviceCode = 2;
     		return this.getLightReBindingSteps();
+    	}
+    	if(stepId === 3 && valueResponse === 3){
+    		this.resetCpfCnpj();
+    		this.finished = true;
+    		return [stepUtil.getUserAnswer(stepId,stepId - 1,msgResponse,valueResponse,null)];
     	}
     	if(stepId === 4 && this.blockWalking && this.serviceCode === 1){
     		this.blockWalking = false;
@@ -88,7 +104,7 @@ export default class BotIA2 {
     }
     
     getPutCPFSteps(stepId){
-		return [stepUtil.getBotQuestion(stepId,'Por favor informe o CPF do responsável:',
+		return [stepUtil.getBotQuestion(stepId,'Por favor informe o CPF ou CNPJ do responsável:',
 				                        stepUtil.getInputTextOption(),null)];
 	}
     
@@ -99,6 +115,7 @@ export default class BotIA2 {
     getOperationSteps(stepId,msgResponse,valueResponse){
 		let options = stepUtil.appendOption([],1,'Relatar Falta de Luz',false);
 		options = stepUtil.appendOption(options,2,'Solicitar Re-ligamento',false);
+		options = stepUtil.appendOption(options,3,'Remover o CPF/CNPJ',false);
 		let steps = [];
     	if(null != msgResponse && null != valueResponse){
     		steps = [...steps,stepUtil.getUserAnswer(stepId,stepId - 1,msgResponse,valueResponse,null)];
@@ -150,7 +167,12 @@ export default class BotIA2 {
     		this.blockWalking = true;
     		return this.getConsumerUnitSelectionOptionsMessage(stepId,steps);
     	}
-    	let msg = Array.isArray(this.backendResponse) ? this.backendResponse[0].msg : this.backendResponse.msg;
+    	let isArray = Array.isArray(this.backendResponse);
+    	if(!isArray && undefined !== this.backendResponse.objectClass 
+    		&& this.backendResponse.objectClass === 'ValidationResult'){
+    		this.finished = true;
+    	}
+    	let msg = isArray ? this.backendResponse[0].msg : this.backendResponse.msg;
     	return this.splitBotMessage(stepId,steps,msg);
     }
     

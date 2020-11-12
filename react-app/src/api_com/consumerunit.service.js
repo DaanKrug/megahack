@@ -5,8 +5,9 @@ const ConsumerUnitService = {
 		return '/consumerunits';
 	},
 	registerFault(cpf){
+		let bodyObject = cpf.length === 11 ? {a3_cpf: cpf} : {a4_cnpj: cpf};
 		const url = ConsumerUnitService.getUrlBase();
-		return BaseCrudService.makeRequestToAPI(url,'post',{a3_cpf: cpf})
+		return BaseCrudService.makeRequestToAPI(url,'post',bodyObject)
 						      .then(response => { return response; });
 	},
 	registerFaultByConsumerUnitId(id){
@@ -15,8 +16,9 @@ const ConsumerUnitService = {
 						      .then(response => { return response; });
 	},
 	registerReBinding(cpf){
+		let bodyObject = cpf.length === 11 ? {a3_cpf: cpf} : {a4_cnpj: cpf};
 		const url = ConsumerUnitService.getUrlBase();
-		return BaseCrudService.makeRequestToAPI(url,'put',{a3_cpf: cpf})
+		return BaseCrudService.makeRequestToAPI(url,'put',bodyObject)
 						      .then(response => { return response; });
 	},
 	registerReBindingByConsumerUnitId(id){

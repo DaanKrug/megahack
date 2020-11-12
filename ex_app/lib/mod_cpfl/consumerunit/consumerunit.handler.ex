@@ -5,11 +5,18 @@ defmodule ExApp.ConsumerunitHandler do
   alias ExApp.MessagesUtil
   alias ExApp.MapUtil
   alias ExApp.StringUtil
+  alias ExApp.DateUtil
+  alias ExApp.NumberUtil
   alias ExApp.Consumerunit
   alias ExApp.GenericValidator
   alias ExApp.ConsumerunitValidator
   alias ExApp.ConsumerunitService 
   alias ExApp.SolicitationValidator
+  alias ExApp.FaultreportService
+  alias ExApp.RebindingrequestService
+  alias ExApp.ConsumerunitService
+  alias ExApp.BilletService
+  
   
   def objectClassName() do
     "Unidade Consumidora"
@@ -46,9 +53,10 @@ defmodule ExApp.ConsumerunitHandler do
     a3_cpf = SolicitationValidator.getA3_cpf(mapParams)
     a4_cnpj = SolicitationValidator.getA4_cnpj(mapParams)
     consumerUnits = loadConsumerUnits(a3_cpf,a4_cnpj)
+    noUnit = length(consumerUnits) == 0 or Enum.at(consumerUnits,0) |> MapUtil.get(:id) == 0
     cond do
-      (length(consumerUnits) == 0 and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
-      (length(consumerUnits) == 0) -> MessagesUtil.systemMessage(100157)
+      (noUnit and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
+      (noUnit) -> MessagesUtil.systemMessage(100157)
       (length(consumerUnits) == 1) 
         -> Enum.at(consumerUnits,0) |> registerFaultByConsumerUnit()
       true -> consumerUnits
@@ -63,9 +71,10 @@ defmodule ExApp.ConsumerunitHandler do
     a3_cpf = SolicitationValidator.getA3_cpf(mapParams)
     a4_cnpj = SolicitationValidator.getA4_cnpj(mapParams)
     consumerUnits = loadConsumerUnits(a3_cpf,a4_cnpj)
+    noUnit = length(consumerUnits) == 0 or Enum.at(consumerUnits,0) |> MapUtil.get(:id) == 0
     cond do
-      (length(consumerUnits) == 0 and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
-      (length(consumerUnits) == 0) -> MessagesUtil.systemMessage(100157)
+      (noUnit and a3_cpf != "") -> MessagesUtil.systemMessage(100156)
+      (noUnit) -> MessagesUtil.systemMessage(100157)
       (length(consumerUnits) == 1) 
         -> Enum.at(consumerUnits,0) |> registerReBindingByConsumerUnit()
       true -> consumerUnits
@@ -86,27 +95,43 @@ defmodule ExApp.ConsumerunitHandler do
   end
   
   defp registerFaultByConsumerUnit(consumerUnit) do
+    id = MapUtil.get(consumerUnit,:id)
+    clientId = MapUtil.get(consumerUnit,:a15_clientid)
+    ownerId = MapUtil.get(consumerUnit,:ownerId)
+    label = getConsumerUnitLabel(consumerUnit)
     cond do
-      (nil == consumerUnit) -> MessagesUtil.systemMessage(100159)
-      true -> MessagesUtil.systemMessage(100158,[getConsumerUnitNumber(consumerUnit),
-                                                 getConsumerUnitLabel(consumerUnit),
-                                                 "0000000XXXXXXXXX",
-                                                 ""])
+      (nil == consumerUnit or !(id > 0)) -> MessagesUtil.systemMessage(100159)
+      (FaultreportService.hasRecent(clientId,id)) 
+        -> MessagesUtil.systemMessage(100158,[id,label,
+                                              FaultreportService.loadLast(clientId,id) |> MapUtil.get(:id),
+                                              getOtherProblemsInNeigborhood(consumerUnit)]) 
+      (!(FaultreportService.create([clientId,id,ownerId]))) 
+          -> MessagesUtil.systemMessage(100162,[id])
+      true -> MessagesUtil.systemMessage(100158,[id,label,
+                                                 FaultreportService.loadLast(clientId,id) |> MapUtil.get(:id),
+                                                 getOtherProblemsInNeigborhood(consumerUnit)])
     end
   end
   
   defp registerReBindingByConsumerUnit(consumerUnit) do
+    id = MapUtil.get(consumerUnit,:id)
+    clientId = MapUtil.get(consumerUnit,:a15_clientid)
+    ownerId = MapUtil.get(consumerUnit,:ownerId)
+    label = getConsumerUnitLabel(consumerUnit)
+    openBillets = loadOpenBillets(consumerUnit) |> StringUtil.trim()
     cond do
-      (nil == consumerUnit) -> MessagesUtil.systemMessage(100161)
-      true -> MessagesUtil.systemMessage(100160,[getConsumerUnitNumber(consumerUnit),
-                                                 getConsumerUnitLabel(consumerUnit),
-                                                 "0000000XXXXXXXXX",
+      (nil == consumerUnit or !(id > 0)) -> MessagesUtil.systemMessage(100159)
+      (openBillets != "") -> MessagesUtil.systemMessage(100161,[id,label,openBillets])
+      (RebindingrequestService.hasRecent(clientId,id)) 
+        -> MessagesUtil.systemMessage(100160,[id,label,
+                                              RebindingrequestService.loadLast(clientId,id) |> MapUtil.get(:id),
+                                              ""])
+      (!(RebindingrequestService.create([clientId,id,ownerId]))) 
+          -> MessagesUtil.systemMessage(100163,[id])
+      true -> MessagesUtil.systemMessage(100160,[id,label,
+                                                 RebindingrequestService.loadLast(clientId,id) |> MapUtil.get(:id),
                                                  ""])
     end
-  end
-  
-  defp getConsumerUnitNumber(consumerUnit) do
-    MapUtil.get(consumerUnit,:id)
   end
   
   defp getConsumerUnitLabel(consumerUnit) do
@@ -123,17 +148,48 @@ defmodule ExApp.ConsumerunitHandler do
     """
   end
   
+  defp getOtherProblemsInNeigborhood(consumerUnit) do
+    cep = MapUtil.get(consumerUnit,:a5_cep)
+    clientId = MapUtil.get(consumerUnit,:a15_clientid)
+    consumerUnitIds = ConsumerunitService.loadConsumerUnitIdsByCep(cep,clientId)
+    cond do
+      ((FaultreportService.hasRecentOthers(consumerUnitIds))) -> ""
+      true -> "Já identificamos problemas na rede elétrica em sua vizinhança."
+    end
+  end
+  
+  defp loadOpenBillets(consumerUnit) do
+    conditions = """
+                 and a2_consumerunitid = #{MapUtil.get(consumerUnit,:id)}
+                 and active = true
+                 """
+    cond do
+      (nil == consumerUnit) -> []
+      true -> BilletService.loadAll(-1,-1,conditions,AuthorizerUtil.getDeletedAt(nil,nil),nil)
+                |> prepareOpenBillets("") 
+    end
+  end
+  
+  defp prepareOpenBillets(openBillets,preparedInfo) do
+    cond do
+      (nil == openBillets or length(openBillets) == 0) -> preparedInfo
+      true -> prepareOpenBillets(tl(openBillets),
+                                 "#{preparedInfo}#{getBilletLabel(hd(openBillets))}")
+    end
+  end
+  
+  defp getBilletLabel(billet) do
+    cond do
+      (!(MapUtil.get(billet,:id) > 0)) -> ""
+      true -> """
+			  | Fatura: #{MapUtil.get(billet,:id) |> StringUtil.leftZeros(20)},
+			  Valor: #{MapUtil.get(billet,:a3_value) |> NumberUtil.toFloatFormat(2)},
+			  Data do Vencimento: #{MapUtil.get(billet,:a4_billingdate) |> DateUtil.sqlDateToTime(false)},
+			  """
+    end
+  end
   
 end
-
-
-
-
-
-
-
-
-
 
 
 

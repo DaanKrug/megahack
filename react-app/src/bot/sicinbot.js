@@ -29,6 +29,7 @@ export default class SicinBot extends React.Component {
 	}
 	
 	handleMsgClick(stepId,msgResponse,valueResponse){
+		//console.log([stepId,msgResponse,valueResponse]);
 		let now = new Date().getTime();
 		if(null != this.state.lastClickTime && !((now - this.state.lastClickTime) > 1000)){
 			return

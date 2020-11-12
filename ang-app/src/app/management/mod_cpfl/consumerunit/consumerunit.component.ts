@@ -86,13 +86,13 @@ export class ConsumerunitComponent extends BaseCrudFilterComponent implements On
 		return consumerunit;
 	}
 
-	/*toObjects(id){
+	toBillets(id){
 		this.crudService.loadFromCache(id).then(consumerunit => {
 			if(this.processObjectAndValidationResult(consumerunit,true)){
-				this.eventEmitterService.get('objectDests').emit({object: consumerunit});
+				this.eventEmitterService.get('billets').emit({object: consumerunit});
 			}
 		});
-	}*/
+	}
 
 	backToOrigin(){
 		this.crudService.getStorageService().clear();
