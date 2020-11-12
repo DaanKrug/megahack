@@ -41,7 +41,7 @@ export class ClientComponent extends BaseCrudFilterComponent implements OnInit, 
 			a6_doctype: new FormControl('', [Validators.required]),
 			a7_document: new FormControl('', [Validators.required]),
 			a8_gender: new FormControl('', [Validators.required]),
-			a9_email: new FormControl('', [Validators.required]),
+			a9_email: new FormControl('', []),
 			a10_phone: new FormControl('', [Validators.required]),
 			a11_cep: new FormControl('', [Validators.required]),
 			a12_uf: new FormControl('', [Validators.required]),
@@ -196,9 +196,6 @@ export class ClientComponent extends BaseCrudFilterComponent implements OnInit, 
 		if(this.errorRequired('a8_gender')){
 			this.addValidationMessage('Sexo/g&ecirc;nero &eacute; requerido!');
 		}
-		if(this.errorRequired('a9_email')){
-			this.addValidationMessage('E-mail &eacute; requerido!');
-		}
 		if(this.errorRequired('a10_phone')){
 			this.addValidationMessage('Telefone(s) &eacute; requerido!');
 		}
@@ -234,6 +231,14 @@ export class ClientComponent extends BaseCrudFilterComponent implements OnInit, 
 		this.crudService.loadFromCache(id).then(client => {
 			if(this.processObjectAndValidationResult(client,true)){
 				this.eventEmitterService.get('solicitations').emit({object: client});
+			}
+		});
+	}
+	
+	toConsumerUnits(id){
+		this.crudService.loadFromCache(id).then(client => {
+			if(this.processObjectAndValidationResult(client,true)){
+				this.eventEmitterService.get('consumerunits').emit({object: client});
 			}
 		});
 	}

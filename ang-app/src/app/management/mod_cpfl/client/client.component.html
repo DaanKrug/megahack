@@ -101,7 +101,7 @@
    				                   ngDefaultControl>
    				</rich-input-select>
 				<rich-input-text [formGroup]="dataForm" 
-				                 label="E-mail (*)" 
+				                 label="E-mail" 
 				                 titlee="E-mail"
 				                 maxchars="100"
 				                 formControlName="a9_email" 
@@ -243,7 +243,7 @@
 						Telefone(s)
 					</th>
 					<th scope="col" 
-					    style="width: 9em;" 
+					    style="width: 11em;" 
 					    *ngIf="!auditingExclusions">
 					    A&ccedil;&otilde;es
 					</th>
@@ -272,6 +272,15 @@
 					<td class="actions">
 						<div class="buttons">
 							<button class="btn btn-primary clickable" 
+			          		        type="button" 
+			          		        *ngIf="!auditingExclusions"
+			            			placement="left" 
+			            			ngbTooltip="Unidades Consumidoras" 
+			            			aria-label="Unidades Consumidoras"
+			            		    (click)="toConsumerUnits(client.id);">
+			            		<i class="fas fa-home"></i>
+			            	</button>
+			            	<button class="btn btn-primary clickable" 
 			          		        type="button" 
 			          		        *ngIf="!auditingExclusions"
 			            			placement="left" 

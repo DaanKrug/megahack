@@ -18,7 +18,7 @@ defmodule ExApp.ClientHandler do
   end
   
   def accessCategories() do
-    ["system_auditor","admin","admin_master"]
+    ["admin","admin_master"]
   end
   
   def accessCategoriesAuditor() do
@@ -34,7 +34,6 @@ defmodule ExApp.ClientHandler do
     a6_doctype = ClientValidator.getA6_doctype(mapParams)
     a7_document = ClientValidator.getA7_document(mapParams)
     a8_gender = ClientValidator.getA8_gender(mapParams)
-    a9_email = ClientValidator.getA9_email(mapParams)
     a10_phone = ClientValidator.getA10_phone(mapParams)
     a11_cep = ClientValidator.getA11_cep(mapParams)
     a12_uf = ClientValidator.getA12_uf(mapParams)
@@ -42,7 +41,7 @@ defmodule ExApp.ClientHandler do
     a14_street = ClientValidator.getA14_street(mapParams)
 	ownerId = GenericValidator.getOwnerId(mapParams)
 	params = [a1_name,a2_type,a5_birthdate,a6_doctype,a7_document,
-	          a8_gender,a9_email,a10_phone,a11_cep,a12_uf,a13_city,a14_street]
+	          a8_gender,a10_phone,a11_cep,a12_uf,a13_city,a14_street]
     cond do
       (!(ownerId > 0)) -> MessagesUtil.systemMessage(412)
       (SanitizerUtil.hasEmpty(params)) -> MessagesUtil.systemMessage(480,[objectClassName()])
@@ -127,7 +126,7 @@ defmodule ExApp.ClientHandler do
     a6_doctype = ClientValidator.getA6_doctype(mapParams,MapUtil.get(client,:a6_doctype))
     a7_document = ClientValidator.getA7_document(mapParams,MapUtil.get(client,:a7_document))
     a8_gender = ClientValidator.getA8_gender(mapParams,MapUtil.get(client,:a8_gender))
-    a9_email = ClientValidator.getA9_email(mapParams,MapUtil.get(client,:a9_email))
+    a9_email = ClientValidator.getA9_email(mapParams)
     a10_phone = ClientValidator.getA10_phone(mapParams,MapUtil.get(client,:a10_phone))
     a11_cep = ClientValidator.getA11_cep(mapParams,MapUtil.get(client,:a11_cep))
     a12_uf = ClientValidator.getA12_uf(mapParams,MapUtil.get(client,:a12_uf))

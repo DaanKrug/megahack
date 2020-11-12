@@ -20,7 +20,7 @@ defmodule ExApp.SolicitationHandler do
   end
   
   def accessCategories() do
-    ["system_auditor","admin","admin_master"]
+    ["admin","admin_master"]
   end
   
   def accessCategoriesAuditor() do

@@ -11,13 +11,34 @@ defmodule ExApp.ConsumerunitHandler do
   alias ExApp.ConsumerunitService 
   alias ExApp.SolicitationValidator
   
- 
-  defp loadConsumerUnits(a3_cpf,a4_cnpj) do
-    deletedAt = AuthorizerUtil.getDeletedAt(nil,nil)
+  def objectClassName() do
+    "Unidade Consumidora"
+  end 
+  
+  def objectTableName() do
+    "consumerunit"
+  end
+  
+  def accessCategories() do
+    ["admin","admin_master"]
+  end
+  
+  def accessCategoriesAuditor() do
+    ["system_auditor","admin","admin_master","system_auditor"]
+  end
+  
+  def validateToDelete(id,consumerunit) do
     cond do
-      (a3_cpf == "" and a4_cnpj == "") -> []
-      (a3_cpf != "") -> ConsumerunitService.loadAll(-1,-1," and a3_cpf = '#{a3_cpf}' ",deletedAt,nil)
-      true -> ConsumerunitService.loadAll(-1,-1," and a4_cnpj = '#{a4_cnpj}' ",deletedAt,nil)
+      (!(id > 0) or nil == consumerunit) -> MessagesUtil.systemMessage(412)
+      #(SolicitationService.clientIsIn(id)) -> MessagesUtil.systemMessage(100153)
+      true -> MessagesUtil.systemMessage(205)
+    end
+  end
+  
+  def validateToRestore(id,consumerunit) do
+    cond do
+      (!(id > 0) or nil == consumerunit) -> MessagesUtil.systemMessage(412)
+      true -> MessagesUtil.systemMessage(205)
     end
   end
   
@@ -37,17 +58,7 @@ defmodule ExApp.ConsumerunitHandler do
   def registerFaultByConsumerUnitId(id) do
     ConsumerunitService.loadById(id) |> registerFaultByConsumerUnit()
   end
-  
-  defp registerFaultByConsumerUnit(consumerUnit) do
-    cond do
-      (nil == consumerUnit) -> MessagesUtil.systemMessage(100159)
-      true -> MessagesUtil.systemMessage(100158,[getConsumerUnitNumber(consumerUnit),
-                                                 getConsumerUnitLabel(consumerUnit),
-                                                 "0000000XXXXXXXXX",
-                                                 ""])
-    end
-  end
-  
+
   def registerReBinding(mapParams) do
     a3_cpf = SolicitationValidator.getA3_cpf(mapParams)
     a4_cnpj = SolicitationValidator.getA4_cnpj(mapParams)
@@ -63,6 +74,25 @@ defmodule ExApp.ConsumerunitHandler do
   
   def registerReBindingByConsumerUnitId(id) do
     ConsumerunitService.loadById(id) |> registerReBindingByConsumerUnit()
+  end
+  
+  defp loadConsumerUnits(a3_cpf,a4_cnpj) do
+    deletedAt = AuthorizerUtil.getDeletedAt(nil,nil)
+    cond do
+      (a3_cpf == "" and a4_cnpj == "") -> []
+      (a3_cpf != "") -> ConsumerunitService.loadAll(-1,-1," and a3_cpf = '#{a3_cpf}' ",deletedAt,nil)
+      true -> ConsumerunitService.loadAll(-1,-1," and a4_cnpj = '#{a4_cnpj}' ",deletedAt,nil)
+    end
+  end
+  
+  defp registerFaultByConsumerUnit(consumerUnit) do
+    cond do
+      (nil == consumerUnit) -> MessagesUtil.systemMessage(100159)
+      true -> MessagesUtil.systemMessage(100158,[getConsumerUnitNumber(consumerUnit),
+                                                 getConsumerUnitLabel(consumerUnit),
+                                                 "0000000XXXXXXXXX",
+                                                 ""])
+    end
   end
   
   defp registerReBindingByConsumerUnit(consumerUnit) do
