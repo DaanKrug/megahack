@@ -20,6 +20,15 @@ defmodule ExApp.UserService do
     DAOService.load("select id from user where category = ?",["admin"])
   end
   
+  def loadFirstMasterAdminId() do
+    resultset = DAOService.load("select id from user where category = ?",["admin_master"])
+    cond do
+      (nil != resultset and resultset.num_rows > 0) 
+        -> resultset |>  ResultSetHandler.getColumnValue(0,0)
+      true -> 0
+    end
+  end
+  
   def loadUserIdsOfOwner(userId) do
     DAOService.load("select id from user where ownerId = ?",[userId])
   end

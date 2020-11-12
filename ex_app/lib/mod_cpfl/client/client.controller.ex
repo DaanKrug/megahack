@@ -15,7 +15,10 @@ defmodule ExApp.ClientController do
   plug(:dispatch)
   
   post "/" do
-    sendResponse(conn,save(conn,Handler,AuthHandler))
+    {:ok, _body, conn} = Plug.Conn.read_body(conn)
+    id = GenericValidator.getId(conn.params)
+    ownerId = GenericValidator.getOwnerId(conn.params)
+    sendResponse(conn,save(conn,Handler,AuthHandler,(id == -1 and ownerId == 0)))
   end
 
   post "/:id" do

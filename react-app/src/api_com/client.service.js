@@ -95,6 +95,7 @@ const ClientService = {
 	},
 	create(client: any){// return responseobject
 		const url = ClientService.getUrlBase();
+		client.id = -1;
 		return BaseCrudService.makeRequestToAPI(url,'post',client)
 						      .then(response => { return response; });
 	},
@@ -113,6 +114,44 @@ const ClientService = {
 		return BaseCrudService.makeRequestToAPI(url,'post',{})
 						      .then(response => { return response; });
 	},
+	loadByCpf(cpf){
+		let conditions = ' xoo a3_cpf = quaspa' + cpf + 'quaspa ';
+		return ClientService.getAll(-1,-1,conditions).then(clients => {
+			if(null === clients || !(clients.length > 0)){
+				return null;
+			}
+			return clients[0];
+		});
+	},
+	loadByCnpj(cnpj){
+		let conditions = ' xoo a4_cnpj = quaspa' + cnpj + 'quaspa ';
+		return ClientService.getAll(-1,-1,conditions).then(clients => {
+			if(null === clients || !(clients.length > 0)){
+				return null;
+			}
+			return clients[0];
+		});
+	},
+	test(){
+		let client = {
+			a1_name: 'Echo Ping',
+			a2_type: 'PF',
+			a3_cpf: '12345678912',
+			a4_cnpj: '',
+			a5_birthdate: '2000-01-01',
+			a6_doctype: 'RG',
+			a7_document: '70076783',
+			a8_gender: 'M',
+			a10_phone: '041 45678 8976',
+			a11_cep: '85890000',
+			a12_uf: 'PR',
+			a13_city: 'Missal',
+			a14_street: 'Zona Rural'
+		};
+		return ClientService.create(client).then(result => {
+			return result;
+		});
+	}
 };
 export default ClientService;
 

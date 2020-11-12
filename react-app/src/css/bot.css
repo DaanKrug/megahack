@@ -19,7 +19,6 @@
 .rsc-ts-user div{
 	float: right;
 }
-
 .chatContainer{
     background: #ffffff;
     border-radius: .8em;
@@ -30,8 +29,7 @@
     z-index: 999;
     box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
     -webkit-box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
--moz-box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
-
+    -moz-box-shadow: 1px 0px 5px 0px rgba(255,161,73,0.75);
 }
 .chatContainerHeader{
     padding: 10px 20px;

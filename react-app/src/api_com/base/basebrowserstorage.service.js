@@ -19,7 +19,11 @@ const BaseBrowserStorageService = {
 		return BaseBrowserStorageService.getSessionItem('_token_');
 	},
 	getOwnerId(){
-		return BaseBrowserStorageService.getSessionItem('_ownerId_');
+		let ownerId = BaseBrowserStorageService.getSessionItem('_ownerId_');
+		if(null === ownerId || ownerId.trim() === ''){
+			ownerId = 0;
+		}
+		return ownerId;
 	}
 };
 export default BaseBrowserStorageService;

@@ -139,8 +139,46 @@ defmodule ExApp.ClientService do
     end
   end
   
-  def loadAllForPublic(_page,_rows,_conditions,_deletedAt,_mapParams) do
-    [Client.new(0,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,0)]
+  def loadAllForPublic(page,rows,conditions,deletedAt,_mapParams) do
+    limit = cond do
+      (page > 0 and rows > 0) -> " limit #{((page - 1) * rows)},#{rows}"
+      true -> ""
+    end
+    sql = "select count(id) from client where #{deletedAt} #{conditions}"
+    resultset = DAOService.load(sql,[])
+    total = NumberUtil.toInteger(ResultSetHandler.getColumnValue(resultset,0,0))
+    sql = """
+          select id, 
+          a1_name,
+          a2_type,
+          a3_cpf,
+          a4_cnpj,
+          a5_birthdate,
+          a6_doctype,
+          a7_document,
+          a8_gender,
+          a9_email,
+          a10_phone,
+          a11_cep,
+          a12_uf,
+          a13_city,
+          a14_street,
+          a15_number,
+          a16_compl1type,
+          a17_compl1desc,
+          a18_compl2type,
+          a19_compl2desc, 
+          0 as ownerId from client 
+          where #{deletedAt} #{conditions} 
+          order by id asc
+          #{limit}
+          """
+    resultset = DAOService.load(sql,[])
+    cond do
+      (nil == resultset or resultset.num_rows == 0) 
+        -> [Client.new(0,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,0,0)]
+      true -> parseResults(resultset,total,[],0) 
+    end
   end 
   
   def delete(id) do

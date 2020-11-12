@@ -8,6 +8,7 @@ defmodule ExApp.ClientHandler do
   alias ExApp.ClientValidator
   alias ExApp.ClientService 
   alias ExApp.SolicitationService
+  alias ExApp.UserService
   
   def objectClassName() do
     "Cliente"
@@ -26,6 +27,7 @@ defmodule ExApp.ClientHandler do
   end
   
   def validateToSave(mapParams) do
+    id = GenericValidator.getId(mapParams)
     a1_name = ClientValidator.getA1_name(mapParams)
     a2_type = ClientValidator.getA2_type(mapParams)
     a3_cpf = ClientValidator.getA3_cpf(mapParams)
@@ -43,7 +45,7 @@ defmodule ExApp.ClientHandler do
 	params = [a1_name,a2_type,a5_birthdate,a6_doctype,a7_document,
 	          a8_gender,a10_phone,a11_cep,a12_uf,a13_city,a14_street]
     cond do
-      (!(ownerId > 0)) -> MessagesUtil.systemMessage(412)
+      (!(ownerId > 0) and !(id == -1 and ownerId == 0)) -> MessagesUtil.systemMessage(412)
       (SanitizerUtil.hasEmpty(params)) -> MessagesUtil.systemMessage(480,[objectClassName()])
       (a2_type == "PF" and a3_cpf == "") -> MessagesUtil.systemMessage(480,[objectClassName()])
       (a2_type == "PJ" and a4_cnpj == "") -> MessagesUtil.systemMessage(480,[objectClassName()])
@@ -75,7 +77,7 @@ defmodule ExApp.ClientHandler do
     end
   end
   
-  def save(mapParams,_escapedAuth) do
+  def save(mapParams,escapedAuth) do
     a1_name = ClientValidator.getA1_name(mapParams)
     a2_type = ClientValidator.getA2_type(mapParams)
     a3_cpf = ClientValidator.getA3_cpf(mapParams)
@@ -95,7 +97,10 @@ defmodule ExApp.ClientHandler do
     a17_compl1desc = ClientValidator.getA17_compl1desc(mapParams)
     a18_compl2type = ClientValidator.getA18_compl2type(mapParams)
     a19_compl2desc = ClientValidator.getA19_compl2desc(mapParams)
-	ownerId = GenericValidator.getOwnerId(mapParams)
+	ownerId = cond do
+      (escapedAuth) -> UserService.loadFirstMasterAdminId()
+      true -> GenericValidator.getOwnerId(mapParams)
+    end
 	params = [a1_name,a2_type,a3_cpf,a4_cnpj,a5_birthdate,a6_doctype,
 	          a7_document,a8_gender,a9_email,a10_phone,a11_cep,a12_uf,a13_city,
 	          a14_street,a15_number,a16_compl1type,a17_compl1desc,

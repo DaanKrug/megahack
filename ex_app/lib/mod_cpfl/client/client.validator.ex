@@ -57,7 +57,7 @@ defmodule ExApp.ClientValidator do
   def getA8_gender(mapParams,defaultValue \\ nil) do
     value = StringUtil.coalesce(MapUtil.get(mapParams,:a8_gender),defaultValue)
     value = SanitizerUtil.sanitizeAll(value,false,true,20,"A-z0-9")
-    validValues = ["men","women","unknow"]
+    validValues = ["M","F","O"]
     member = Enum.member?(validValues,value)
     cond do
       (!member and nil == defaultValue) -> Enum.at(validValues,0)
