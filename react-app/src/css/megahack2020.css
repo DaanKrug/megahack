@@ -15,44 +15,62 @@ html, body{
 .modal-body{
     background-color: #fff !important;
 }
+.nav-link{
+    color: #303030;
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    padding: 10px 20px;
+}
 .card, .nav-link:hover, .nav-link.active{
-	border: 1px solid #ffffff !important;
+    border: 1px solid white !important;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.4s;
+
 }
 .header, .nav-link.active, .card-header, .modal-header, .wizard-tab{
     background-color: #FFA149 !important;
+    transition: all 0.5s;
 }
 .nav-link:hover, .destak,
 .list-group-item-action:hover, .dropdown-item:hover,
 .list-group-item-action:focus, .dropdown-item:focus{
-	color: #100101 !important;
-	background-color: #eeef75 !important;
+    color: #303030 !important;
+	background-color: #ffffff !important;
 }
 .nav-link.active, .nav-tabs{
-	border-bottom: 1px solid #1c99b5 !important;
+	border: 1px solid white !important;
 }
-.list-group-item.active, 
-.list-group-item.active:hover,
-.list-group-item.active:focus,
-.dropdown-item.active,
-.dropdown-item.active:hover,
-.dropdown-item.active:focus{
-	background-color: #99dae4 !important;
-	border-color: #99dae4 !important;
-}
+
 .list-group-item-action:hover, .dropdown-item:hover,
 .list-group-item-action:focus, .dropdown-item:focus{
 	background-color: #eeef75 !important;
     border-color: #99dae4 !important;
 }
-.dropdown-item{
-	border-top: 1px solid rgba(0,0,0,.125) !important;
-}
+
 .nav-link, .nav-link.active:hover, .inputActionIcon, .wizard-tab-inactive{
-    color: #1c99b5 !important;
+    color: #303030 !important;
 }
 .btn-primary {
-    background-color: #1e6e94 !important;
-    border-color: #1e6e94 !important;
+    background-color: #FBA652
+    !important;
+    border-color: transparent
+    !important;
+    width: 100%;
+    border: 1px solid transparent;
+    padding: 10px 20px ;
+    font-family: Inter, sans-serif!important;
+    font-size: 13px!important;
+    transition: all 0.4s;
+    border-radius: 5px;
+    max-width: 150px;
+    
+}
+.btn-primary:hover{
+    background-color: #ff8f1f!important;
+}
+.btn-primary i{
+    margin: 0px 10px;
 }
 .list-group-item, .list-group-item-action, .dropdown-item,
 .list-group-item.active, .list-group-item-action.active, .dropdown-item.active{

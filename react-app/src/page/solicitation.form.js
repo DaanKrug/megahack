@@ -9,6 +9,7 @@ import InputText from '../component/inputtext.js';
 import RadioButton from '../component/radiobutton.js';
 import SelectBox from '../component/selectbox.js';
 
+import '../css/solicitacao.css';
 
 const alphaE: string[] = [
 	'Ñ','Ã','Á','À','Â','Ä','É','È','Ê','Ë','Í','Ì','Î','Ï','Õ','Ó','Ò','Ô','Ö','Ú','Ù','Û','Ü','Ç'
@@ -410,24 +411,24 @@ export default class SolicitationForm extends React.Component{
 				 key={this.state.key}>
 				<h3>Solicitação de Nova Instalação</h3>
 				<div>
-					<ul className="nav nav-tabs justify-content-start" 
+					<ul className="tabs" 
 						style={{'margin-left':'.5em'}}>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab0}>
 						   	    CPF/CNPJ
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab1}>
 						   	    Dados Pessoais
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab2}>
 						   	    Endereço
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab3}>
 						   	    Endereço Nova Instalação
 							</span>
