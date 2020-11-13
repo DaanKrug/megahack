@@ -28,6 +28,7 @@ defmodule ExApp.SolicitationHandler do
   end
   
   def validateToSave(mapParams) do
+    id = GenericValidator.getId(mapParams)
     a1_name = SolicitationValidator.getA1_name(mapParams)
     a3_cpf = SolicitationValidator.getA3_cpf(mapParams)
     a4_cnpj = SolicitationValidator.getA4_cnpj(mapParams)
@@ -41,7 +42,7 @@ defmodule ExApp.SolicitationHandler do
 	ownerId = GenericValidator.getOwnerId(mapParams)
 	params = [a1_name,a2_caracteristic,a5_cep,a6_uf,a7_city,a8_street,a14_reference]
     cond do
-      (!(ownerId > 0)) -> MessagesUtil.systemMessage(412)
+      (!(ownerId > 0) and !(id == -1 and ownerId == 0)) -> MessagesUtil.systemMessage(412)
       (SanitizerUtil.hasEmpty(params)) -> MessagesUtil.systemMessage(480,[objectClassName()])
       (a3_cpf == "" and a4_cnpj == "") -> MessagesUtil.systemMessage(480,[objectClassName()])
       (SanitizerUtil.hasLessThan([a15_clientid],1)) 

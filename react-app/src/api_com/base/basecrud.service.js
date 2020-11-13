@@ -46,7 +46,7 @@ const BaseCrudService = {
 		}
 	},
 	async makeRequestToAPI(resorceUrl,method,bodyObject){
-		let url = BaseCrudService.getBase() + resorceUrl;
+		let url = BaseCrudService.getBase() + resorceUrl + '?v=' + new Date().getTime();
 		bodyObject = (undefined === bodyObject || null === bodyObject) ? {} : bodyObject;
 		bodyObject._token = BaseBrowserStorageService.getToken();
 		bodyObject.ownerId = BaseBrowserStorageService.getOwnerId();

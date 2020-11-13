@@ -82,6 +82,7 @@ const SolicitationService = {
 	},
 	create(solicitation: any){// return responseobject
 		const url = SolicitationService.getUrlBase();
+		solicitation.id = -1;
 		return BaseCrudService.makeRequestToAPI(url,'post',solicitation)
 						      .then(response => { return response; });
 	},

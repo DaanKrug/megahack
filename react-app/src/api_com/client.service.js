@@ -132,7 +132,7 @@ const ClientService = {
 			return clients[0];
 		});
 	},
-	test(){
+	/*test(){
 		let client = {
 			a1_name: 'Echo Ping',
 			a2_type: 'PF',
@@ -151,7 +151,7 @@ const ClientService = {
 		return ClientService.create(client).then(result => {
 			return result;
 		});
-	}
+	}*/
 };
 export default ClientService;
 

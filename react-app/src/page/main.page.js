@@ -1,6 +1,7 @@
 import React from 'react';
 
 import BigButton from '../component/bigbutton.js';
+import SolicitationForm from './solicitation.form.js';
 import ClientService from '../api_com/client.service.js';
 
 
@@ -19,10 +20,6 @@ export default class MainPage extends React.Component {
 	
 	newBinding(){
 		this.setView('newBinding');
-		console.log('make newBinding screen');
-		ClientService.test().then(result => {
-			console.log('result: ', result);
-		});
 	}
 	
 	alterClientData(){
@@ -33,6 +30,12 @@ export default class MainPage extends React.Component {
 	otherServices(){
 		this.setView('otherServices');
 		console.log('make otherServices screen');
+	}
+	
+	renderSolicitationForm(){
+		return(
+			   <SolicitationForm />
+		);
 	}
 	
     renderinitialView() {
@@ -62,10 +65,10 @@ export default class MainPage extends React.Component {
     }
     
     render(){
-    	/*
     	if('newBinding' === this.state.view){
-    		return this.renderinitialView();
+    		return this.renderSolicitationForm();
     	}
+    	/*
     	if('alterClientData' === this.state.view){
     		return this.renderinitialView();
     	}

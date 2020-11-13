@@ -44,6 +44,7 @@ defmodule ExApp.ClientHandler do
 	ownerId = GenericValidator.getOwnerId(mapParams)
 	params = [a1_name,a2_type,a5_birthdate,a6_doctype,a7_document,
 	          a8_gender,a10_phone,a11_cep,a12_uf,a13_city,a14_street]
+	IO.inspect(params)
     cond do
       (!(ownerId > 0) and !(id == -1 and ownerId == 0)) -> MessagesUtil.systemMessage(412)
       (SanitizerUtil.hasEmpty(params)) -> MessagesUtil.systemMessage(480,[objectClassName()])
