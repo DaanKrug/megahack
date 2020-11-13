@@ -1,19 +1,17 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
 
 export default function BigButton(props){
     return (
 			<div className="btLargeContainer">
-	    		<Button variant="primary" 
-	    			    className="btLarge"
+	    		<button className="btn btn-primary clickable btLarge"
 	    			    onClick={() => props.onClick()}>
-	    			<div>
-	    				<i className={props.className + ' btIconLarge'}></i>
-	    			</div>
-	    			<div>
-	    				{props.label}
-	    			</div>
-	    		</Button>
+		    		<div>
+						<i className={props.className + ' btIconLarge'}></i>
+					</div>
+					<div>
+						{props.label}
+					</div>
+				</button>  
 	    	</div>
     );
 }

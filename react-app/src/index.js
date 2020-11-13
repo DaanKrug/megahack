@@ -10,7 +10,6 @@ import './css/app.css';
 import './css/gauge.css';
 import './css/bot.css';
 
-import SicinBot from './bot/sicinbot.js';
 import MainPage from './page/main.page.js';
 
 // For mock remote server uncomment following lines then execute [npm start] in terminal
@@ -21,14 +20,7 @@ BaseBrowserStorageService.setSessionItem('_debugg_mode_on_','true');
 
 
 ReactDOM.render(
-	<div>
-		<div className="field" style={{'width':'calc(100% - 23em)'}}>
-			<MainPage />
-		</div>
-		<div className="field" style={{'float':'right !important','width':'22em'}}>
-			<SicinBot />
-		</div>
-	</div>,
+	<MainPage />,
     document.getElementById('root')
 );
 
