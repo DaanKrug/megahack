@@ -40,7 +40,7 @@ export default class InputText extends React.Component{
 		if(null !== this.props.noRender && this.props.noRender){
 			return (<></>);
 		}
-		let readOnly = (undefined != this.props.readOnly 
+		let readOnly = (undefined !== this.props.readOnly 
 				        && null !== this.props.readOnly && this.props.readOnly);
 		let clazz = readOnly ? 'form-control disabled' : 'form-control';
 		return (
