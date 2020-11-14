@@ -9,6 +9,8 @@ import InputCorrector from '../component/corrector/input.corrector.js';
 import InputText from '../component/inputtext.js';
 import RadioButton from '../component/radiobutton.js';
 import SelectBox from '../component/selectbox.js';
+import InputUpload from '../component/inputupload.js';
+import AwsRekognitionService from '../api_com/awsrekognition.service.js';
 
 import '../css/solicitacao.css';
 
@@ -61,7 +63,59 @@ export default class SolicitationForm extends React.Component{
 	constructor(props){
 		super(props);
 		this.client = null;
-		
+		this.a2_caracteristics = [
+			{value: 'l1', label: 'Ligação para casa ou comércio, em local com até duas instalações'},
+			{value: 'l2', label: 'Ligação para apartamentos residenciais ou sala/loja comercial em edifícios e galerias'},
+			{value: 'l3', label: 'Ligação de projeto para loteamentos'},
+			{value: 'l4', label: 'Ligação de projeto edifícios'}
+		];
+		this.a2_types = [
+			{value: 'PF', label: 'C.P.F'},
+			{value: 'PJ', label: 'C.N.P.J.'}
+		];
+		this.a6_doctypes = [
+			{value: 'rg', label: 'RG'},
+			{value: 'cnh', label: 'CNH'},
+			{value: 'passport', label: 'Passaporte'},
+			{value: 'reservistcart', label: 'Carteira de Reservista'},
+			{value: 'workcart', label: 'Carteira de Trabalho'},
+			{value: 'nre', label: 'Número de Registro de Estrangeiro'},
+		];
+		this.a8_genders = [
+			{value: 'M', label: 'Masculino'},
+			{value: 'F', label: 'Feminino'},
+			{value: 'O', label: 'Outro'}
+		];
+		this.a16_compl1types = [
+			{value: '', label: ''},
+			{value: 'adminstracao', label: 'Administração'},
+			{value: 'altos', label: 'Altos'},
+			{value: 'apartamento', label: 'Apartamento'},
+			{value: 'armazem', label: 'Armazém'},
+			{value: 'baixos', label: 'Balcão'},
+			{value: 'bancajornal', label: 'Banca de Jornal'},
+			{value: 'barraca', label: 'Barraca'},
+			{value: 'barracao', label: 'Barracão'},
+			{value: 'bilheteria', label: 'Bilheteria'},
+			{value: 'loja', label: 'Loja'},
+			{value: 'lote', label: 'Lote'},
+			{value: 'sala', label: 'Sala'},
+			{value: 'salao', label: 'Salão'}
+		];
+		this.a18_compl2types = [
+			{value: '', label: ''},
+			{value: 'acesso', label: 'Acesso'},
+			{value: 'andar', label: 'Andar'},
+			{value: 'anexo', label: 'Anexo'},
+			{value: 'clube', label: 'Clube'},
+			{value: 'colegio', label: 'Colégio'},
+			{value: 'colonia', label: 'Colônia'},
+			{value: 'cruzamento', label: 'Cruzamento'}
+		]; 
+		this.statesOptions = CitiesUtil.getStateOptions();
+		this.citiesOptions = [];
+		this.statesOptions2 = CitiesUtil.getStateOptions();
+		this.citiesOptions2 = [];
 		this.state = {
 			key: new Date().getTime(),
 			a1_name: '',
@@ -98,10 +152,14 @@ export default class SolicitationForm extends React.Component{
 			errorMsg: '',
 			successMsg: '',
 			addressMode: 'select',
+			addressMode2: 'select',
+			fileData: null, 
+			validatedNew: false,
 		};
 	}
 	
 	setValidationMessage(response){
+		console.log('response:', response);
 		this.setState({errorMsg: response.msg, sucessMsg: '', key: new Date().getTime()});
 	}
 	
@@ -109,14 +167,40 @@ export default class SolicitationForm extends React.Component{
 		this.setState({errorMsg: '', successMsg: msg, key: new Date().getTime()});
 	}
 	
+	makeRekognition(){
+		if(undefined === this.state.fileData || null === this.state.fileData){
+			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
+			return;
+		}
+		let image = {file: this.state.fileData.base64, filename: this.state.fileData.fileName};
+		AwsRekognitionService.rekognize(image).then(result => {
+			let labels = result.msg.Labels;
+			let size = labels.length;
+			let validated = false;
+			for(let i = 0; i < size; i++){
+				if(['Electrical Device','Fuse','Switch'].includes(labels[i].Name)
+						&& labels[i].Confidence > 90){
+					validated = true;
+					break;
+				}
+			}
+			this.setState({validatedNew: validated});
+			this.loadClientAndNext();
+		});
+	}
+	
 	loadClientAndNext(){
+		if(this.state.validatedNew !== true){
+			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
+			return;
+		}
 		this.setProcessing(true);
 		if(this.state.a2_type === 'PF'){
 			ClientService.loadByCpf(this.state.a3_cpf).then(client => {
 				this.setClientData(client);
 				this.setProcessing(false);
 				let newTab = null === this.client ? 1 : 3;
-				this.setState({tab: newTab, key: new Date().getTime()});
+				this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
 			});
 			return;
 		}
@@ -124,7 +208,7 @@ export default class SolicitationForm extends React.Component{
 			this.setClientData(client);
 			this.setProcessing(false);
 			let newTab = null === this.client ? 1 : 3;
-			this.setState({tab: newTab, key: new Date().getTime()});
+			this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
 		});
 	}
 	
@@ -132,10 +216,12 @@ export default class SolicitationForm extends React.Component{
 		if(this.state.tab === 0){
 			return;
 		}
+		this.setState({errorMsg: '', successMsg: '', key: new Date().getTime()});
 		let newTab = null === this.client ? this.state.tab - 1 : this.state.tab - 3;
 		if(newTab === 0){
 			this.client = null;
 			this.valueChanged('a3_cpf','');
+			this.setState({validatedNew: false});
 		}
 		this.setState({tab: newTab, key: new Date().getTime()});
 	}
@@ -144,9 +230,10 @@ export default class SolicitationForm extends React.Component{
 		if(this.state.tab === 3){
 			return;
 		}
+		this.setState({errorMsg: '', successMsg: '', key: new Date().getTime()});
 		let newTab = this.state.tab + 1;
 		if(newTab === 1){
-			this.loadClientAndNext();
+			this.makeRekognition();
 			return;
 		}
 		if(newTab === 2){
@@ -220,18 +307,33 @@ export default class SolicitationForm extends React.Component{
 	}
 	
 	searchByCep(value){
+		if(!([2,3].includes(this.state.tab))){
+			return;
+		}
 		ViaCepService.findByCep(value).then(result => {
 			if(null === result || Array.isArray(result)){
 				return;
 			}
-			this.setState({addressMode: 'text'});
-			this.valueChanged('a12_uf',result.uf);
-			this.valueChanged('a13_city',result.cidade);
-			this.valueChanged('a14_street',result.logradouro + ' ' + result.bairro);
+			if(this.state.tab === 2){
+				this.setState({addressMode: 'text'});
+				this.valueChanged('a12_uf',result.uf);
+				this.valueChanged('a13_city',result.cidade);
+				this.valueChanged('a14_street',result.logradouro + ' ' + result.bairro);
+			}
+			if(this.state.tab === 3){
+				console.log('echoo: ', result);
+				this.setState({addressMode2: 'text'});
+				this.valueChanged('s_a6_uf',result.uf);
+				this.valueChanged('s_a7_city',result.cidade);
+				this.valueChanged('s_a8_street',result.logradouro + ' ' + result.bairro);
+			}
 		});
 	}
 	
 	valueChanged(id,value){
+		if(id === 'upRekognition'){
+			this.setState({fileData: value, validatedNew: false});
+		}
 		if(id === 'a1_name'){
 			this.setState({a1_name: value});
 		}
@@ -300,6 +402,9 @@ export default class SolicitationForm extends React.Component{
 		}
 		if(id === 's_a5_cep'){
 			this.setState({s_a5_cep: value});
+			if(value.trim().length >= 8){
+				this.searchByCep(value);
+			}
 		}
 		if(id === 's_a6_uf'){
 			this.citiesOptions2 = value.trim() === '' 
@@ -357,42 +462,8 @@ export default class SolicitationForm extends React.Component{
 		this.valueChanged('a19_compl2desc',null != client ? client.a19_compl2desc : '');
 	}
 	
-	/*
-	 <SelectBox id="a12_uf"
-		       label="Estado/UF"
-		       defaultValue={this.state.a12_uf}
-		       options={this.statesOptions}
-	           readOnly={null !== this.client}
-	           noRender={this.state.addressMode === 'text'}
-		       handler={this}>
-	</SelectBox>
-	<SelectBox id="a13_city" 
-		       label="Cidade"
-		       defaultValue={this.state.a13_city}
-	           options={this.citiesOptions}
-	           readOnly={null !== this.client}
-	           noRender={this.state.addressMode === 'text'}
-	           handler={this}>
-	</SelectBox>
-	<InputText id="a12_uf" 
-		       label="Estado/UF"
-		       defaultValue={this.state.a12_uf}
-		       corrector={OnlyAlphaCorrector}
-	           readOnly={null !== this.client}
-	           noRender={this.state.addressMode !== 'text'}
-	           handler={this}>
-	</InputText>
-	<InputText id="a13_city" 
-		       label="Cidade"
-		       defaultValue={this.state.a13_city}
-		       corrector={OnlyAlphaCorrector}
-	           readOnly={null !== this.client}
-	           noRender={this.state.addressMode !== 'text'}
-	           handler={this}>
-	</InputText>
-	 */
-	
 	render(){
+		let fitMode = window.innerWidth < 600;
 		let clazzTab0 = this.state.tab === 0 ? 'nav-link active' : 'nav-link';
 		let clazzTab1 = this.state.tab === 1 ? 'nav-link active' : 'nav-link';
 		let clazzTab2 = this.state.tab === 2 ? 'nav-link active' : 'nav-link';
@@ -461,6 +532,10 @@ export default class SolicitationForm extends React.Component{
 					           maxlength="18"
 					           handler={this}>
 					</InputText>
+					<InputUpload id="upRekognition" 
+						         label="Adicione uma Imagem do Padrão para Validação"
+						         handler={this}>
+					</InputUpload>
 				</div>
 				<div className={clazzPanel1}>
 					<div className={null !== this.client ? 'alert-info' : 'none'}>
@@ -479,6 +554,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a5_birthdate}
 						       corrector={DateCorrector}
 							   readOnly={null !== this.client}
+							   width={fitMode ? '100' : '32'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a6_doctype"
@@ -486,6 +562,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a6_doctype}
 						       options={this.a6_doctypes}
 					           readOnly={null !== this.client}
+							   width={fitMode ? '100' : '32'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a7_document" 
@@ -493,6 +570,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a7_document}
 						       corrector={DocumentCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '32'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a8_gender"
@@ -500,6 +578,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a8_gender}
 						       options={this.a8_genders}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a9_email" 
@@ -507,6 +586,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a9_email}
 						       corrector={EmailCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a10_phone" 
@@ -528,6 +608,7 @@ export default class SolicitationForm extends React.Component{
 						       corrector={CepCorrector}
 					           maxlength="9"
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a12_uf"
@@ -535,6 +616,8 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a12_uf}
 						       options={this.statesOptions}
 					           readOnly={null !== this.client}
+					           noRender={this.state.addressMode === 'text'}
+					           width={fitMode ? '100' : '19'}
 						       handler={this}>
 					</SelectBox>
 					<SelectBox id="a13_city" 
@@ -542,13 +625,35 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a13_city}
 					           options={this.citiesOptions}
 					           readOnly={null !== this.client}
+					           noRender={this.state.addressMode === 'text'}
+					           width={fitMode ? '100' : '59'}
 					           handler={this}>
 					</SelectBox>
+					<InputText id="a12_uf" 
+						       label="Estado/UF"
+						       defaultValue={this.state.a12_uf}
+						       corrector={OnlyAlphaCorrector}
+					           readOnly={null !== this.client}
+					           noRender={this.state.addressMode !== 'text'}
+					           width={fitMode ? '100' : '19'}
+					           handler={this}>
+					</InputText>
+					<InputText id="a13_city" 
+						       label="Cidade"
+						       defaultValue={this.state.a13_city}
+						       corrector={OnlyAlphaCorrector}
+					           readOnly={null !== this.client}
+					           noRender={this.state.addressMode !== 'text'}
+					           width={fitMode ? '100' : '59'}
+					           handler={this}>
+					</InputText>
+					<div className="clear"></div>
 					<InputText id="a14_street" 
 						       label="Logradouro"
 						       defaultValue={this.state.a14_street}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '78'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a15_number" 
@@ -556,6 +661,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a15_number}
 						       corrector={OnlyNumberCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a16_compl1type"
@@ -563,6 +669,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a16_compl1type}
 						       options={this.a16_compl1types}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a17_compl1desc" 
@@ -570,6 +677,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a17_compl1desc}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={null !== this.client || this.state.a16_compl1type.trim() === ''}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a18_compl2type"
@@ -577,6 +685,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a18_compl2type}
 						       options={this.a18_compl2types}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a19_compl2desc" 
@@ -584,6 +693,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a19_compl2desc}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={null !== this.client || this.state.a18_compl2type.trim() === ''}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 				</div>
@@ -599,36 +709,61 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a5_cep}
 						       corrector={CepCorrector}
 					           maxlength="9"
+					        	   width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a6_uf"
 						       label="Estado/UF"
 						       defaultValue={this.state.s_a6_uf}
 						       options={this.statesOptions2}
+					           noRender={this.state.addressMode2 === 'text'}
+					           width={fitMode ? '100' : '19'}
 						       handler={this}>
 					</SelectBox>
 					<SelectBox id="s_a7_city" 
 						       label="Cidade"
 						       defaultValue={this.state.s_a7_city}
 					           options={this.citiesOptions2}
+					           noRender={this.state.addressMode2 === 'text'}
+					           width={fitMode ? '100' : '59'}
 					           handler={this}>
 					</SelectBox>
+					<InputText id="s_a6_uf" 
+						       label="Estado/UF"
+						       defaultValue={this.state.s_a6_uf}
+						       corrector={OnlyAlphaCorrector}
+					           noRender={this.state.addressMode2 !== 'text'}
+					           width={fitMode ? '100' : '19'}
+					           handler={this}>
+					</InputText>
+					<InputText id="s_a7_city" 
+						       label="Cidade"
+						       defaultValue={this.state.s_a7_city}
+						       corrector={OnlyAlphaCorrector}
+					           noRender={this.state.addressMode2 !== 'text'}
+					           width={fitMode ? '100' : '59'}
+					           handler={this}>
+					</InputText>
+					<div className="clear"></div>
 					<InputText id="s_a8_street" 
 						       label="Logradouro"
 						       defaultValue={this.state.s_a8_street}
 						       corrector={OnlyAlphaCorrector}
+					           width={fitMode ? '100' : '78'}
 					           handler={this}>
 					</InputText>
 					<InputText id="s_a9_number" 
 						       label="Número"
 						       defaultValue={this.state.s_a9_number}
 						       corrector={OnlyNumberCorrector}
+					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a10_compl1type"
 						       label="Complemento 1 Tipo"
 						       defaultValue={this.state.s_a10_compl1type}
 						       options={this.a16_compl1types}
+					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="s_a11_compl1desc" 
@@ -636,12 +771,14 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a11_compl1desc}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={this.state.s_a10_compl1type.trim() === ''}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a12_compl2type"
 						       label="Complemento 2 Tipo"
 						       defaultValue={this.state.s_a12_compl2type}
 						       options={this.a18_compl2types}
+					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="s_a13_compl2desc" 
@@ -649,6 +786,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a13_compl2desc}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={this.state.s_a12_compl2type.trim() === ''}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<InputText id="s_a14_reference" 

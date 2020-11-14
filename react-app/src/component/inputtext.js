@@ -43,8 +43,11 @@ export default class InputText extends React.Component{
 		let readOnly = (undefined !== this.props.readOnly 
 				        && null !== this.props.readOnly && this.props.readOnly);
 		let clazz = readOnly ? 'form-control disabled' : 'form-control';
+		let w = (undefined !== this.props.width && null !== undefined !== this.props.width) 
+              ? this.props.width : 100;
 		return (
-				<div>
+				<div className="field" 
+					 style={{'width': w + '%','float':'left'}}>
 					{this.renderLabel()}
 					<input id={this.props.id} 
 						   type="text" 

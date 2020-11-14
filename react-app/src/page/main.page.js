@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BigButton from '../component/bigbutton.js';
-import SolicitationForm from './solicitation.form.js';
+import SolicitationForm from './solicitation2.form.js';
 import RekognitionForm from './rekognition.form.js';
 import SicinBot from '../bot/sicinbot.js';
 

@@ -101,7 +101,7 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 			return;
 		}
 		elem.src = this.reactAppLink;
-		elem.style.minHeight = (window.innerHeight - 35) + 'px';
+		elem.style.height = (window.innerHeight + 100) + 'px';
 		setTimeout(() => {
 			elem.style.display = 'block';
 		},200);

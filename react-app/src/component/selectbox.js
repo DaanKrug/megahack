@@ -37,8 +37,12 @@ export default class SelectBox extends React.Component{
 		let readOnly = (undefined != this.props.readOnly 
 		        && null !== this.props.readOnly && this.props.readOnly);
 	    let clazz = readOnly ? 'form-control disabled' : 'form-control clickable';
+	    let w = (undefined !== this.props.width && null !== undefined !== this.props.width) 
+	              ? this.props.width : 100;
 		return (
-				<div key={this.state.key}>
+				<div key={this.state.key}
+				     className="field"
+				     style={{'width': w + '%','float':'left'}}>
 					{this.renderLabel()}
 					<select id={this.props.id} 
 			                className={clazz}
