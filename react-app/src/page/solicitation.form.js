@@ -2,6 +2,7 @@ import React from 'react';
 
 import ClientService from '../api_com/client.service.js';
 import SolicitationService from '../api_com/solicitation.service.js';
+import ViaCepService from '../api_com/external/viacep.service.js';
 import CitiesUtil from '../util/cities.util.js';
 
 import InputCorrector from '../component/corrector/input.corrector.js';
@@ -147,6 +148,7 @@ export default class SolicitationForm extends React.Component{
 			s_a14_reference: '',
 			errorMsg: '',
 			successMsg: '',
+			addressMode: 'select',
 		};
 	}
 	
@@ -197,6 +199,9 @@ export default class SolicitationForm extends React.Component{
 		if(newTab === 1){
 			this.loadClientAndNext();
 			return;
+		}
+		if(newTab === 2){
+			this.setState({tab: newTab, addressMode: 'select', key: new Date().getTime() });
 		}
 		if(newTab === 3 && null === this.client){
 			let client = {
@@ -265,6 +270,18 @@ export default class SolicitationForm extends React.Component{
 		});
 	}
 	
+	searchByCep(value){
+		ViaCepService.findByCep(value).then(result => {
+			if(null === result || Array.isArray(result)){
+				return;
+			}
+			this.setState({addressMode: 'text'});
+			this.valueChanged('a12_uf',result.uf);
+			this.valueChanged('a13_city',result.cidade);
+			this.valueChanged('a14_street',result.logradouro + ' ' + result.bairro);
+		});
+	}
+	
 	valueChanged(id,value){
 		if(id === 'a1_name'){
 			this.setState({a1_name: value});
@@ -298,6 +315,9 @@ export default class SolicitationForm extends React.Component{
 		}
 		if(id === 'a11_cep'){
 			this.setState({a11_cep: value});
+			if(value.trim().length >= 8){
+				this.searchByCep(value);
+			}
 		}
 		if(id === 'a12_uf'){
 			this.citiesOptions = value.trim() === '' 
@@ -387,6 +407,41 @@ export default class SolicitationForm extends React.Component{
 		this.valueChanged('a18_compl2type',null != client ? client.a18_compl2type : '');
 		this.valueChanged('a19_compl2desc',null != client ? client.a19_compl2desc : '');
 	}
+	
+	/*
+	 <SelectBox id="a12_uf"
+		       label="Estado/UF"
+		       defaultValue={this.state.a12_uf}
+		       options={this.statesOptions}
+	           readOnly={null !== this.client}
+	           noRender={this.state.addressMode === 'text'}
+		       handler={this}>
+	</SelectBox>
+	<SelectBox id="a13_city" 
+		       label="Cidade"
+		       defaultValue={this.state.a13_city}
+	           options={this.citiesOptions}
+	           readOnly={null !== this.client}
+	           noRender={this.state.addressMode === 'text'}
+	           handler={this}>
+	</SelectBox>
+	<InputText id="a12_uf" 
+		       label="Estado/UF"
+		       defaultValue={this.state.a12_uf}
+		       corrector={OnlyAlphaCorrector}
+	           readOnly={null !== this.client}
+	           noRender={this.state.addressMode !== 'text'}
+	           handler={this}>
+	</InputText>
+	<InputText id="a13_city" 
+		       label="Cidade"
+		       defaultValue={this.state.a13_city}
+		       corrector={OnlyAlphaCorrector}
+	           readOnly={null !== this.client}
+	           noRender={this.state.addressMode !== 'text'}
+	           handler={this}>
+	</InputText>
+	 */
 	
 	render(){
 		let clazzTab0 = this.state.tab === 0 ? 'nav-link active' : 'nav-link';

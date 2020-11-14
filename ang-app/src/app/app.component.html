@@ -60,7 +60,7 @@
 				    	<rich-dropdown-button label="P&aacute;gina Inicial"  
 				    	                      [noRender]="!logged"
 				    	                      [activated]="mainpageNumber == 0"
-						                      (clickEmitter)="homeView()"
+						                      (clickEmitter)="homeView(); loadReactApp();"
 						                      (clickEmitter1)="drdBegin.close()">
 						</rich-dropdown-button>
 						<rich-dropdown-button label="P&aacute;gina Inicial"  

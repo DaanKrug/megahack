@@ -94,8 +94,10 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 	
 	private loadReactApp(){
 		var elem: any = document.getElementById('iframeReactApp');
-	console.log('elem: ',elem);
 		if(this.emptyObject(elem)){
+			setTimeout(() => {
+				this.loadReactApp();
+			},200);
 			return;
 		}
 		elem.src = this.reactAppLink;
@@ -258,11 +260,6 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 	
 	//navigation control
 	homeView(){ 
-		console.log('homeView(): ');
-		setTimeout(() => {
-			this.mainpageNumber = 0;
-			this.loadReactApp();
-		},500);
 		this.storageService.clear();
 		this.storageService.put(null);
 		this.navigateTo('home','In&iacute;cio'); 
@@ -411,6 +408,7 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 		this.storageService.clear();
 		this.storageService.put(null);
 		this.navigateTo('blank','');
+		this.loadReactApp();
 	}
 	
 	pricingPolicy(){
