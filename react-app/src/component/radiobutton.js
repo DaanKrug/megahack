@@ -24,8 +24,8 @@ export default class RadioButton extends React.Component{
 			return (<></>);
 		}
 		return (
-				<div>
-					<label forHtml={this.props.id}>{this.props.label}</label>
+				<div >
+					<label style={{marginTop: '10px', marginBottom: '3px'}} forHtml={this.props.id}>{this.props.label}</label>
 				</div>
 		);
 	}

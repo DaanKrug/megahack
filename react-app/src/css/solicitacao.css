@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Poppins&family=Ubuntu:wght@300&display=swap');
+
+*{
+  box-sizing: border-box;
+}
+
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+.headerData .tabs{
+  overflow: auto;
+}
+
+.dataForm{
+  width: 100%;
+  max-width: 670px;
+  height: 100vh;
+  margin:  auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  overflow: auto;
+}
+.dataForm h3{
+  font-size: 17px;
+  color: #303030;
+  font-family: Poppins, sans-serif;
+  margin-bottom: 10px;
+}
+
+.dataForm select{
+  width: 100%;
+  background: #EDEDED  ;
+  font-family: Inter, sans-serif;
+  font-size: 14;
+  padding: 5px 10px;
+  background: #EDEDED  ;
+  outline: none;
+  border-radius: 5px;
+  transition: border 0.4s;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 2px solid transparent!important;
+}
+.dataForm option{
+  padding: 5px 10px;
+  background: white;
+}
+.dataForm option:hover, .dataForm option:focus{
+  border: 2px solid #FBA652!important;
+}
+.dataForm select:focus{
+  border: 2px solid #FBA652!important;
+
+}
+.dataForm input{
+  width: 100%;
+  font-family: Inter, sans-serif;
+  font-size: 14;
+  padding: 5px 10px;
+  background: #EDEDED  ;
+  outline: none;
+  border-radius: 5px;
+  transition: border 0.4s;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 2px solid transparent!important;
+}
+.dataForm input:focus{
+  border: 2px solid #FBA652!important;
+}
+label{
+  font-family: Ubuntu, sans-serif;
+  font-size: 14px;
+  color: #303030;
+  margin-top: 15px!important;
+}
+.dataForm .tabs{
+  display: flex;
+  justify-content: space-between;
+  background: #FBA652;
+  padding: 10px 20px;
+  border-radius: 3px;
+
+}
+.tabs li{
+  list-style: none;
+
+}
+@media(max-width: 500px){
+  .dataForm .tabs{
+    display: none;
+  }
+}

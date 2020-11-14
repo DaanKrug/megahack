@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans&family=Poppins&family=Ubuntu:wght@300&display=swap');
+
+body{
+    background: white!important;
+}
 .rsc{
-	margin-top: 0.3em;
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
 }
 .rsc-content{
     height: 23em;
@@ -16,6 +22,7 @@
 .rsc-ts-bot div{
 	float: left;
 }
+
 .rsc-ts-user div{
 	float: right;
 }

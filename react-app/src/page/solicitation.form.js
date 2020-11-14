@@ -10,6 +10,7 @@ import InputText from '../component/inputtext.js';
 import RadioButton from '../component/radiobutton.js';
 import SelectBox from '../component/selectbox.js';
 
+import '../css/solicitacao.css';
 
 const alphaE: string[] = [
 	'Ñ','Ã','Á','À','Â','Ä','É','È','Ê','Ë','Í','Ì','Î','Ï','Õ','Ó','Ò','Ô','Ö','Ú','Ù','Û','Ü','Ç'
@@ -463,28 +464,29 @@ export default class SolicitationForm extends React.Component{
 		return(
 			<div className="dataForm"
 				 key={this.state.key}>
+					 <div className='headerData'>
 				<h3>Solicitação de Nova Instalação</h3>
 				<div>
-					<ul className="nav nav-tabs justify-content-start" 
+					<ul className="tabs" 
 						style={{'margin-left':'.5em'}}>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab0}>
-						   	    CPF/CNPJ
+						   	  CPF/CNPJ
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab1}>
-						   	    Dados Pessoais
+						   	  Dados pessoais
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab2}>
-						   	    Endereço
+						   	    Seu endereço
 							</span>
 						</li>
-						<li className="nav-item">
+						<li>
 							<span className={clazzTab3}>
-						   	    Endereço Nova Instalação
+						   	  Endereço da Instalação
 							</span>
 						</li>
 					</ul>
@@ -492,8 +494,8 @@ export default class SolicitationForm extends React.Component{
 						 style={{'marginBottom':'.4em'}}>
 					</div>
 				</div>
+				</div>
 				<div className={clazzPanel0}>
-					<h4>Informe CPF ou CNPJ</h4>
 					<RadioButton id="a2_type" 
 						         defaultValue={this.state.a2_type}
 						         options={this.a2_types}
@@ -513,7 +515,6 @@ export default class SolicitationForm extends React.Component{
 					</InputText>
 				</div>
 				<div className={clazzPanel1}>
-					<h4>Informe os Dados Pessoais</h4>
 					<div className={null !== this.client ? 'alert-info' : 'none'}>
 						Encontramos seu cadastro. Para alterar os dados realize 
 						solicitação de alteração de dados pessoais.
@@ -569,7 +570,6 @@ export default class SolicitationForm extends React.Component{
 					</InputText>
 				</div>
 				<div className={clazzPanel2}>
-					<h4>Informe O Seu Endereço</h4>
 					<div className={null !== this.client ? 'alert-info' : 'none'}>
 						Encontramos seu cadastro. Para alterar os dados realize 
 						solicitação de alteração de dados pessoais.
@@ -640,7 +640,6 @@ export default class SolicitationForm extends React.Component{
 					</InputText>
 				</div>
 				<div className={clazzPanel3}>
-					<h4>Informe O Endereço Da Nova Instalação</h4>
 					<SelectBox id="s_a2_caracteristic"
 						       label="Característica da Instalação"
 						       defaultValue={this.state.s_a2_caracteristic}
