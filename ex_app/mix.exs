@@ -37,8 +37,10 @@ defmodule ExApp.MixProject do
         {:bamboo_smtp, "~> 2.1.0"},
         {:bamboo_config_adapter, "~> 1.0.0"},
         {:httpoison, "~> 1.6"},
-        {:ex_aws, "~> 2.1"},
+        {:jason, "~> 1.2.2"},
+        {:ex_aws, "~> 2.1.6"},
 	    {:ex_aws_s3, "~> 2.0"},
+	    {:ex_aws_rekognition, "~> 0.6.0"},
 	    {:hackney, "~> 1.15"},
 	    {:sntp, "~> 0.2.1"}
     ]

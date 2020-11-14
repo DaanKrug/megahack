@@ -1,21 +1,19 @@
-var origin = 'https://www.megahack2020.skallerten.com.br';
+var origin = 'http://localhost';
 var siteUrl = origin + '/megahack2020';
-var cdn0 = 'https://skallerten-cdn.s3.amazonaws.com';
-var cdn = 'https://megahack2020-cdn.s3-us-west-2.amazonaws.com';
 var cacheName = 'megahack2020-v1.0.0_' + new Date().getTime();
 var urlsToPrefetch = [
-	cdn + '/custom.min.css',
-	cdn0 + '/fontawesome-5.11/css/all.min.css',
-	cdn0 + '/bootstrap/bootstrap-reduced.min.css',
-	cdn + '/angular/runtime-es2015.js',
-	cdn + '/angular/polyfills-es2015.js',
-	cdn + '/angular/main-es2015.js',
-	cdn + '/angular/scripts.js',
-	cdn0 + '/tinymce-5.3.0/jquery.tinymce.min.js',
-	cdn0 + '/tinymce-5.3.0/tinymce.min.js',
-	cdn0 + '/webfonts/ubuntu/ubuntu.css',
-	cdn + '/angular/styles.css',
-	cdn0 + '/themes/blue01.min.css'
+	siteUrl + '/custom.min.css',
+	siteUrl + '/fontawesome-5.11/css/all.min.css',
+	siteUrl + '/bootstrap/bootstrap-reduced.min.css',
+	siteUrl + '/angular/runtime-es2015.js',
+	siteUrl + '/angular/polyfills-es2015.js',
+	siteUrl + '/angular/main-es2015.js',
+	siteUrl + '/angular/scripts.js',
+	siteUrl + '/tinymce-5.3.0/jquery.tinymce.min.js',
+	siteUrl + '/tinymce-5.3.0/tinymce.min.js',
+	siteUrl + '/webfonts/ubuntu/ubuntu.css',
+	siteUrl + '/angular/styles.css',
+	siteUrl + '/themes/blue01.min.css'
 ];
 var requestProps = {method: 'GET',
 		            mode: 'no-cors',

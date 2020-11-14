@@ -332,6 +332,13 @@ defmodule ExApp.MessagesUtil do
                                  "Falha ao criar <strong>Fatura Energia</strong>.")
       (messageCode == 100167) -> ReturnUtil.getValidationResult(100167,
                                  "Falha ao alterar <strong>Fatura Energia</strong>.") 
+      (messageCode == 100168) -> ReturnUtil.getValidationResult(100168,
+                                 "Falha a processar reconhecimento de imagem [Identificação inválida].")
+      (messageCode == 100169) -> ReturnUtil.getValidationResult(100169,
+                                 """
+                                 Falha a processar reconhecimento de imagem 
+                                 [MimeType incompatível com o tipo do arquivo].
+                                 """)
       true -> systemMessage(0)
     end
   end

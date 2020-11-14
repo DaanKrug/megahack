@@ -2,6 +2,7 @@ import React from 'react';
 
 import BigButton from '../component/bigbutton.js';
 import SolicitationForm from './solicitation.form.js';
+import RekognitionForm from './rekognition.form.js';
 import SicinBot from '../bot/sicinbot.js';
 
 
@@ -35,6 +36,12 @@ export default class MainPage extends React.Component {
 	renderSolicitationForm(){
 		return(
 			   <SolicitationForm />
+		);
+	}
+	
+	renderRekognitionForm(){
+		return(
+			   <RekognitionForm />
 		);
 	}
 	
@@ -75,13 +82,10 @@ export default class MainPage extends React.Component {
     	if('newBinding' === this.state.view){
     		return this.renderSolicitationForm();
     	}
-    	/*
-    	if('alterClientData' === this.state.view){
-    		return this.renderinitialView();
-    	}
     	if('otherServices' === this.state.view){
-    		return this.renderinitialView();
+    		return this.renderRekognitionForm();
     	}
+    	/*
     	if('initial' === this.state.view){
     		return this.renderinitialView();
     	}
