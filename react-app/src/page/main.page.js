@@ -52,7 +52,7 @@ export default class MainPage extends React.Component {
 				    		<div className="row justify-content-center" 
 				    			 style={{'paddingTop': '3em'}}>
 				    			<BigButton label="Solicitar Nova Ligação" 
-				    				       className="fab fa-houzz" 
+													 className="fab fa-houzz" 
 				    				       onClick={() => this.newBinding()} />
 				    			<BigButton label="Alterar Dados Cadastrais" 
 				    				       className="fas fa-user-edit" 
