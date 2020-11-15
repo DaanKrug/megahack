@@ -82,9 +82,9 @@ export default class MainPage extends React.Component {
     	if('newBinding' === this.state.view){
     		return this.renderSolicitationForm();
     	}
-    	if('otherServices' === this.state.view){
+    	/*if('otherServices' === this.state.view){
     		return this.renderRekognitionForm();
-    	}
+    	}*/
     	/*
     	if('initial' === this.state.view){
     		return this.renderinitialView();

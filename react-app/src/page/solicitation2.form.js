@@ -53,9 +53,9 @@ export default class SolicitationForm extends React.Component{
 			a3_cpf: '',
 			a4_cnpj: '',
 			a5_birthdate: '',
-			a6_doctype: '',
+			a6_doctype: SolicitationHelper.getA6_doctypes()[0].value,
 			a7_document: '',
-			a8_gender: '',
+			a8_gender: SolicitationHelper.getA8_genders()[0].value,
 			a9_email: '',
 			a10_phone: '',
 			a11_cep: '',
@@ -142,7 +142,13 @@ export default class SolicitationForm extends React.Component{
 				this.setClientData(client);
 				this.setProcessing(false);
 				let newTab = this.emptyObject(this.client) ? 1 : 3;
-				this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
+				this.setState({
+					tab: newTab, 
+					addressMode2: 'select', 
+					a6_doctype: SolicitationHelper.getA6_doctypes()[0].value,
+					a8_gender: SolicitationHelper.getA8_genders()[0].value,
+					key: new Date().getTime() 
+				});
 			});
 			return;
 		}
@@ -150,7 +156,13 @@ export default class SolicitationForm extends React.Component{
 			this.setClientData(client);
 			this.setProcessing(false);
 			let newTab = this.emptyObject(this.client) ? 1 : 3;
-			this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
+			this.setState({
+				tab: newTab, 
+				addressMode2: 'select', 
+				a6_doctype: SolicitationHelper.getA6_doctypes()[0].value,
+				a8_gender: SolicitationHelper.getA8_genders()[0].value,
+				key: new Date().getTime() 
+			});
 		});
 	}
 	
@@ -183,7 +195,11 @@ export default class SolicitationForm extends React.Component{
 			return;
 		}
 		if(newTab === 2){
-			this.setState({tab: newTab, addressMode: 'select', key: new Date().getTime() });
+			this.setState({
+				tab: newTab, 
+				addressMode: 'select',
+				key: new Date().getTime() 
+			});
 		}
 		if(newTab === 3 && this.emptyObject(this.client)){
 			let date = this.state.a5_birthdate.replace(/\//gi,'');
@@ -234,6 +250,7 @@ export default class SolicitationForm extends React.Component{
 	
 	validateNext1(){
 		if(this.emptyString(this.state.a3_cpf) && this.emptyString(this.state.a4_cnpj)){
+			console.log('validateNext1',this.state);
 			return false;
 		}
 		return true;
@@ -246,6 +263,7 @@ export default class SolicitationForm extends React.Component{
 				|| this.emptyString(this.state.a7_document)
 				|| this.emptyString(this.state.a8_gender)
 				|| this.emptyString(this.state.a10_phone)){
+			console.log('validateNext2',this.state);
 			return false;
 		}
 		return true;
@@ -256,6 +274,7 @@ export default class SolicitationForm extends React.Component{
 				|| this.emptyString(this.state.a12_uf)
 				|| this.emptyString(this.state.a13_city)
 				|| this.emptyString(this.state.a14_street)){
+			console.log('validateNext3',this.state);
 			return false;
 		}
 		return true;

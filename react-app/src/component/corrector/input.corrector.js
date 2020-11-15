@@ -26,7 +26,7 @@ export default class InputCorrector{
     		this.validChars = alphas.concat([' ']);
     	}
     	if(type === 'alphanum'){
-    		this.validChars = alphas.concat(numbers).concat(specials);
+    		this.validChars = alphas.concat(numbers).concat(specials).concat([' ']);
     	}
     	if(type === 'email'){
     		this.validChars = alphaA.concat(alphaa).concat(numbers).concat(['@','.','-','_']);

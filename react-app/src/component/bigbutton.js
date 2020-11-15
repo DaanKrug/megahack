@@ -8,7 +8,7 @@ export default function BigButton(props){
 		    		<div>
 						<i className={props.className + ' btIconLarge'}></i>
 					</div>
-					<div>
+					<div style={{'fontSize':'.8rem'}}>
 						{props.label}
 					</div>
 				</button>  

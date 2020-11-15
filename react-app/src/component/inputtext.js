@@ -13,7 +13,7 @@ export default class InputText extends React.Component{
 	
 	onChange(){
 		let elem = document.getElementById(this.props.id);
-		let value = elem.value.trim();
+		let value = elem.value;
 		if(undefined !== this.props.corrector && null !== this.props.corrector){
 			value = this.props.corrector.adjustValue(value);
 		}
