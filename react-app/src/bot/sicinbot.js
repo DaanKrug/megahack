@@ -14,9 +14,15 @@ export default class SicinBot extends React.Component {
 		    key: new Date().getTime(),
 			actualStep: 0,
 			msgs: botia.getInitialSteps(),
-			lastClickTime: null
+			lastClickTime: null,
+			collapsed: false,
 		};
 		setTimeout(() => {this.loadNextSteps(null,null,null);},10);
+	}
+	
+	collapse(){
+		let newCollapsed = !this.state.collapsed;
+		this.setState({collapsed: newCollapsed, key: new Date().getTime()});
 	}
 	
 	reset(){
@@ -96,13 +102,21 @@ export default class SicinBot extends React.Component {
 			msg.lastItem = (i === (size - 1));
 			rMsgs = [...rMsgs,msg];
 		}
+		let clazzPanel = this.state.collapsed ? 'chatContainer collapsed' : 'chatContainer';
 		return (
-				<div key={this.state.key} className="rsc">
+				<div key={this.state.key} 
+				     className="rsc">
 					<div id="chatContainer" 
-						 className="chatContainer">
+						 className={clazzPanel}>
+					<i className={!this.state.collapsed ? 'none' : 'fas fa-angle-double-left collapser'}
+	    		       onClick={() => {this.collapse();}}>
+	    		    </i>
+	    		    <i className={this.state.collapsed ? 'none' : 'fas fa-angle-double-right collapser'}
+	    		       onClick={() => {this.collapse();}}>
+	    		    </i>
 				    	<div className="chatContainerHeader rsc-header header">
 				    		<span className="rsc-header-title">
-				    		Joana Resolve
+				    			Joana Resolve
 				    		</span>
 				    	</div>
 				    	<div id="chatContainerBody" 

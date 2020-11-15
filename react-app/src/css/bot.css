@@ -22,7 +22,6 @@ body{
 .rsc-ts-bot div{
 	float: left;
 }
-
 .rsc-ts-user div{
 	float: right;
 }
@@ -46,7 +45,6 @@ body{
     justify-content: center;
     margin: auto;
 }
-
 .chatMsgContainer{
     display: block;
     clear: both;
@@ -93,7 +91,7 @@ body{
 }
 .botMsg{
     background: #ffe1c5;
-    padding: 10px 15px;
+    padding: .8em .95em;
     font-family: Open Sans, sans-serif;
     border-radius: 1.4em 1.4em 1.4em 0;
     color: rgb(34, 34, 34);
@@ -114,4 +112,62 @@ body{
 	border-radius: 1.4em 1.4em 1.4em 1.4em;
 	margin-left: .4em;
 	max-width: 100%;
+}
+.chatContainer.collapsed{
+	margin-right: -18.5em;
+}
+.collapser{
+	position: absolute;
+	top: .5em;
+	left: .5em;
+	cursor: pointer;
+	border: 1px solid;
+	border-radius: .35em;
+	padding: .3em;
+}
+@media only screen and (max-width: 260px) {
+	.rsc{
+	    right: .5em;
+	    bottom: 0em;
+	}
+	.chatContainer{
+		height: 16em !important;
+    	width: 14em !important;
+	}
+	.rsc-content{
+	    height: 12em !important;
+	}
+	.botMsg, .userMsg{
+		font-size: .75rem;
+	}
+	.chatMsgContainer .botMsg, 
+	.chatMsgContainer .userMsg{
+		max-width: 9rem;
+	}
+	.chatContainer.collapsed{
+		margin-right: -11.5em;
+	}
+}
+@media only screen and (min-width: 261px) and (max-width: 400px) {
+	.rsc{
+	    right: .5em;
+	    bottom: 4.5em;
+	}
+	.chatContainer{
+		height: 19.5em !important;
+    	width: 16.5em !important;
+	}
+	.rsc-content{
+	    height: 14.5em !important;
+	}
+	.botMsg, .userMsg{
+		font-size: .75rem;
+	}
+	.chatMsgContainer .botMsg, 
+	.chatMsgContainer .userMsg{
+		max-width: 11rem;
+	}
+	.chatContainer.collapsed{
+		margin-right: -14em;
+	}
 }
