@@ -45,6 +45,7 @@ export default class InputMessage extends React.Component {
 	    			<div className="field" 
 	    				 style={{'width':'2.5em'}}>
 		    			<button className="btn btn-primary clickable"
+		    				    style={{'padding':'.4em','margin':'0'}}
 				    		    onClick={() => {this.onClick();}}>
 				    		<i className="fas fa-paper-plane"></i>
 				    	</button>

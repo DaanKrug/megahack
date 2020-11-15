@@ -12,7 +12,7 @@ import SelectBox from '../component/selectbox.js';
 import InputUpload from '../component/inputupload.js';
 import AwsRekognitionService from '../api_com/awsrekognition.service.js';
 
-import '../css/solicitacao.css';
+import '../css/solicitacao2.css';
 
 const alphaE: string[] = [
 	'Ñ','Ã','Á','À','Â','Ä','É','È','Ê','Ë','Í','Ì','Î','Ï','Õ','Ó','Ò','Ô','Ö','Ú','Ù','Û','Ü','Ç'
@@ -159,7 +159,6 @@ export default class SolicitationForm extends React.Component{
 	}
 	
 	setValidationMessage(response){
-		console.log('response:', response);
 		this.setState({errorMsg: response.msg, sucessMsg: '', key: new Date().getTime()});
 	}
 	
@@ -172,6 +171,7 @@ export default class SolicitationForm extends React.Component{
 			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
 			return;
 		}
+		this.setProcessing(true);
 		let image = {file: this.state.fileData.base64, filename: this.state.fileData.fileName};
 		AwsRekognitionService.rekognize(image).then(result => {
 			let labels = result.msg.Labels;
@@ -192,9 +192,9 @@ export default class SolicitationForm extends React.Component{
 	loadClientAndNext(){
 		if(this.state.validatedNew !== true){
 			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
+			this.setProcessing(false);
 			return;
 		}
-		this.setProcessing(true);
 		if(this.state.a2_type === 'PF'){
 			ClientService.loadByCpf(this.state.a3_cpf).then(client => {
 				this.setClientData(client);
@@ -240,12 +240,13 @@ export default class SolicitationForm extends React.Component{
 			this.setState({tab: newTab, addressMode: 'select', key: new Date().getTime() });
 		}
 		if(newTab === 3 && null === this.client){
+			let date = this.state.a5_birthdate.replace(/\//gi,'');
 			let client = {
 				a1_name: this.state.a1_name,
 				a2_type: this.state.a2_type,
 				a3_cpf: this.state.a3_cpf,
 				a4_cnpj: this.state.a4_cnpj,
-				a5_birthdate: this.state.a5_birthdate,
+				a5_birthdate: date.substring(4) + '-' + date.substring(2,4) + '-' + date.substring(0,2),
 				a6_doctype: this.state.a6_doctype,
 				a7_document: this.state.a7_document,
 				a8_gender: this.state.a8_gender,
@@ -261,6 +262,7 @@ export default class SolicitationForm extends React.Component{
 				a18_compl2type: this.state.a18_compl2type,
 				a19_compl2desc: this.state.a19_compl2desc
 			};
+			console.log('client: ', client);
 			this.setProcessing(true);
 			ClientService.create(client).then(response => {
 				if(response.code !== 200){
@@ -438,8 +440,11 @@ export default class SolicitationForm extends React.Component{
 		}
 	}
 	
-	setProcessing(block){
-		// show|hide a shadow mask and a loading icon
+	setProcessing(processing){
+		setTimeout(() => {
+			let elem = document.getElementById('backDropLoading');
+			elem.style.display = processing ? 'block' : 'none';
+		},100);
 	}
 	
 	setClientData(client){
@@ -469,11 +474,11 @@ export default class SolicitationForm extends React.Component{
 		let clazzTab2 = this.state.tab === 2 ? 'nav-link active' : 'nav-link';
 		let clazzTab3 = this.state.tab === 3 ? 'nav-link active' : 'nav-link';
 		let clazzTab4 = this.state.tab === 4 ? 'nav-link active' : 'nav-link';
-		let clazzPanel0 = this.state.tab === 0 ? 'card' : 'none';
-		let clazzPanel1 = this.state.tab === 1 ? 'card' : 'none';
-		let clazzPanel2 = this.state.tab === 2 ? 'card' : 'none';
-		let clazzPanel3 = this.state.tab === 3 ? 'card' : 'none';
-		let clazzPanel4 = this.state.tab === 4 ? 'card' : 'none';
+		let clazzPanel0 = this.state.tab === 0 ? '' : 'none';
+		let clazzPanel1 = this.state.tab === 1 ? '' : 'none';
+		let clazzPanel2 = this.state.tab === 2 ? '' : 'none';
+		let clazzPanel3 = this.state.tab === 3 ? '' : 'none';
+		let clazzPanel4 = this.state.tab === 4 ? '' : 'none';
 		if(null !== this.client){
 			clazzTab1 = 'none';
 			clazzTab2 = 'none';
@@ -483,36 +488,35 @@ export default class SolicitationForm extends React.Component{
 		return(
 			<div className="dataForm"
 				 key={this.state.key}>
-					 <div className='headerData'>
-				<h3>Solicitação de Nova Instalação</h3>
-				<div>
-					<ul className="tabs" 
-						style={{'margin-left':'.5em'}}>
-						<li>
-							<span className={clazzTab0}>
-						   	  CPF/CNPJ
-							</span>
-						</li>
-						<li>
-							<span className={clazzTab1}>
-						   	  Dados pessoais
-							</span>
-						</li>
-						<li>
-							<span className={clazzTab2}>
-						   	    Seu endereço
-							</span>
-						</li>
-						<li>
-							<span className={clazzTab3}>
-						   	  Endereço da Instalação
-							</span>
-						</li>
-					</ul>
-					<div className="clear" 
-						 style={{'marginBottom':'.4em'}}>
+				<div className='headerData'>
+					<h3>Solicitação de Nova Instalação</h3>
+					<div>
+						<ul className="tabs">
+							<li>
+								<span className={clazzTab0}>
+							   	  CPF/CNPJ
+								</span>
+							</li>
+							<li>
+								<span className={clazzTab1}>
+							   	  Dados pessoais
+								</span>
+							</li>
+							<li>
+								<span className={clazzTab2}>
+							   	    Seu endereço
+								</span>
+							</li>
+							<li>
+								<span className={clazzTab3}>
+							   	  Endereço da Instalação
+								</span>
+							</li>
+						</ul>
+						<div className="clear" 
+							 style={{'marginBottom':'.4em'}}>
+						</div>
 					</div>
-				</div>
 				</div>
 				<div className={clazzPanel0}>
 					<RadioButton id="a2_type" 
@@ -536,6 +540,10 @@ export default class SolicitationForm extends React.Component{
 						         label="Adicione uma Imagem do Padrão para Validação"
 						         handler={this}>
 					</InputUpload>
+					<img style={{'border':'0','width':'100%','height':'16em'}}
+					     className={null === this.state.fileData ? 'none' : ''}
+					     src={null === this.state.fileData ? '' : this.state.fileData.base64}>
+					</img>
 				</div>
 				<div className={clazzPanel1}>
 					<div className={null !== this.client ? 'alert-info' : 'none'}>
@@ -547,6 +555,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a1_name}
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '99'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a5_birthdate" 
@@ -562,7 +571,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a6_doctype}
 						       options={this.a6_doctypes}
 					           readOnly={null !== this.client}
-							   width={fitMode ? '100' : '32'}
+							   width={fitMode ? '100' : '33'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a7_document" 
@@ -570,7 +579,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a7_document}
 						       corrector={DocumentCorrector}
 					           readOnly={null !== this.client}
-					           width={fitMode ? '100' : '32'}
+					           width={fitMode ? '100' : '33'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a8_gender"
@@ -594,6 +603,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a10_phone}
 						       corrector={PhoneCorrector}
 					           readOnly={null !== this.client}
+					           width={fitMode ? '100' : '99'}
 					           handler={this}>
 					</InputText>
 				</div>
@@ -626,7 +636,7 @@ export default class SolicitationForm extends React.Component{
 					           options={this.citiesOptions}
 					           readOnly={null !== this.client}
 					           noRender={this.state.addressMode === 'text'}
-					           width={fitMode ? '100' : '59'}
+					           width={fitMode ? '100' : '60'}
 					           handler={this}>
 					</SelectBox>
 					<InputText id="a12_uf" 
@@ -644,7 +654,7 @@ export default class SolicitationForm extends React.Component{
 						       corrector={OnlyAlphaCorrector}
 					           readOnly={null !== this.client}
 					           noRender={this.state.addressMode !== 'text'}
-					           width={fitMode ? '100' : '59'}
+					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<div className="clear"></div>
@@ -661,7 +671,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.a15_number}
 						       corrector={OnlyNumberCorrector}
 					           readOnly={null !== this.client}
-					           width={fitMode ? '100' : '19'}
+					           width={fitMode ? '100' : '20'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a16_compl1type"
@@ -702,6 +712,7 @@ export default class SolicitationForm extends React.Component{
 						       label="Característica da Instalação"
 						       defaultValue={this.state.s_a2_caracteristic}
 						       options={this.a2_caracteristics}
+					           width={fitMode ? '100' : '99'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="s_a5_cep" 
@@ -709,7 +720,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a5_cep}
 						       corrector={CepCorrector}
 					           maxlength="9"
-					        	   width={fitMode ? '100' : '19'}
+					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a6_uf"
@@ -725,7 +736,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a7_city}
 					           options={this.citiesOptions2}
 					           noRender={this.state.addressMode2 === 'text'}
-					           width={fitMode ? '100' : '59'}
+					           width={fitMode ? '100' : '60'}
 					           handler={this}>
 					</SelectBox>
 					<InputText id="s_a6_uf" 
@@ -741,7 +752,7 @@ export default class SolicitationForm extends React.Component{
 						       defaultValue={this.state.s_a7_city}
 						       corrector={OnlyAlphaCorrector}
 					           noRender={this.state.addressMode2 !== 'text'}
-					           width={fitMode ? '100' : '59'}
+					           width={fitMode ? '100' : '60'}
 					           handler={this}>
 					</InputText>
 					<div className="clear"></div>
@@ -756,7 +767,7 @@ export default class SolicitationForm extends React.Component{
 						       label="Número"
 						       defaultValue={this.state.s_a9_number}
 						       corrector={OnlyNumberCorrector}
-					           width={fitMode ? '100' : '19'}
+					           width={fitMode ? '100' : '20'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a10_compl1type"
@@ -793,6 +804,7 @@ export default class SolicitationForm extends React.Component{
 						       label="Referência"
 						       defaultValue={this.state.s_a14_reference}
 						       corrector={OnlyAlphaCorrector}
+					           width={fitMode ? '100' : '99'}
 					           handler={this}>
 					</InputText>
 				</div>
@@ -807,25 +819,35 @@ export default class SolicitationForm extends React.Component{
 				<div className="buttons clear"> 
 					<button className="btn btn-primary clickable"
 						    onClick={() => {this.previousStep();}}>
-					    <i className="fas fa-backward"></i>
-						<span style={{'marginLeft':'1em;'}}>
+					    <i className="fas fa-backward" 
+					       style={{'marginRight':'1em'}}>
+					    </i>
+						<span>
 							Anterior
 						</span>
 					</button>  
 					<button className={this.state.tab === 3 ? 'none' : 'btn btn-primary clickable'}
 						    onClick={() => {this.nextStep();}}>
-						<span style={{'marginRight':'1em;'}}>
+						<span>
 							Seguinte
 						</span>
-						<i className="fas fa-forward"></i>
+						<i className="fas fa-forward"
+							style={{'marginLeft':'1em'}}>
+					    </i>
 					</button>  
 					<button className={this.state.tab !== 3 ? 'none' : 'btn btn-primary clickable'}
 						    onClick={() => {this.createSolicitation();}}>
-					    <i className="fas fa-check-double"></i>
-						<span style={{'marginRight':'1em;'}}>
-							Confirmar Envio da Solicitação
+					    <i className="fas fa-check-double" 
+					       style={{'marginLeft':'1em'}}>
+					    </i>
+						<span>
+							Enviar Solicitação
 						</span>
 					</button>  
+				</div>
+				<div id="backDropLoading"
+				     style={{'zIndex':'1000050','display':'none'}} 
+				     className="modal-backdrop fade show">
 				</div>
 			</div>
 		);

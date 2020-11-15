@@ -1,14 +1,3 @@
-/* 
-<headerX>                   - 1c99b5 
-<backgroundX>               - fffaff
-<primarybuttonX>            - 1e6e94
-<activeborderX>             - eeef75
-<activebackgroundX>         - 99dae4
-<textcolor1X>               - fff
-<textcolor2X>               - 100101
-<disabledX>                 - bbd9de
-*/
-
 html, body{
     background-color: #fffaff !important;
 }
@@ -17,41 +6,37 @@ html, body{
 }
 .nav-link{
     font-family: Inter, sans-serif;
-    font-size: 13px;
+    font-size: .9rem;
 }
 .nav-link.active{
-    padding: 10px 20px;
+    padding: .8em 1.6em;
     color: white!important;
-    border-radius: 5px;
+    border-radius: .4em;
     transition: all 0.4s;
 }
-
 .header, .nav-link.active, .card-header, .modal-header, .wizard-tab{
     background-color: #FFA149 !important;
     transition: all 0.5s;
 }
-
-
 .btn-primary {
-    background-color: #FBA652
-    !important;
-    border-color: transparent
-    !important;
+    background-color: #FBA652 !important;
+    border-color: transparent !important;
     width: 100%;
     border: 1px solid transparent;
-    padding: 10px 20px ;
+    padding: .4em .9em;
     font-family: Inter, sans-serif!important;
-    font-size: 13px!important;
+    font-size: .9rem !important;
     transition: all 0.4s;
-    border-radius: 5px;
-    max-width: 150px;
-    margin: 10px 5px;
+    border-radius: .4em;
+    max-width: 12em;
+    margin: .8em .4em;
+    color: #303030;
 }
 .btn-primary:hover{
-    background-color: #ff8f1f!important;
+    background-color: #ff8f1f !important;
 }
 .btn-primary i{
-    margin: 0px 10px;
+    margin: 0 .2em;
 }
 @media only screen and (max-width: 1100px) {
 	.menuTop .btn.btn-link{

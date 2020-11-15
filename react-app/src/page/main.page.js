@@ -55,9 +55,9 @@ export default class MainPage extends React.Component {
 							     style={{'width':'30em','height':'10em','margin':'1em 0 0 1.4em'}}
 							     alt="" />
 			    		</div>
-			    		<div className="container">
-				    		<div className="row justify-content-center" 
-				    			 style={{'paddingTop': '3em'}}>
+			    		<div style={{'marginTop':'-3.5em'}}>
+				    		<div className="field" 
+				    			 style={{'paddingTop':'3em','width':'20em','marginLeft':'1.5em'}}>
 				    			<BigButton label="Solicitar Nova Ligação" 
 													 className="fab fa-houzz" 
 				    				       onClick={() => this.newBinding()} />

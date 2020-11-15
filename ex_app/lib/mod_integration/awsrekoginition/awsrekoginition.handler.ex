@@ -22,6 +22,7 @@ defmodule ExApp.AwsrekoginitionHandler do
     # "ProjectVersionArn" => "arn:aws:s3:::custom-labels-console-us-west-2-d89c4fe0be" 
     # {"x-amz-target", "RekognitionService.DetectLabels"}
     binary = fileBase64 |> StringUtil.split(",") |> Enum.at(1) 
+    configuration = ExAws.Config.new(:rekognition)
     result = %ExAws.Operation.JSON{
       before_request: nil,
 	  data: %{ 
@@ -36,7 +37,7 @@ defmodule ExApp.AwsrekoginitionHandler do
       path: "/",
       service: :rekognition,
       stream_builder: nil  
-	} |> ExAws.Operation.perform(ExAws.Config.new(:rekognition))
+	} |> ExAws.Operation.perform(configuration)
     result = result |> Tuple.to_list() |> Enum.at(1)
     #IO.inspect(result)
     ReturnUtil.getOperationSuccess(200,result,nil)

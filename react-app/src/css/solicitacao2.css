@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Poppins&family=Ubuntu:wght@300&display=swap');
+
+*{
+  box-sizing: border-box;
+}
+::-webkit-scrollbar {
+  width: 0;
+}
+.headerData .tabs{
+  overflow: auto;
+}
+.dataForm{
+	width: 46em;
+	margin: 0 auto;
+}
+h3{
+  font-size: 1.1rem;
+  color: #303030;
+  font-family: Poppins, sans-serif;
+  margin-bottom: .8em;
+}
+option{
+  padding: .4em .8em;
+  background: #fff;
+}
+option:hover, option:focus, select:focus{
+  border: 2px solid #FBA652!important;
+}
+label{
+  font-family: Ubuntu, sans-serif;
+  font-size: .9rem;
+  color: #303030;
+  margin-top: .15rem !important;
+}
+.tabs{
+  display: flex;
+  justify-content: space-between;
+  background: #FBA652;
+  padding: .8em 1.6em;
+  border-radius: .3em;
+}
+.tabs li{
+  list-style: none;
+}
+@media(max-width: 500px){
+  .tabs{
+    display: none;
+  }
+}
