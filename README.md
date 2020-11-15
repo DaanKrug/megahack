@@ -1,8 +1,8 @@
 
 
-# Hackathon 5º Mega Hack | Shawee | Time XX | Desafio XX | Equipe Kentaurus
+# Hackathon 5º Mega Hack | Shawee | Time 05 | Desafio CPFL Energia | Equipe Kentaurus
 
-APP é um aplicativo que ajudará ....
+Nossa solução visa automatizar o atendimento ao cliente utilizando o cruzamento de dados, o machine learning e o reconhecimento de imagem para a simplificação do processo. Através de um atendimento mais dinâmico e humanizado, o cliente conseguirá solicitar serviços com apenas poucos clicks. Abaixo os serviços a serem implantados com base nas necessidades da CPFL.
 
 ## Tecnologias
 
