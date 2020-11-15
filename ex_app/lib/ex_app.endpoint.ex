@@ -30,6 +30,7 @@ defmodule ExApp.Endpoint do
   alias ExApp.RebindingrequestController
   alias ExApp.BilletController
   alias ExApp.AwsrekoginitionController
+  alias ExApp.CepSearchController
   
   
   plug(Plug.Logger, log: :debug)
@@ -62,6 +63,7 @@ defmodule ExApp.Endpoint do
   forward("/rebindingrequests",                to: RebindingrequestController)
   forward("/billets",                          to: BilletController)
   forward("/awsrekoginitions",                 to: AwsrekoginitionController)
+  forward("/cepsearchs",                       to: CepSearchController)
   
   
   match _ do

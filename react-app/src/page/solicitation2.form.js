@@ -2,7 +2,7 @@ import React from 'react';
 
 import ClientService from '../api_com/client.service.js';
 import SolicitationService from '../api_com/solicitation.service.js';
-import ViaCepService from '../api_com/external/viacep.service.js';
+import CepSearchService from '../api_com/cepsearch.service.js';
 import AwsRekognitionService from '../api_com/awsrekognition.service.js';
 
 import SolicitationHelper from './helper/solicitation.helper.js';
@@ -314,21 +314,21 @@ export default class SolicitationForm extends React.Component{
 		if(!([2,3].includes(this.state.tab))){
 			return;
 		}
-		ViaCepService.findByCep(value).then(result => {
+		CepSearchService.findByCep(value).then(result => {
 			if(this.emptyObject(result) || Array.isArray(result)){
 				return;
 			}
 			if(this.state.tab === 2){
 				this.setState({addressMode: 'text'});
 				this.valueChanged('a12_uf',result.uf);
-				this.valueChanged('a13_city',result.cidade);
-				this.valueChanged('a14_street',result.logradouro + ' ' + result.bairro);
+				this.valueChanged('a13_city',result.localidade);
+				this.valueChanged('a14_street',result.logradouro + ' '+ result.complemento + ' ' + result.bairro);
 			}
 			if(this.state.tab === 3){
 				this.setState({addressMode2: 'text'});
 				this.valueChanged('s_a6_uf',result.uf);
-				this.valueChanged('s_a7_city',result.cidade);
-				this.valueChanged('s_a8_street',result.logradouro + ' ' + result.bairro);
+				this.valueChanged('s_a7_city',result.localidade);
+				this.valueChanged('s_a8_street',result.logradouro + ' '+ result.complemento + ' ' + result.bairro);
 			}
 		});
 	}

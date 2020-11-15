@@ -401,6 +401,7 @@ export class AppComponent extends BaseCrudFilterComponent implements OnInit, OnD
 	
     publicHome(){
 		if(this.mainpageNumber == 0){
+			this.loadReactApp();
 			this.eventEmitterService.get('showMenuContent').emit({id: 0, content: ''});
 			return;
 		}
