@@ -16,14 +16,16 @@ Para a construção do protótipo estamos utilizando...
 
 ## Participantes
 
- - Daniel Krug 
+ - Daniel Krug (Full Stack Developer / Software Engineer)
    - https://www.linkedin.com/in/daniel-krug-427646b9/
    - https://github.com/DaanKrug
- - Deivid Gabriel
+ - Deivid Gabriel (Full Stack Developer)
    - https://github.com/Fukubi
- - Francisco Cajlon Jhonathan Moura Batista
-   - https://github.com/cajlonbatista
-
+ - Henrique Nitatori (Backend Developer) 
+   - https://github.com/henrique-nitatori
+ - Katia Rocha (Marketing/UX)
+   - https://www.linkedin.com/in/katia-rocha/
+ 
 
 
 # Tips and Tricks
