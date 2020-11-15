@@ -38,6 +38,11 @@ html, body{
 .btn-primary i{
     margin: 0 .2em;
 }
+.alert-danger, .alert-info{
+	padding: .2em .5em !important;
+	border-radius: .4em !important;
+	margin: .1em 0 !important;
+}
 @media only screen and (max-width: 1100px) {
 	.menuTop .btn.btn-link{
 	    color: #fff !important;

@@ -88,6 +88,9 @@ export default class InputUpload extends React.Component{
 		let readOnly = (undefined !== this.props.readOnly 
 				        && null !== this.props.readOnly && this.props.readOnly);
 		let clazz = readOnly ? 'form-control disabled' : 'form-control';
+		let vclazz = (undefined !== this.state.validationMessage 
+				      && null !== this.state.validationMessage && this.state.validationMessage.trim () !== '')
+				   ? 'alert-danger' : 'none';
 		return (
 				<div>
 					{this.renderLabel()}
@@ -99,7 +102,7 @@ export default class InputUpload extends React.Component{
 					       ref={this.fileInput}
 					       onChange={() => {this.onChange();}}  />
 					<div key={this.state.key}
-					     className={this.state.validationMessage !== '' ? 'alert-danger' : 'none'}>
+					     className={vclazz}>
 						{this.state.validationMessage}
 					</div>
 				</div>

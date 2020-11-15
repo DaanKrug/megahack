@@ -1,7 +1,7 @@
 defmodule ExApp.Enviroment.Decisor do
 
   def getEnvType() do
-    "prod"
+    "dev"
   end
 
 end

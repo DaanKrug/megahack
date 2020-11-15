@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "deployUrl": "https://megahack2020-cdn.s3-us-west-2.amazonaws.com/angular/",
+            "deployUrl": "../megahack2020/ex_app/priv/static/angular/",
             "aot": true,
             "outputPath": "../static_files/angular/",
             "index": "src/index.html",

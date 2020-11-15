@@ -3,58 +3,37 @@ import React from 'react';
 import ClientService from '../api_com/client.service.js';
 import SolicitationService from '../api_com/solicitation.service.js';
 import ViaCepService from '../api_com/external/viacep.service.js';
+import AwsRekognitionService from '../api_com/awsrekognition.service.js';
+
+import SolicitationHelper from './helper/solicitation.helper.js';
+
 import CitiesUtil from '../util/cities.util.js';
 
-import InputCorrector from '../component/corrector/input.corrector.js';
+import CpfMask from '../component/mask/cpf.mask.js';
+import CnpjMask from '../component/mask/cnpj.mask.js';
+import CepMask from '../component/mask/cep.mask.js';
+import DateMask from '../component/mask/date.mask.js';
+import DocumentMask from '../component/mask/document.mask.js';
+import RgMask from '../component/mask/rg.mask.js';
+
 import InputText from '../component/inputtext.js';
 import RadioButton from '../component/radiobutton.js';
 import SelectBox from '../component/selectbox.js';
 import InputUpload from '../component/inputupload.js';
-import AwsRekognitionService from '../api_com/awsrekognition.service.js';
+import InputCorrector from '../component/corrector/input.corrector.js';
 
 import '../css/solicitacao2.css';
 
-const alphaE: string[] = [
-	'Ñ','Ã','Á','À','Â','Ä','É','È','Ê','Ë','Í','Ì','Î','Ï','Õ','Ó','Ò','Ô','Ö','Ú','Ù','Û','Ü','Ç'
-];
-const alphae: string[] = [
-	'ñ','ã','á','à','â','ä','é','è','ê','ë','í','ì','î','ï','õ','ó','ò','ô','ö','ú','ù','û','ü','ç'
-];
-const alphaA: string[] = [
-	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
-];
-const alphaa: string[] = [
-	'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-];
-const numbers: string[] = ['0','1','2','3','4','5','6','7','8','9'];
-const specials: string[] = [
-	'(',')','*','-','+','%','@','_','.',',','$',':',' ','|',';','/','\\','?','=','&','[',']','{','}'
-];
-const alphas = alphaA.concat(alphaa).concat(alphaE).concat(alphae).concat([' ']);
-const doubles = numbers.concat([',','-']);
-const dates = numbers.concat(['/']);
+const OnlyAlphaCorrector = new InputCorrector('alpha');
+const AlphaNumberCorrector = new InputCorrector('alphanum');
+const EmailCorrector = new InputCorrector('email');
+const PhoneCorrector = new InputCorrector('phone');
 
-
-const OnlyAlphaCorrector = new InputCorrector(alphas);
-const OnlyNumberCorrector = new InputCorrector(numbers);
-const AlphaNumberCorrector = new InputCorrector(alphas.concat(numbers).concat(specials));
-const DateCorrector = new InputCorrector(numbers.concat(['/']));
-const DocumentCorrector = new InputCorrector(numbers.concat(['.','-']));
-const CpfCorrector = new InputCorrector(numbers.concat(['.','-']));
-const CnpjCorrector = new InputCorrector(numbers.concat(['.','-','/']));
-const EmailCorrector = new InputCorrector(alphaA.concat(alphaa).concat(numbers).concat(['@','.','-','_']));
-const PhoneCorrector = new InputCorrector(numbers.concat([' ','-','(',')']));
-const CepCorrector = new InputCorrector(numbers.concat(['-']));
+const imgErrorMsg = 'Imagem selecionada não parece ser de uma instalação de padrão adequada.';
 
 export default class SolicitationForm extends React.Component{
 	
-	a2_caracteristics: any[];
-	a2_types: any[];
-	a6_doctypes: any[];
-	a8_genders: any[];
-	a16_compl1types: any[];
-	a18_compl2types: any[];
-    client: any;
+	client: any;
     statesOptions: any[];
     citiesOptions: any[];
 	statesOptions2: any[];
@@ -63,55 +42,6 @@ export default class SolicitationForm extends React.Component{
 	constructor(props){
 		super(props);
 		this.client = null;
-		this.a2_caracteristics = [
-			{value: 'l1', label: 'Ligação para casa ou comércio, em local com até duas instalações'},
-			{value: 'l2', label: 'Ligação para apartamentos residenciais ou sala/loja comercial em edifícios e galerias'},
-			{value: 'l3', label: 'Ligação de projeto para loteamentos'},
-			{value: 'l4', label: 'Ligação de projeto edifícios'}
-		];
-		this.a2_types = [
-			{value: 'PF', label: 'C.P.F'},
-			{value: 'PJ', label: 'C.N.P.J.'}
-		];
-		this.a6_doctypes = [
-			{value: 'rg', label: 'RG'},
-			{value: 'cnh', label: 'CNH'},
-			{value: 'passport', label: 'Passaporte'},
-			{value: 'reservistcart', label: 'Carteira de Reservista'},
-			{value: 'workcart', label: 'Carteira de Trabalho'},
-			{value: 'nre', label: 'Número de Registro de Estrangeiro'},
-		];
-		this.a8_genders = [
-			{value: 'M', label: 'Masculino'},
-			{value: 'F', label: 'Feminino'},
-			{value: 'O', label: 'Outro'}
-		];
-		this.a16_compl1types = [
-			{value: '', label: ''},
-			{value: 'adminstracao', label: 'Administração'},
-			{value: 'altos', label: 'Altos'},
-			{value: 'apartamento', label: 'Apartamento'},
-			{value: 'armazem', label: 'Armazém'},
-			{value: 'baixos', label: 'Balcão'},
-			{value: 'bancajornal', label: 'Banca de Jornal'},
-			{value: 'barraca', label: 'Barraca'},
-			{value: 'barracao', label: 'Barracão'},
-			{value: 'bilheteria', label: 'Bilheteria'},
-			{value: 'loja', label: 'Loja'},
-			{value: 'lote', label: 'Lote'},
-			{value: 'sala', label: 'Sala'},
-			{value: 'salao', label: 'Salão'}
-		];
-		this.a18_compl2types = [
-			{value: '', label: ''},
-			{value: 'acesso', label: 'Acesso'},
-			{value: 'andar', label: 'Andar'},
-			{value: 'anexo', label: 'Anexo'},
-			{value: 'clube', label: 'Clube'},
-			{value: 'colegio', label: 'Colégio'},
-			{value: 'colonia', label: 'Colônia'},
-			{value: 'cruzamento', label: 'Cruzamento'}
-		]; 
 		this.statesOptions = CitiesUtil.getStateOptions();
 		this.citiesOptions = [];
 		this.statesOptions2 = CitiesUtil.getStateOptions();
@@ -119,7 +49,7 @@ export default class SolicitationForm extends React.Component{
 		this.state = {
 			key: new Date().getTime(),
 			a1_name: '',
-			a2_type: this.a2_types[0].value,
+			a2_type: SolicitationHelper.getA2_types()[0].value,
 			a3_cpf: '',
 			a4_cnpj: '',
 			a5_birthdate: '',
@@ -158,6 +88,14 @@ export default class SolicitationForm extends React.Component{
 		};
 	}
 	
+	emptyObject(obj){
+		return (undefined === obj || null === obj);
+	}
+	
+	emptyString(string){
+		return (this.emptyObject(string) || string.trim() === '');
+	}
+	
 	setValidationMessage(response){
 		this.setState({errorMsg: response.msg, sucessMsg: '', key: new Date().getTime()});
 	}
@@ -167,14 +105,18 @@ export default class SolicitationForm extends React.Component{
 	}
 	
 	makeRekognition(){
-		if(undefined === this.state.fileData || null === this.state.fileData){
-			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
+		if(this.emptyObject(this.state.fileData)){
+			this.setValidationMessage({msg: imgErrorMsg});
 			return;
 		}
 		this.setProcessing(true);
 		let image = {file: this.state.fileData.base64, filename: this.state.fileData.fileName};
 		AwsRekognitionService.rekognize(image).then(result => {
 			let labels = result.msg.Labels;
+			if(this.emptyObject(labels)){
+				this.setValidationMessage({msg: imgErrorMsg});
+				return;
+		    }
 			let size = labels.length;
 			let validated = false;
 			for(let i = 0; i < size; i++){
@@ -191,7 +133,7 @@ export default class SolicitationForm extends React.Component{
 	
 	loadClientAndNext(){
 		if(this.state.validatedNew !== true){
-			this.setValidationMessage({msg: 'Imagem não parece ser uma instalação de padrão adequada.'});
+			this.setValidationMessage({msg: imgErrorMsg});
 			this.setProcessing(false);
 			return;
 		}
@@ -199,7 +141,7 @@ export default class SolicitationForm extends React.Component{
 			ClientService.loadByCpf(this.state.a3_cpf).then(client => {
 				this.setClientData(client);
 				this.setProcessing(false);
-				let newTab = null === this.client ? 1 : 3;
+				let newTab = this.emptyObject(this.client) ? 1 : 3;
 				this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
 			});
 			return;
@@ -207,7 +149,7 @@ export default class SolicitationForm extends React.Component{
 		ClientService.loadByCnpj(this.state.a4_cnpj).then(client => {
 			this.setClientData(client);
 			this.setProcessing(false);
-			let newTab = null === this.client ? 1 : 3;
+			let newTab = this.emptyObject(this.client) ? 1 : 3;
 			this.setState({tab: newTab, addressMode2: 'select', key: new Date().getTime()});
 		});
 	}
@@ -217,7 +159,7 @@ export default class SolicitationForm extends React.Component{
 			return;
 		}
 		this.setState({errorMsg: '', successMsg: '', key: new Date().getTime()});
-		let newTab = null === this.client ? this.state.tab - 1 : this.state.tab - 3;
+		let newTab = this.emptyObject(this.client) ? this.state.tab - 1 : this.state.tab - 3;
 		if(newTab === 0){
 			this.client = null;
 			this.valueChanged('a3_cpf','');
@@ -232,6 +174,10 @@ export default class SolicitationForm extends React.Component{
 		}
 		this.setState({errorMsg: '', successMsg: '', key: new Date().getTime()});
 		let newTab = this.state.tab + 1;
+		if(!this.validateNext(newTab)){
+			this.setValidationMessage({msg: 'Preencher corretamente os campos obrigatórios (*).'})
+			return;
+		}
 		if(newTab === 1){
 			this.makeRekognition();
 			return;
@@ -239,7 +185,7 @@ export default class SolicitationForm extends React.Component{
 		if(newTab === 2){
 			this.setState({tab: newTab, addressMode: 'select', key: new Date().getTime() });
 		}
-		if(newTab === 3 && null === this.client){
+		if(newTab === 3 && this.emptyObject(this.client)){
 			let date = this.state.a5_birthdate.replace(/\//gi,'');
 			let client = {
 				a1_name: this.state.a1_name,
@@ -262,7 +208,6 @@ export default class SolicitationForm extends React.Component{
 				a18_compl2type: this.state.a18_compl2type,
 				a19_compl2desc: this.state.a19_compl2desc
 			};
-			console.log('client: ', client);
 			this.setProcessing(true);
 			ClientService.create(client).then(response => {
 				if(response.code !== 200){
@@ -275,7 +220,45 @@ export default class SolicitationForm extends React.Component{
 			return;
 		}
 		this.setState({tab: newTab, key: new Date().getTime()});
-		
+	}
+	
+	validateNext(newTab){
+		if(newTab === 1){
+			return this.validateNext1();
+		}
+        if(newTab === 2){
+        	return this.validateNext2();
+		}
+        return this.validateNext3();
+	}
+	
+	validateNext1(){
+		if(this.emptyString(this.state.a3_cpf) && this.emptyString(this.state.a4_cnpj)){
+			return false;
+		}
+		return true;
+	}
+	
+	validateNext2(){
+		if(this.emptyString(this.state.a1_name) 
+				|| this.emptyString(this.state.a5_birthdate)
+				|| this.emptyString(this.state.a6_doctype)
+				|| this.emptyString(this.state.a7_document)
+				|| this.emptyString(this.state.a8_gender)
+				|| this.emptyString(this.state.a10_phone)){
+			return false;
+		}
+		return true;
+	}
+	
+	validateNext3(){
+		if(this.emptyString(this.state.a11_cep) 
+				|| this.emptyString(this.state.a12_uf)
+				|| this.emptyString(this.state.a13_city)
+				|| this.emptyString(this.state.a14_street)){
+			return false;
+		}
+		return true;
 	}
 	
 	createSolicitation(){
@@ -313,7 +296,7 @@ export default class SolicitationForm extends React.Component{
 			return;
 		}
 		ViaCepService.findByCep(value).then(result => {
-			if(null === result || Array.isArray(result)){
+			if(this.emptyObject(result) || Array.isArray(result)){
 				return;
 			}
 			if(this.state.tab === 2){
@@ -323,7 +306,6 @@ export default class SolicitationForm extends React.Component{
 				this.valueChanged('a14_street',result.logradouro + ' ' + result.bairro);
 			}
 			if(this.state.tab === 3){
-				console.log('echoo: ', result);
 				this.setState({addressMode2: 'text'});
 				this.valueChanged('s_a6_uf',result.uf);
 				this.valueChanged('s_a7_city',result.cidade);
@@ -368,12 +350,12 @@ export default class SolicitationForm extends React.Component{
 		}
 		if(id === 'a11_cep'){
 			this.setState({a11_cep: value});
-			if(value.trim().length >= 8){
+			if(value.trim().length === 9){
 				this.searchByCep(value);
 			}
 		}
 		if(id === 'a12_uf'){
-			this.citiesOptions = value.trim() === '' 
+			this.citiesOptions = this.emptyString(value) 
 				               ? [{value: '', label: ''}] 
 			                   :  CitiesUtil.getCitiesOptions(value);
 		    this.setState({a12_uf: value, a13_city: this.citiesOptions[0].value, key: new Date().getTime()});
@@ -404,12 +386,12 @@ export default class SolicitationForm extends React.Component{
 		}
 		if(id === 's_a5_cep'){
 			this.setState({s_a5_cep: value});
-			if(value.trim().length >= 8){
+			if(value.trim().length === 9){
 				this.searchByCep(value);
 			}
 		}
 		if(id === 's_a6_uf'){
-			this.citiesOptions2 = value.trim() === '' 
+			this.citiesOptions2 = this.emptyString(value) 
 				               ? [{value: '', label: ''}] 
 			                   :  CitiesUtil.getCitiesOptions(value);
 		    this.setState({s_a6_uf: value, s_a7_city: this.citiesOptions[0].value, key: new Date().getTime()});
@@ -449,22 +431,22 @@ export default class SolicitationForm extends React.Component{
 	
 	setClientData(client){
 		this.client = client;
-		this.valueChanged('a1_name',null != client ? client.a1_name : '');
-		this.valueChanged('a5_birthdate',null != client ? client.a5_birthdate : '');
-		this.valueChanged('a6_doctype',null != client ? client.a6_doctype : '');
-		this.valueChanged('a7_document',null != client ? client.a7_document : '');
-		this.valueChanged('a8_gender',null != client ? client.a8_gender : '');
-		this.valueChanged('a9_email',null != client ? client.a9_email : '');
-		this.valueChanged('a10_phone',null != client ? client.a10_phone : '');
-		this.valueChanged('a11_cep',null != client ? client.a11_cep : '');
-		this.valueChanged('a12_uf',null != client ? client.a12_uf : '');
-		this.valueChanged('a13_city',null != client ? client.a13_city : '');
-		this.valueChanged('a14_street',null != client ? client.a14_street : '');
-		this.valueChanged('a15_number',null != client ? client.a15_number : '');
-		this.valueChanged('a16_compl1type',null != client ? client.a16_compl1type : '');
-		this.valueChanged('a17_compl1desc',null != client ? client.a17_compl1desc : '');
-		this.valueChanged('a18_compl2type',null != client ? client.a18_compl2type : '');
-		this.valueChanged('a19_compl2desc',null != client ? client.a19_compl2desc : '');
+		this.valueChanged('a1_name',!this.emptyObject(this.client) ? client.a1_name : '');
+		this.valueChanged('a5_birthdate',!this.emptyObject(this.client) ? client.a5_birthdate : '');
+		this.valueChanged('a6_doctype',!this.emptyObject(this.client) ? client.a6_doctype : '');
+		this.valueChanged('a7_document',!this.emptyObject(this.client) ? client.a7_document : '');
+		this.valueChanged('a8_gender',!this.emptyObject(this.client) ? client.a8_gender : '');
+		this.valueChanged('a9_email',!this.emptyObject(this.client) ? client.a9_email : '');
+		this.valueChanged('a10_phone',!this.emptyObject(this.client) ? client.a10_phone : '');
+		this.valueChanged('a11_cep',!this.emptyObject(this.client) ? client.a11_cep : '');
+		this.valueChanged('a12_uf',!this.emptyObject(this.client) ? client.a12_uf : '');
+		this.valueChanged('a13_city',!this.emptyObject(this.client) ? client.a13_city : '');
+		this.valueChanged('a14_street',!this.emptyObject(this.client) ? client.a14_street : '');
+		this.valueChanged('a15_number',!this.emptyObject(this.client) ? client.a15_number : '');
+		this.valueChanged('a16_compl1type',!this.emptyObject(this.client) ? client.a16_compl1type : '');
+		this.valueChanged('a17_compl1desc',!this.emptyObject(this.client) ? client.a17_compl1desc : '');
+		this.valueChanged('a18_compl2type',!this.emptyObject(this.client) ? client.a18_compl2type : '');
+		this.valueChanged('a19_compl2desc',!this.emptyObject(this.client) ? client.a19_compl2desc : '');
 	}
 	
 	render(){
@@ -479,7 +461,7 @@ export default class SolicitationForm extends React.Component{
 		let clazzPanel2 = this.state.tab === 2 ? '' : 'none';
 		let clazzPanel3 = this.state.tab === 3 ? '' : 'none';
 		let clazzPanel4 = this.state.tab === 4 ? '' : 'none';
-		if(null !== this.client){
+		if(!this.emptyObject(this.client)){
 			clazzTab1 = 'none';
 			clazzTab2 = 'none';
 			clazzPanel1 = 'none';
@@ -521,18 +503,18 @@ export default class SolicitationForm extends React.Component{
 				<div className={clazzPanel0}>
 					<RadioButton id="a2_type" 
 						         defaultValue={this.state.a2_type}
-						         options={this.a2_types}
+						         options={SolicitationHelper.getA2_types()}
 						         handler={this}>
 					</RadioButton>
 					<InputText id="a3_cpf" 
 						       noRender={this.state.a2_type !== 'PF'}
-						       corrector={CpfCorrector}
+						       corrector={new CpfMask()}
 						       maxlength="14"
 					           handler={this}>
 					</InputText>
 					<InputText id="a4_cnpj" 
 						       noRender={this.state.a2_type !== 'PJ'}
-						       corrector={CnpjCorrector}
+						       corrector={new CnpjMask()}
 					           maxlength="18"
 					           handler={this}>
 					</InputText>
@@ -541,52 +523,52 @@ export default class SolicitationForm extends React.Component{
 						         handler={this}>
 					</InputUpload>
 					<img style={{'border':'0','width':'100%','height':'16em'}}
-					     className={null === this.state.fileData ? 'none' : ''}
-					     src={null === this.state.fileData ? '' : this.state.fileData.base64}>
+					     className={this.emptyObject(this.state.fileData) ? 'none' : ''}
+					     src={this.emptyObject(this.state.fileData) ? '' : this.state.fileData.base64}>
 					</img>
 				</div>
 				<div className={clazzPanel1}>
-					<div className={null !== this.client ? 'alert-info' : 'none'}>
+					<div className={!this.emptyObject(this.client) ? 'alert-info' : 'none'}>
 						Encontramos seu cadastro. Para alterar os dados realize 
 						solicitação de alteração de dados pessoais.
 					</div>
 					<InputText id="a1_name" 
-						       label="Nome"
+						       label="Nome (*)"
 						       defaultValue={this.state.a1_name}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '99'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a5_birthdate" 
-						       label="Data de Nascimento"
+						       label="Data de Nascimento (*)"
 						       defaultValue={this.state.a5_birthdate}
-						       corrector={DateCorrector}
-							   readOnly={null !== this.client}
+						       corrector={new DateMask()}
+							   readOnly={!this.emptyObject(this.client)}
 							   width={fitMode ? '100' : '32'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a6_doctype"
-						       label="Tipo Outro Documento"
+						       label="Tipo Outro Documento (*)"
 						       defaultValue={this.state.a6_doctype}
-						       options={this.a6_doctypes}
-					           readOnly={null !== this.client}
+						       options={SolicitationHelper.getA6_doctypes()}
+					           readOnly={!this.emptyObject(this.client)}
 							   width={fitMode ? '100' : '33'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="a7_document" 
-						       label="Número Outro Documento"
+						       label="Número Outro Documento (*)"
 						       defaultValue={this.state.a7_document}
-						       corrector={DocumentCorrector}
-					           readOnly={null !== this.client}
+						       corrector={this.state.a6_doctype === 'rg' ? new RgMask() : new DocumentMask()}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '33'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a8_gender"
-						       label="Sexo/Gênero"
+						       label="Sexo/Gênero (*)"
 						       defaultValue={this.state.a8_gender}
-						       options={this.a8_genders}
-					           readOnly={null !== this.client}
+						       options={SolicitationHelper.getA8_genders()}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
@@ -594,91 +576,91 @@ export default class SolicitationForm extends React.Component{
 						       label="E-mail"
 						       defaultValue={this.state.a9_email}
 						       corrector={EmailCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a10_phone" 
-						       label="Telefone(s)"
+						       label="Telefone(s) (*)"
 						       defaultValue={this.state.a10_phone}
 						       corrector={PhoneCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '99'}
 					           handler={this}>
 					</InputText>
 				</div>
 				<div className={clazzPanel2}>
-					<div className={null !== this.client ? 'alert-info' : 'none'}>
+					<div className={!this.emptyObject(this.client) ? 'alert-info' : 'none'}>
 						Encontramos seu cadastro. Para alterar os dados realize 
 						solicitação de alteração de dados pessoais.
 					</div>
 					<InputText id="a11_cep" 
-						       label="CEP"
+						       label="CEP (*)"
 						       defaultValue={this.state.a11_cep}
-						       corrector={CepCorrector}
+						       corrector={new CepMask()}
 					           maxlength="9"
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a12_uf"
-						       label="Estado/UF"
+						       label="Estado/UF (*)"
 						       defaultValue={this.state.a12_uf}
 						       options={this.statesOptions}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           noRender={this.state.addressMode === 'text'}
 					           width={fitMode ? '100' : '19'}
 						       handler={this}>
 					</SelectBox>
 					<SelectBox id="a13_city" 
-						       label="Cidade"
+						       label="Cidade (*)"
 						       defaultValue={this.state.a13_city}
 					           options={this.citiesOptions}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           noRender={this.state.addressMode === 'text'}
 					           width={fitMode ? '100' : '60'}
 					           handler={this}>
 					</SelectBox>
 					<InputText id="a12_uf" 
-						       label="Estado/UF"
+						       label="Estado/UF (*)"
 						       defaultValue={this.state.a12_uf}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           noRender={this.state.addressMode !== 'text'}
 					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a13_city" 
-						       label="Cidade"
+						       label="Cidade (*)"
 						       defaultValue={this.state.a13_city}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           noRender={this.state.addressMode !== 'text'}
-					           width={fitMode ? '100' : '69'}
+					           width={fitMode ? '100' : '60'}
 					           handler={this}>
 					</InputText>
 					<div className="clear"></div>
 					<InputText id="a14_street" 
-						       label="Logradouro"
+						       label="Logradouro (*)"
 						       defaultValue={this.state.a14_street}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '78'}
 					           handler={this}>
 					</InputText>
 					<InputText id="a15_number" 
 						       label="Número"
 						       defaultValue={this.state.a15_number}
-						       corrector={OnlyNumberCorrector}
-					           readOnly={null !== this.client}
+						       corrector={AlphaNumberCorrector}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '20'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a16_compl1type"
 						       label="Complemento 1 Tipo"
 						       defaultValue={this.state.a16_compl1type}
-						       options={this.a16_compl1types}
-					           readOnly={null !== this.client}
+						       options={SolicitationHelper.getA16_compl1types()}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
@@ -686,15 +668,15 @@ export default class SolicitationForm extends React.Component{
 						       label="Complemento 1 Descrição"
 						       defaultValue={this.state.a17_compl1desc}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client || this.state.a16_compl1type.trim() === ''}
+					           readOnly={!this.emptyObject(this.client) || this.state.a16_compl1type.trim() === ''}
 					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="a18_compl2type"
 						       label="Complemento 2 Tipo"
 						       defaultValue={this.state.a18_compl2type}
-						       options={this.a18_compl2types}
-					           readOnly={null !== this.client}
+						       options={SolicitationHelper.getA18_compl2types()}
+					           readOnly={!this.emptyObject(this.client)}
 					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
@@ -702,29 +684,29 @@ export default class SolicitationForm extends React.Component{
 						       label="Complemento 2 Descrição"
 						       defaultValue={this.state.a19_compl2desc}
 						       corrector={OnlyAlphaCorrector}
-					           readOnly={null !== this.client || this.state.a18_compl2type.trim() === ''}
+					           readOnly={!this.emptyObject(this.client) || this.state.a18_compl2type.trim() === ''}
 					           width={fitMode ? '100' : '69'}
 					           handler={this}>
 					</InputText>
 				</div>
 				<div className={clazzPanel3}>
 					<SelectBox id="s_a2_caracteristic"
-						       label="Característica da Instalação"
+						       label="Característica da Instalação (*)"
 						       defaultValue={this.state.s_a2_caracteristic}
-						       options={this.a2_caracteristics}
+						       options={SolicitationHelper.getA2_caracteristics()}
 					           width={fitMode ? '100' : '99'}
 						       handler={this}>
 					</SelectBox>
 					<InputText id="s_a5_cep" 
-						       label="CEP"
+						       label="CEP (*)"
 						       defaultValue={this.state.s_a5_cep}
-						       corrector={CepCorrector}
+						       corrector={new CepMask()}
 					           maxlength="9"
 					           width={fitMode ? '100' : '19'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a6_uf"
-						       label="Estado/UF"
+						       label="Estado/UF (*)"
 						       defaultValue={this.state.s_a6_uf}
 						       options={this.statesOptions2}
 					           noRender={this.state.addressMode2 === 'text'}
@@ -732,7 +714,7 @@ export default class SolicitationForm extends React.Component{
 						       handler={this}>
 					</SelectBox>
 					<SelectBox id="s_a7_city" 
-						       label="Cidade"
+						       label="Cidade (*)"
 						       defaultValue={this.state.s_a7_city}
 					           options={this.citiesOptions2}
 					           noRender={this.state.addressMode2 === 'text'}
@@ -740,7 +722,7 @@ export default class SolicitationForm extends React.Component{
 					           handler={this}>
 					</SelectBox>
 					<InputText id="s_a6_uf" 
-						       label="Estado/UF"
+						       label="Estado/UF (*)"
 						       defaultValue={this.state.s_a6_uf}
 						       corrector={OnlyAlphaCorrector}
 					           noRender={this.state.addressMode2 !== 'text'}
@@ -748,7 +730,7 @@ export default class SolicitationForm extends React.Component{
 					           handler={this}>
 					</InputText>
 					<InputText id="s_a7_city" 
-						       label="Cidade"
+						       label="Cidade (*)"
 						       defaultValue={this.state.s_a7_city}
 						       corrector={OnlyAlphaCorrector}
 					           noRender={this.state.addressMode2 !== 'text'}
@@ -757,7 +739,7 @@ export default class SolicitationForm extends React.Component{
 					</InputText>
 					<div className="clear"></div>
 					<InputText id="s_a8_street" 
-						       label="Logradouro"
+						       label="Logradouro (*)"
 						       defaultValue={this.state.s_a8_street}
 						       corrector={OnlyAlphaCorrector}
 					           width={fitMode ? '100' : '78'}
@@ -766,14 +748,14 @@ export default class SolicitationForm extends React.Component{
 					<InputText id="s_a9_number" 
 						       label="Número"
 						       defaultValue={this.state.s_a9_number}
-						       corrector={OnlyNumberCorrector}
+						       corrector={AlphaNumberCorrector}
 					           width={fitMode ? '100' : '20'}
 					           handler={this}>
 					</InputText>
 					<SelectBox id="s_a10_compl1type"
 						       label="Complemento 1 Tipo"
 						       defaultValue={this.state.s_a10_compl1type}
-						       options={this.a16_compl1types}
+						       options={SolicitationHelper.getA16_compl1types()}
 					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
@@ -788,7 +770,7 @@ export default class SolicitationForm extends React.Component{
 					<SelectBox id="s_a12_compl2type"
 						       label="Complemento 2 Tipo"
 						       defaultValue={this.state.s_a12_compl2type}
-						       options={this.a18_compl2types}
+						       options={SolicitationHelper.getA18_compl2types()}
 					           width={fitMode ? '100' : '29'}
 						       handler={this}>
 					</SelectBox>
@@ -801,7 +783,7 @@ export default class SolicitationForm extends React.Component{
 					           handler={this}>
 					</InputText>
 					<InputText id="s_a14_reference" 
-						       label="Referência"
+						       label="Referência (*)"
 						       defaultValue={this.state.s_a14_reference}
 						       corrector={OnlyAlphaCorrector}
 					           width={fitMode ? '100' : '99'}
@@ -809,12 +791,16 @@ export default class SolicitationForm extends React.Component{
 					</InputText>
 				</div>
 				
-				<div className={this.state.errorMsg !== '' ? 'alert-danger' : 'none'}> 
+				<div className="clear"></div> 
+				<div className={!this.emptyString(this.state.errorMsg) ? 'alert-danger' : 'none'}> 
 					{this.state.errorMsg}
+					<div className="clear"></div> 
 				</div>
-				<div className={this.state.successMsg !== '' ? 'alert-info' : 'none'}> 
+				<div className={!this.emptyString(this.state.successMsg) ? 'alert-info' : 'none'}> 
 					{this.state.successMsg}
+					<div className="clear"></div> 
 				</div>
+				<div className="clear"></div> 
 				
 				<div className="buttons clear"> 
 					<button className="btn btn-primary clickable"
